@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    /* --- Módulo e Ambiente --- */
+    "target": "ES2022", // Compila para uma versão moderna do JavaScript compatível com versões recentes do Node.js
+    "module": "NodeNext", // O sistema de módulos moderno para Node.js
+    "moduleResolution": "NodeNext", // Como o TypeScript resolve os módulos, deve acompanhar a opção "module"
+
+    /* --- Estrutura de Arquivos --- */
+    "outDir": "./dist", // Pasta onde o JavaScript compilado será salvo
+    "rootDir": "./src", // Pasta que contém seu código-fonte TypeScript
+
+    /* --- Checagem de Tipos Estrita --- */
+    "strict": true, // Habilita todas as checagens de tipo estritas (recomendado)
+    "noImplicitAny": true, // Força a declaração de tipos em vez de usar 'any' implicitamente
+
+    /* --- Interoperabilidade de Módulos --- */
+    "esModuleInterop": true, // Permite melhor interoperabilidade entre CommonJS e ES Modules
+    "skipLibCheck": true, // Pula a verificação de tipos em arquivos de declaração (.d.ts) das dependências
+
+    /* --- Adicional --- */
+    "forceConsistentCasingInFileNames": true, // Garante que os imports usem o mesmo case do nome do arquivo
+    "resolveJsonModule": true // Permite importar arquivos .json
+  },
+  "include": [
+    "src/**/*" // Diz ao TypeScript para compilar tudo que estiver dentro da pasta 'src'
+  ],
+  "exclude": [
+    "node_modules", // Ignora a pasta de dependências
+    "**/*.spec.ts" // Ignora arquivos de teste
+  ]
+}

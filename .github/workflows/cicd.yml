@@ -1,0 +1,23 @@
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: Teste de CI/CD
+
+# Define o gatilho (trigger) para rodar este workflow
+on:
+  # Roda quando você fizer um push para a branch 'main'
+  push:
+    branches:
+      - main
+  # Permite que você rode este workflow manualmente pela interface do GitHub
+  workflow_dispatch:
+
+# Define os "trabalhos" (jobs) que o workflow irá executar
+jobs:
+  # Nome do nosso único job de teste
+  test-pipeline:
+    # O tipo de máquina virtual que o job irá rodar
+    runs-on: ubuntu-latest
+
+    # A sequência de passos que este job irá executar
+    steps:
+      - name: Hello world!
+        run: echo "Hello world!"

@@ -4,7 +4,7 @@ import { Knex } from 'knex';
 
 const config: { [key: string]: Knex.Config } = {
   development: {
-    client: 'sqlite3',
+    client: 'sqlite3', // inicialmente sqlite e posteriormente migrar para postgree
     connection: {
       filename: path.resolve(__dirname, 'src', 'data', 'database.db')
     },

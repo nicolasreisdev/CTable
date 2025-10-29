@@ -19,4 +19,12 @@ export const defaultTheme = {
   'red-700': '#7A1921',
 
   'yellow-500': '#FBA94C',
+
+  'sidebar': '#311642',
+  'button': '#83219C',
+  'placeholder': '#816587',
+  'background': '#DFBAF7',
+  'keyword': '#BF42DB',
+  'hover-button': '#5f275f'
+
 }

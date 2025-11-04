@@ -32,7 +32,7 @@ export default function Sidebar() {
             <S.SidebarNav>
                 
                 {/* 1. Link para Home - Feed inicial*/}
-                <S.HomeLink to="/">
+                <S.HomeLink to="/feed">
                     <FiHome size={22} />
                     <span>Home</span>
                 </S.HomeLink>

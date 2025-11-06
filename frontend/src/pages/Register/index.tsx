@@ -10,12 +10,12 @@ interface NotificationState {
 }
 
 interface RegisterProps {
-  name: string;
+  nomeCompleto: string;
   username: string;
   email: string;
-  password: string;
-  phone: string;
-  birthdate: string; 
+  senha: string;
+  telefone: string;
+  dataNascimento: string; 
 }
 
 export default function Register() {
@@ -28,7 +28,17 @@ export default function Register() {
   async function onSubmit(data: RegisterProps) {
     console.log(data);
     try{
-      /* ... Lógica da API ... */
+      const response = await fetch('http://localhost:3000/api/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao registrar usuário');
+      }
       
       console.log('Usuário registrado com sucesso:');
       
@@ -62,7 +72,7 @@ export default function Register() {
             type="text" 
             placeholder="Nome completo" 
             required 
-            {...register('name')}
+            {...register('nomeCompleto')}
           />
           <StyledInput 
             type="text" 
@@ -80,16 +90,16 @@ export default function Register() {
             type="password" 
             placeholder="Senha" 
             required 
-            {...register('password')}
+            {...register('senha')}
           />
           <StyledInput 
             type="tel" 
             placeholder="Telefone" 
             required 
-            {...register('phone')}
+            {...register('telefone')}
           />
           <Controller
-            name="birthdate"
+            name="dataNascimento"
             control={control}
             rules={{ required: true }} 
             render={({ field }) => (

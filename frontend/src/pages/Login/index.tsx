@@ -1,7 +1,4 @@
-// Salve como: src/pages/LoginPage/index.tsx (Novo arquivo)
-
 import React from 'react';
-// Importe os MESMOS estilos compartilhados
 import {
   FormPageContainer,
   FormWrapper,

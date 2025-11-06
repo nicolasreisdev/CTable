@@ -1,12 +1,4 @@
-import { z } from 'zod';
-
-const userSchema = z.object({
-  nomeCompleto: z.string().min(3, "Nome muito curto"),
-  username: z.string().min(4, "Username muito curto"),
-  email: z.string().email("Formato de e-mail inválido"),
-  telefone: z.string().optional(), // Telefone é opcional
-  dataNascimento: z.string() // Idealmente, validar como data
-});
+import { userValidate } from "../utils/validationUser";
 
 
 export interface userData {
@@ -22,24 +14,17 @@ class requestController {
     async create(data: userData) { 
         try{
             
-            const validation = userSchema.parse(data);
-            
             console.log('Dados recebidos no controller:', data);
+
+            userValidate(data);
+
             // AQUI virá a lógica para salvar no banco de dados
             // Ex: await knex('usuarios').insert(data);
 
         } catch(error){
 
-            if (error instanceof z.ZodError) {
-                // return response.status(400).json({ 
-                //     message: "Erro de validação",
-                //     errors: error.flatten().fieldErrors 
-                // });
-                console.log("Erro de validação");
-            }
-
-
             console.log("Controller error:" + error);
+            throw error;
         }
     }
 }

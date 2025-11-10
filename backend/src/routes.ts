@@ -7,7 +7,7 @@ const routes = express.Router();
 // Endpoint para CADASTRAR um novo usuário
 routes.post('/api/register', async (request, response) => {
   try{
-
+    console.log("Recebendo requisição de cadastro:", request.body);
     await requestController.createUser(request.body);
     return response.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     

@@ -28,7 +28,8 @@ export default function Register() {
   async function onSubmit(data: RegisterProps) {
     console.log(data);
     try{
-      const response = await fetch('http://localhost:3000/api/usuarios', {
+      console.log('Enviando dados de registro:', data);
+      const response = await fetch('http://localhost:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +38,8 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao registrar usuário');
+        const errorData = await response.json();
+        throw new Error(errorData.message);
       }
       
       console.log('Usuário registrado com sucesso:');
@@ -49,7 +51,9 @@ export default function Register() {
       console.error('Erro ao registrar usuário:', error);
       
       // Define estado para mostrar notificação de erro
-      setNotification({ message: 'Erro ao registrar usuário.', type: 'error' });
+      if (error instanceof Error){
+        setNotification({ message: error.message, type: 'error' });
+      }
     }
   }
 

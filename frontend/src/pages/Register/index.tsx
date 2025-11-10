@@ -60,7 +60,7 @@ export default function Register() {
         <Toast
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification(null)} // Função para fechar
+          onClose={() => setNotification(null)} 
         />
       )}
 

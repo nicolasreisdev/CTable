@@ -5,27 +5,10 @@ import { z } from 'zod';
 const routes = express.Router();
 
 // Endpoint para CADASTRAR um novo usuário
-routes.post('/api/usuarios', async (request, response) => {
+routes.post('/api/register', async (request, response) => {
   try{
-    // 1. Capturar os dados do corpo da requisição
-    const { nomeCompleto, username, email, senha, telefone, dataNascimento } = request.body;
 
-    // 2. AQUI ENTRA A LÓGICA DE NEGÓCIO
-    //    - Validar os dados (verificar se não estão vazios)
-      const userData: userData = {
-          nomeCompleto,
-          username,
-          email,
-          telefone,
-          dataNascimento
-      };
-
-      await requestController.create(userData);
-    //    - Criptografar a senha (NUNCA salve senhas em texto puro)
-    //    - Inserir os dados no banco de dados com o Knex
-
-    // 3. Retornar uma resposta
-    // O status 201 significa "Created" (Criado com sucesso)
+    await requestController.createUser(request.body);
     return response.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     
   }catch(error){
@@ -36,9 +19,39 @@ routes.post('/api/usuarios', async (request, response) => {
            errors: error.flatten().fieldErrors 
       });
     }
+
+    if(error instanceof Error){
+      if (error.message.includes("já está em uso")) {
+          console.log("Enviando erro de duplicidade 400...");
+          return response.status(400).json({ message: error.message });
+      }
+    }
     
     console.error("Erro interno no servidor:", error);
     return response.status(500).json({ message: "Erro interno no servidor." });
+  }
+});
+
+// Endpoint para verificar a existência de usuário
+routes.post('/api/login', async(request, response) => {
+  try{
+
+    const { user, token } = await requestController.enterUser(request.body);
+    // console.log('Login: ' + user, token);
+    return response.status(200).json({
+        user,
+        token
+    });
+
+  }catch(error){
+
+    if(error instanceof Error){
+      if(error.message.includes("Usuário ou senha incorretos.")){
+        console.log("Erro de username ou senha");
+        return response.status(400).json({ message: error.message });
+      }
+    }
+
   }
 });
 

@@ -3,6 +3,8 @@ import { FormPageContainer, FormWrapper, FormTitle, StyledForm, StyledInput, Sub
 import { useForm, Controller} from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import  Toast  from '../../components/common/Toast';
+import { useNavigate } from 'react-router-dom';
+
 
 interface NotificationState {
   message: string;
@@ -24,6 +26,7 @@ export default function Register() {
 
   
   const { register, handleSubmit, formState: {isSubmitting}, control } = useForm<RegisterProps>();
+  const navigate = useNavigate();
 
   async function onSubmit(data: RegisterProps) {
     console.log(data);
@@ -46,6 +49,9 @@ export default function Register() {
       
       // Define estado para mostrar notificação de sucesso
       setNotification({ message: 'Usuário registrado com sucesso!', type: 'success' });
+      setTimeout(() => {
+        navigate('/feed'); // Navega para a página de feed
+      }, 1000);
       
     } catch (error) { 
       console.error('Erro ao registrar usuário:', error);

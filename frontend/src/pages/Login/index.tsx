@@ -10,6 +10,7 @@ import {
 } from '../../components/domain/Form/styles';
 import { useForm} from 'react-hook-form';
 import  Toast  from '../../components/common/Toast';
+import { useNavigate } from 'react-router-dom';
 
 interface NotificationState {
   message: string;
@@ -26,11 +27,12 @@ export default function LoginPage() {
   
     
   const { register, handleSubmit, formState: {isSubmitting} } = useForm<LoginProps>();
+  const navigate = useNavigate();
   
     async function onSubmit(data: LoginProps) {
       console.log(data);
-      /* try{
-        const response = await fetch('http://localhost:3000/api/usuarios', {
+      try{
+        const response = await fetch('http://localhost:3000/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -39,20 +41,27 @@ export default function LoginPage() {
         });
   
         if (!response.ok) {
-          throw new Error('Erro ao registrar usuário');
+          const errorData = await response.json();
+          throw new Error(errorData.message);
         }
         
         console.log('Usuário registrado com sucesso:');
         
         // Define estado para mostrar notificação de sucesso
         setNotification({ message: 'Usuário registrado com sucesso!', type: 'success' });
+    
+        setTimeout(() => {
+        navigate('/feed'); // Navega para a página de feed
+        }, 1000);
         
       } catch (error) { 
         console.error('Erro ao registrar usuário:', error);
         
         // Define estado para mostrar notificação de erro
-        setNotification({ message: 'Erro ao registrar usuário.', type: 'error' });
-      } */
+        if (error instanceof Error){
+        setNotification({ message: error.message, type: 'error' });
+        }
+      } 
   }
 
   return (

@@ -6,12 +6,12 @@ import bcrypt from 'bcryptjs';
 
 
 
-class businessLogic{
+class businessLogicUser{
 
     async newUser(data: userData){
         userValidate(data);
 
-        const existingUser = await knex('usuarios')
+        const existingUser = await knex('User')
                 .where('username', data.username)
                 .orWhere('email', data.email)
                 .first();
@@ -31,19 +31,20 @@ class businessLogic{
 
         const { nomeCompleto, username, email, telefone, dataNascimento } = data;
 
-        await knex('usuarios').insert({
-            nomeCompleto,
+
+        await knex('User').insert({
+            fullName: nomeCompleto,
             username,
             email,
-            telefone,
-            dataNascimento,
-            senhaHash
+            phone: telefone,
+            birthDate: dataNascimento,
+            passwordHash: senhaHash
         });
     }
 
     async enterUser(data: loginData){
         try{
-            const user = await knex('usuarios')
+            const user = await knex('User')
                     .where('username', data.username)
                     .first();
             
@@ -69,7 +70,8 @@ class businessLogic{
             throw error;
         }
     }
+
 }
 
 
-export default new businessLogic();
+export default new businessLogicUser();

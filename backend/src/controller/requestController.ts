@@ -1,4 +1,6 @@
-import businessLogic  from '../business/businessLogic'
+import businessLogicUser  from '../business/businessLogicUser'
+import businessLogicProject from '../business/businessLogicProject';
+import { projectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
 
 const TOKEN_SECRET = 'seu-segredo-super-secreto-mude-depois';
@@ -23,7 +25,7 @@ class requestController {
             
             console.log('Dados recebidos no controller:', data);
 
-            await businessLogic.newUser(data);
+            await businessLogicUser.newUser(data);
 
         } catch(error){
 
@@ -36,7 +38,7 @@ class requestController {
         try{
             console.log('dados do Login: ', data);
 
-            const userData = await businessLogic.enterUser(data);
+            const userData = await businessLogicUser.enterUser(data);
 
             const payload = { id: userData.id, username: userData.username };
             
@@ -51,6 +53,17 @@ class requestController {
         }catch(error){
             console.log("Controller error login:" + error)
             throw error;
+        }
+    }
+
+    async createProject(data: projectData){
+        try{
+
+            businessLogicProject.newProject(data);
+            
+            console.log("Iniciando novo projeto");
+        }catch(error){
+            console.log("Erro na criação do projeto");
         }
     }
 }

@@ -1,34 +1,32 @@
 
 export interface projectData{
-    projectID: string;
     title: string;
     description: string;
-    technologies: string[];
+    // technologies: string[];
     status: string;
     startDate: Date;
-    createdAt: Date;
-    updatedA: Date;
+    // createdAt: Date;
+    // updatedA: Date;
 }
 
 
-class Project{
-    projectID: string;
+export class Project{
     title: string;
     description: string;
-    technologies: string[];
+    // technologies: string[]; //keywords
     status: string;
     startDate: Date;
-    createdAt: Date;
-    updatedAt: Date;
+    // createdAt: Date;
+    // updatedAt: Date;
 
     constructor(data: projectData){
-        this.projectID = data.projectID
         this.title = data.title
         this.description = data.description
-        this.technologies = data.technologies
+        // this.technologies = data.technologies
         this.status = data.status
         this.startDate = data.startDate
-        this.createdAt = data.createdAt
-        this.updatedAt = data.updatedA
+        // this.createdAt = data.createdAt
+        // this.updatedAt = data.updatedA
     }
 }
+

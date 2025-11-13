@@ -1,5 +1,5 @@
 import express from 'express';
-import requestController , { userData } from './controller/requestController';
+import requestController , { userData,  } from './controller/requestController';
 import { z } from 'zod';
 
 const routes = express.Router();
@@ -51,6 +51,17 @@ routes.post('/api/login', async(request, response) => {
         return response.status(400).json({ message: error.message });
       }
     }
+
+  }
+});
+
+// Endpoint para criar projeto
+routes.post('/api/newproject', async(request, response) =>{
+  try{
+
+    requestController.createProject(request.body);
+    
+  }catch(error){
 
   }
 });

@@ -16,3 +16,13 @@ Construir um sistema de ponta a ponta que rastreia fóruns, processa o texto das
 ### Rode a migration
 
 - Para criar o arquivo em databse.bd, no terminal, na pasta backend, execute: npx knex migrate:latest --knexfile knexfile.ts
+
+
+## Realização de testes
+
+### Testes unitários:
+- No terminal dentro da pasta backend, execute o comando: npm test
+
+### Cobertura de testes:
+- No terminal dentro da pasta backend, execute o comando: npm run test:coverage
+- Para verificar a cobertura de testes, entre na pasta backend/src/coverage/lcov-report e abra o arquivo index.html no navegador para melhor análise.

@@ -1,12 +1,12 @@
 
-import { userData, loginData } from "../controller/requestController";
+import { userData, loginData } from "../models/User";
 import { userValidate } from "../utils/validationUser";
 import knex from '../data/index'; 
 import bcrypt from 'bcryptjs';
 
 
 
-class businessLogicUser{
+class businessLogicAuth{
 
     async newUser(data: userData){
         userValidate(data);
@@ -54,7 +54,7 @@ class businessLogicUser{
 
             const isPasswordValid = await bcrypt.compare(
                 data.senha,     
-                user.senhaHash  
+                user.passwordHash  
             );
 
             if (!isPasswordValid) {
@@ -74,4 +74,4 @@ class businessLogicUser{
 }
 
 
-export default new businessLogicUser();
+export default new businessLogicAuth();

@@ -16,6 +16,17 @@ const config: { [key: string]: Knex.Config } = {
     useNullAsDefault: true,
   },
 
+  test: {
+    client: 'sqlite3',
+    connection: {
+      filename: ':memory:' 
+    },
+    migrations: {
+      directory: path.resolve(__dirname, 'data', 'migrations')
+    },
+    useNullAsDefault: true,
+  },
+
   production: {
     // ...
   }

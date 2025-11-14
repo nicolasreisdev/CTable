@@ -1,22 +1,10 @@
-import businessLogicUser  from '../business/businessLogicUser'
+import businessLogicUser  from '../business/businessLogicAuth'
 import businessLogicProject from '../business/businessLogicProject';
+import {userData, loginData } from '../models/User'
 import { projectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
 
 const TOKEN_SECRET = 'seu-segredo-super-secreto-mude-depois';
-export interface userData {
-    nomeCompleto: string;
-    username: string;
-    email: string;
-    telefone: string;
-    dataNascimento: string;
-    senha: string;
-}
-
-export interface loginData{
-    username: string;
-    senha: string;
-}
 
 class requestController {
 

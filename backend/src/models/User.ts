@@ -5,8 +5,14 @@ export interface userData {
     email: string;
     telefone: string;
     dataNascimento: Date;
+    senha: string,
 }
-class User{
+
+export interface loginData{
+    username: string;
+    senha: string;
+}
+export class User{
     // userId: string;
     fullName: string;
     username: string;
@@ -65,4 +71,3 @@ class User{
 
 }
 
-// export default new User();

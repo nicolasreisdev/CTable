@@ -1,5 +1,5 @@
 import express from 'express';
-import requestController , { userData,  } from './controller/requestController';
+import requestController from './controller/requestController';
 import { z } from 'zod';
 
 const routes = express.Router();

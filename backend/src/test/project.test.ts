@@ -22,9 +22,13 @@ describe("Criação de projeto", () => {
     it("deve obter sucesso na criação do projeto (Status 201)", async () => {
 
       const newProject = {
-        title: 'CTable Ceci',
-        description: 'Teste ceci',
+        title: 'teste',
+        description: 'teste',
         status: 'Andamento',
+        technologies: [
+            "Java",
+            "Python"
+          ],
         startDate: '31/12/2004'
       }
 
@@ -33,6 +37,7 @@ describe("Criação de projeto", () => {
               .send(newProject);
 
       expect(response.status).toBe(201);
+      // expect(response.message).toBe("Projeto criado com sucesso!");
 
     })
 

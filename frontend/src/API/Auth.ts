@@ -16,6 +16,10 @@ export async function Login(data: LoginProps) {
     const errorData = await response.json();
     throw new Error(errorData.message);
   }
+
+  const {user, token} = await response.json();
+  localStorage.setItem('token', token);
+  
 }
 
 interface RegisterProps {

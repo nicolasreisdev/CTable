@@ -1,17 +1,34 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
-// Assumindo que seus estilos de layout estão em 'layout/styles.ts'
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
-// Reutiliza os mesmos estilos de formulário
 import * as S from '../../components/domain/CreationForm/styles'; 
+import TagInput from '../../components/domain/TagInput';
 
-export default function CreateCommunity() {
-  const { register, handleSubmit } = useForm();
+const MOCK_KEYWORDS_DB = [
+  'Frontend', 'Backend', 'Web', 'Mobile', 'Design', 'Data Science', 
+  'Inteligência Artificial', 'Blockchain', 'DevOps', 'Carreira', 'Games'
+  // ... (mais palavras-chave)
+];
 
-  const onSubmit = (data: any) => {
+interface CommunityFormData {
+  name: string;
+  description: string;
+  keywords: string[]; 
+}
+
+export default function CreateCommunityPage() {
+  
+  const { register, handleSubmit, control } = useForm<CommunityFormData>({
+    defaultValues: {
+      name: "",
+      description: "",
+      keywords: [] 
+    }
+  });
+
+  const onSubmit = (data: CommunityFormData) => {
     console.log("Criando Comunidade:", data);
-    // TODO: Lógica da API aqui
   };
 
   return (
@@ -33,7 +50,20 @@ export default function CreateCommunity() {
           
           <S.InputGroup>
             <S.Label htmlFor="keywords">Palavras-chave</S.Label>
-            <S.Input id="keywords" {...register('keywords')} />
+            
+            <Controller
+              name="keywords"
+              control={control}
+              render={({ field }) => (
+                <TagInput 
+                  value={field.value}
+                  onChange={field.onChange}
+                  searchList={MOCK_KEYWORDS_DB}
+                  limit={10} 
+                  placeholder="Adicione até 10 palavras-chave..."
+                />
+              )}
+            />
           </S.InputGroup>
 
           <S.SubmitButton type="submit">Criar Comunidade</S.SubmitButton>

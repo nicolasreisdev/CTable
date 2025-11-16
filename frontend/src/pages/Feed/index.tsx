@@ -1,9 +1,12 @@
 // frontend/src/pages/FeedPage/FeedPage.tsx
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../../components/common/Modal';
 import Postcard from '../../components/domain/Postcard';
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import * as S from './styles';
+import * as ModalS from '../../components/common/Modal/styles';
 
 // --- DADOS MOCKADOS ---
 const mockPosts = [
@@ -23,11 +26,23 @@ const mockPosts = [
 // -----------------------------------------------------------
 
 export default function Feed() {
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleCreateProject = () => {
+        setIsCreateModalOpen(false);
+        navigate('/createProject'); // Navega para a página de projeto
+    };
+
+    const handleCreateCommunity = () => {
+        setIsCreateModalOpen(false);
+        navigate('/createCommunity'); // Navega para a página de comunidade
+    };
     return (
         <S.PageWrapper>
             
             {/* Componentes de Layout renderizados aqui */}
-            <Header />
+            <Header onCreateClick={() => setIsCreateModalOpen(true)}/>
             <Sidebar />
 
             {/* Conteúdo da Página */}
@@ -40,6 +55,21 @@ export default function Feed() {
                     </S.PostList>
                 </S.FeedContainer>
             </S.ContentWrapper>
+
+            <Modal 
+                isOpen={isCreateModalOpen} 
+                onClose={() => setIsCreateModalOpen(false)}
+                title="O que você deseja criar?"
+            >
+                <ModalS.ModalActions>
+                <ModalS.ChoiceButton onClick={handleCreateProject}>
+                    Criar Projeto
+                </ModalS.ChoiceButton>
+                <ModalS.ChoiceButton onClick={handleCreateCommunity}>
+                    Criar Comunidade
+                </ModalS.ChoiceButton>
+                </ModalS.ModalActions>
+            </Modal>
 
         </S.PageWrapper>
     );

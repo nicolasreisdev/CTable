@@ -3,28 +3,24 @@ import businessLogicProject from '../business/businessLogicProject';
 import {userData, loginData } from '../models/User'
 import { projectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
-
-const TOKEN_SECRET = 'seu-segredo-super-secreto-mude-depois';
+import { authConfig } from '../config/auth'
 
 class requestController {
 
     async createUser(data: userData) { 
         try{
-            
-            console.log('Dados recebidos no controller:', data);
 
             await businessLogicUser.newUser(data);
 
         } catch(error){
 
-            console.log("Controller error:" + error);
             throw error;
+            
         }
     }
 
     async enterUser(data: loginData){
         try{
-            console.log('dados do Login: ', data);
 
             const userData = await businessLogicUser.enterUser(data);
 
@@ -32,26 +28,28 @@ class requestController {
             
             const token = jwt.sign(
                 payload,        
-                TOKEN_SECRET,   
-                { expiresIn: '1d' } 
+                authConfig.secret,   
+                { expiresIn: authConfig.expiresIn } 
             );
 
             return { user: userData, token: token };
 
         }catch(error){
-            console.log("Controller error login:" + error)
             throw error;
         }
     }
 
-    async createProject(data: projectData){
+    async createProject(data: projectData, creatorID: number){
         try{
-
-            businessLogicProject.newProject(data);
+            console.log(data);
+            const newProject = await businessLogicProject.newProject(data, creatorID);
             
-            console.log("Iniciando novo projeto");
+            return newProject;
+
         }catch(error){
-            console.log("Erro na criação do projeto");
+
+            throw new Error("Erro nos dados do projeto.");
+
         }
     }
 }

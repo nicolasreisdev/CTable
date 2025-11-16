@@ -38,7 +38,7 @@ export const ActionsContainer = styled.div`
 `;
 
 // Botão "Create"
-export const CreateButton = styled(Link)`
+export const CreateButton = styled.button`
     display: flex;
     align-items: center;
     gap: 4px;

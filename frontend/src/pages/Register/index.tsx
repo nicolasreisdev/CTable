@@ -4,6 +4,7 @@ import { useForm, Controller} from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import  Toast  from '../../components/common/Toast';
 import { useNavigate } from 'react-router-dom';
+import {Register as RegisterAPI} from '../../API/Auth'
 
 
 interface NotificationState {
@@ -31,19 +32,7 @@ export default function Register() {
   async function onSubmit(data: RegisterProps) {
     console.log(data);
     try{
-      console.log('Enviando dados de registro:', data);
-      const response = await fetch('http://localhost:3000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+      await RegisterAPI(data);
       
       console.log('Usuário registrado com sucesso:');
       

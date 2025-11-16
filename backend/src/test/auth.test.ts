@@ -62,6 +62,75 @@ describe('Autenticação de Usuário', () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toContain('Este username já está em uso.');
     });
+
+    it('deve impedir cadastro de email duplicado (Status 400)', async () => {
+     
+      await request(app).post('/api/register').send({
+        nomeCompleto: 'Usuário 3',
+        username: 'user3',
+        email: 'user3@email.com',
+        dataNascimento: '2000/01/01',
+        senha: 'senha123',
+      });
+
+      const response = await request(app).post('/api/register').send({
+        nomeCompleto: 'Usuário 4',
+        username: 'user4',
+        email: 'user3@email.com',
+        dataNascimento: '2000/01/01',
+        senha: 'outrasenha',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain('Este e-mail já está em uso.');
+
+    });
+
+    it('deve impedir cadastro de nome menor que 3 letras (Status 400)', async () => {
+
+      const response = await request(app).post('/api/register').send({
+        nomeCompleto: 'ab',
+        username: 'user5',
+        email: 'user5@email.com',
+        dataNascimento: '2000/01/01',
+        senha: 'senha123',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain('Nome muito curto');
+
+    });
+
+    it('deve impedir cadastro de user menor que 4 letras (Status 400)', async () => {
+
+      const response = await request(app).post('/api/register').send({
+        nomeCompleto: 'abc',
+        username: 'use',
+        email: 'user5@email.com',
+        dataNascimento: '2000/01/01',
+        senha: 'senha123',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain('Username muito curto');
+
+    });
+
+    it('deve impedir cadastro de email invalido (Status 400)', async () => {
+
+      const response = await request(app).post('/api/register').send({
+        nomeCompleto: 'abc',
+        username: 'user',
+        email: 'useremail.com',
+        dataNascimento: '2000/01/01',
+        senha: 'senha123',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain('Formato de e-mail inválido');
+
+    });
+
   });
 
 
@@ -99,6 +168,17 @@ describe('Autenticação de Usuário', () => {
           senha: 'senhaerrada' 
         });
       
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Usuário ou senha incorretos.');
+    });
+
+    it('deve rejeitar login com username inexistente (Status 400)', async () => {
+      const response = await request(app)
+        .post('/api/login')
+        .send({
+          username: 'usuarioinexistente',
+          senha: 'senhaforte' 
+        });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Usuário ou senha incorretos.');
     });

@@ -66,8 +66,9 @@ class businessLogicAuth{
             return userData;
 
         }catch(error){
-            console.log("Login error in businessLogic:", error);
+
             throw error;
+            
         }
     }
 

@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
 import * as S from '../../components/domain/CreationForm/styles'; 
 import TagInput from '../../components/domain/TagInput';
 import { IMaskInput } from 'react-imask';
+import { NewProject } from '../../API/Project';
+import type { ProjectProps } from '../../API/Project';
+import  Toast  from '../../components/common/Toast';
+import { useNavigate } from 'react-router-dom';
 
-interface ProjectFormData {
-  name: string;
-  description: string;
-  technologies: string[]; 
-  status: string;
-  date: string;
+interface NotificationState {
+  message: string;
+  type: 'success' | 'error';
 }
 
 const MOCK_TECHS_DB = [
@@ -21,7 +22,7 @@ const MOCK_TECHS_DB = [
 ];
 
 export default function CreateProject() {
-  const { register, handleSubmit, control } = useForm<ProjectFormData>({
+  const { register, handleSubmit, control } = useForm<ProjectProps>({
     defaultValues: {
       name: "",
       description: "",
@@ -31,14 +32,38 @@ export default function CreateProject() {
     }
   });
 
-  const onSubmit = (data: ProjectFormData) => {
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const navigate = useNavigate();
+
+  const onSubmit = (data: ProjectProps) => {
     console.log("Criando Projeto:", data);
-    // TODO: Lógica da API aqui
+    try{
+        NewProject(data);
+
+        setNotification({ message: 'Projeto criado com sucesso!', type: 'success' });
+        setTimeout(() => {
+            navigate('/feed'); 
+        }, 1000);
+    }
+    catch(error){
+      console.error('Erro ao criar projeto:', error);
+
+      if (error instanceof Error){
+        setNotification({ message: error.message, type: 'error' });
+      }
+    }
   };
 
   return (
     <PageWrapper>
       <Sidebar />
+      {notification && (
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)} 
+        />
+      )}
 
       <ContentWrapper>
         <S.FormContainer onSubmit={handleSubmit(onSubmit)}>

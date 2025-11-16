@@ -41,7 +41,7 @@ class requestController {
 
     async createProject(data: projectData, creatorID: number){
         try{
-
+            console.log(data);
             const newProject = await businessLogicProject.newProject(data, creatorID);
             
             return newProject;

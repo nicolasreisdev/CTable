@@ -10,7 +10,11 @@ const mockUser = {
 };
 // ----------------------------------------------------
 
-export default function Header() {
+interface HeaderProps {
+    onCreateClick: () => void; 
+}
+
+export default function Header({ onCreateClick }: HeaderProps) {
     return (
         <S.HeaderContainer>
             {/* 1. Barra de Pesquisa */}
@@ -21,13 +25,13 @@ export default function Header() {
             {/* 2. Ações do Usuário */}
             <S.ActionsContainer>
                 {/* Botão "Create" */}
-                <S.CreateButton to="/submit"> {/* Redireciona para tela de criação */}
+                <S.CreateButton onClick={onCreateClick}> 
                     <FiPlus size={20} />
                     Create
                 </S.CreateButton>
 
                 {/* Ícone de Perfil */}
-                <S.ProfileIcon to={`/u/${mockUser.username}`}> {/* Redireciona para o perfil */}
+                <S.ProfileIcon to={`/profile`}> {/* Redireciona para o perfil */}
                     <img src={mockUser.avatarUrl} alt="Foto de perfil" />
                 </S.ProfileIcon>
             </S.ActionsContainer>

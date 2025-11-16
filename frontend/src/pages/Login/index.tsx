@@ -11,6 +11,7 @@ import {
 import { useForm} from 'react-hook-form';
 import  Toast  from '../../components/common/Toast';
 import { useNavigate } from 'react-router-dom';
+import {Login} from '../../API/Auth'
 
 interface NotificationState {
   message: string;
@@ -32,18 +33,7 @@ export default function LoginPage() {
     async function onSubmit(data: LoginProps) {
       console.log(data);
       try{
-        const response = await fetch('http://localhost:3000/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-  
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message);
-        }
+        await Login(data);
         
         console.log('Usuário registrado com sucesso:');
         

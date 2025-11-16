@@ -1,5 +1,6 @@
 import express from 'express';
 import requestController from './controller/requestController';
+import authMiddleware from './middleware/auth';
 import { z } from 'zod';
 
 const routes = express.Router();
@@ -56,12 +57,35 @@ routes.post('/api/login', async(request, response) => {
 });
 
 // Endpoint para criar projeto
-routes.post('/api/newproject', async(request, response) =>{
+routes.post('/api/newproject', authMiddleware,  async(request, response) =>{
   try{
 
-    requestController.createProject(request.body);
+    const projectData = request.body;
+        
+    const creatorID = request.user.id; 
+
+    const newProject = await requestController.createProject(projectData, creatorID);
+        
+    return response.status(201).json({
+        message: "Projeto criado com sucesso!",
+        project: newProject
+    });
     
   }catch(error){
+
+    if (error instanceof z.ZodError) { 
+      return response.status(400).json({ 
+           message: "Erro de validação",
+           errors: error.flatten().fieldErrors 
+      });
+    }
+
+    if(error instanceof Error){ 
+      return response.status(400).json({ message: error.message });
+    }
+    
+    console.error("Erro interno no servidor:", error);
+    return response.status(500).json({ message: "Erro interno no servidor." });
 
   }
 });

@@ -27,7 +27,7 @@ export const PostHeader = styled.div`
 
     /* Nome do Autor */
     small {
-        color: ${props => props.theme['gray-300']};
+        color: ${props => props.theme['gray-700']};
         font-size: 0.9em;
     }
 `;

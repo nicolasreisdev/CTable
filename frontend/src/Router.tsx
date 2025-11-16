@@ -4,6 +4,7 @@ import { Teste } from "./pages/Teste";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 
 
 export function Router() {
@@ -14,6 +15,7 @@ export function Router() {
       <Route path="/testeCeci" element={<Teste />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   )
 }

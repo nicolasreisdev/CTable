@@ -3,6 +3,8 @@ import { FormPageContainer, FormWrapper, FormTitle, StyledForm, StyledInput, Sub
 import { useForm, Controller} from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import  Toast  from '../../components/common/Toast';
+import { useNavigate } from 'react-router-dom';
+
 
 interface NotificationState {
   message: string;
@@ -24,11 +26,13 @@ export default function Register() {
 
   
   const { register, handleSubmit, formState: {isSubmitting}, control } = useForm<RegisterProps>();
+  const navigate = useNavigate();
 
   async function onSubmit(data: RegisterProps) {
     console.log(data);
     try{
-      const response = await fetch('http://localhost:3000/api/usuarios', {
+      console.log('Enviando dados de registro:', data);
+      const response = await fetch('http://localhost:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,19 +41,25 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao registrar usuário');
+        const errorData = await response.json();
+        throw new Error(errorData.message);
       }
       
       console.log('Usuário registrado com sucesso:');
       
       // Define estado para mostrar notificação de sucesso
       setNotification({ message: 'Usuário registrado com sucesso!', type: 'success' });
+      setTimeout(() => {
+        navigate('/feed'); // Navega para a página de feed
+      }, 1000);
       
     } catch (error) { 
       console.error('Erro ao registrar usuário:', error);
       
       // Define estado para mostrar notificação de erro
-      setNotification({ message: 'Erro ao registrar usuário.', type: 'error' });
+      if (error instanceof Error){
+        setNotification({ message: error.message, type: 'error' });
+      }
     }
   }
 
@@ -60,7 +70,7 @@ export default function Register() {
         <Toast
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification(null)} // Função para fechar
+          onClose={() => setNotification(null)} 
         />
       )}
 

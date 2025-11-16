@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/models/Comment.ts</title>
+    <title>Code coverage report for src/business/businessLogicProfile.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/models</a> Comment.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/business</a> businessLogicProfile.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -83,8 +83,7 @@
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
-<a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L21'></a><a href='#L21'>21</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -93,40 +92,38 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
-export interface commentData{
-    commentID: string;
-    content: string;
-    createdAt: Date;
-    updatedAt: Date;
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+import knex from '../data/index';
+import { User, userData } from '../models/User'
+&nbsp;
+&nbsp;
+&nbsp;
+class businessLogicProject{
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >    updateProject(</span>){
+&nbsp;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    removeProject(</span>){
+&nbsp;
+    }
+    
 }
 &nbsp;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class C</span>omment{
-    commentID: string;
-    content: string;
-    createdAt: Date;
-    updatedAt: Date;
-&nbsp;
-<span class="fstat-no" title="function not covered" >    constructor(d</span>ata: commentData){
-<span class="cstat-no" title="statement not covered" >        this.commentID = data.commentID</span>
-<span class="cstat-no" title="statement not covered" >        this.content = data.content</span>
-<span class="cstat-no" title="statement not covered" >        this.createdAt = data.createdAt</span>
-<span class="cstat-no" title="statement not covered" >        this.updatedAt = data.updatedAt</span>
-    }
-}</pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >export default new businessLogicProject();</span></pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

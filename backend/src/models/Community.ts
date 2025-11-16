@@ -9,7 +9,7 @@ export interface communityData{
 }
 
 
-class Community {
+export class Community {
     communityID: string;
     name: string;
     description: string;

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "isolatedModules": true,
+
     /* --- Módulo e Ambiente --- */
     "target": "ES2022", // Compila para uma versão moderna do JavaScript compatível com versões recentes do Node.js
     "module": "NodeNext", // O sistema de módulos moderno para Node.js

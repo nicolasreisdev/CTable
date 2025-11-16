@@ -7,7 +7,7 @@ export interface commentData{
 }
 
 
-class Comment{
+export class Comment{
     commentID: string;
     content: string;
     createdAt: Date;

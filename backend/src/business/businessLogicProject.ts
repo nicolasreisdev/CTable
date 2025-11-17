@@ -45,8 +45,12 @@ class businessLogicProject{
     updateProject(){
     }
 
-    userProjects(){
+    async userProjects(creatorID: number){
+
+        const projects = await knex('Projects')
+                        .where('creatorID', creatorID);
         
+        return projects;
     }
 
     removeProject(){

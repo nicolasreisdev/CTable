@@ -46,7 +46,7 @@ class requestController {
             return { user: userData, token: token };
 
         }catch(error){
-            
+
             throw error;
         }
     }
@@ -77,6 +77,18 @@ class requestController {
         }catch(error){
             console.error("Erro ao buscar keywords:", error);
             throw new Error("Não foi possível buscar as keywords.");
+        }
+    }
+
+    async getUserProjects(creatorID: number){
+        try{
+
+            const projects = await businessLogicProject.userProjects(creatorID);
+
+            return projects;
+
+        }catch(error){
+            throw error;
         }
     }
 }

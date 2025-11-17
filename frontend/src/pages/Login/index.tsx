@@ -12,16 +12,8 @@ import { useForm} from 'react-hook-form';
 import  Toast  from '../../components/common/Toast';
 import { useNavigate } from 'react-router-dom';
 import {Login} from '../../API/Auth'
-
-interface NotificationState {
-  message: string;
-  type: 'success' | 'error';
-}
-
-interface LoginProps {
-  username: string;
-  senha: string;
-}
+import type { LoginProps } from '../../API/Auth';
+import type { NotificationState } from '../../components/common/Toast';
 
 export default function LoginPage() {
   const [notification, setNotification] = useState<NotificationState | null>(null);

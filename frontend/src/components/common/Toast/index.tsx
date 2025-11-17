@@ -7,6 +7,11 @@ interface ToastProps {
   onClose: () => void; // Função para fechar o toast
 }
 
+export interface NotificationState {
+  message: string;
+  type: 'success' | 'error';
+}
+
 const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
   
   // Efeito para fechar o toast automaticamente após 5 segundos

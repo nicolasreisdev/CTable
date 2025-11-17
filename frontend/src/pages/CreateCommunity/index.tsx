@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
 import * as S from '../../components/domain/CreationForm/styles'; 
 import TagInput from '../../components/domain/TagInput';
+import { IMaskInput } from 'react-imask';
+import type { NotificationState } from '../../components/common/Toast';
 
 const MOCK_KEYWORDS_DB = [
   'Frontend', 'Backend', 'Web', 'Mobile', 'Design', 'Data Science', 
@@ -19,7 +21,7 @@ interface CommunityFormData {
 
 export default function CreateCommunityPage() {
   
-  const { register, handleSubmit, control } = useForm<CommunityFormData>({
+  const { register, handleSubmit, control, watch } = useForm<CommunityFormData>({
     defaultValues: {
       name: "",
       description: "",
@@ -27,8 +29,23 @@ export default function CreateCommunityPage() {
     }
   });
 
+  const descriptionValue = watch('description');
+  const descriptionLength = descriptionValue ? descriptionValue.length : 0;
+  const MAX_CHARS = 500;
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+
   const onSubmit = (data: CommunityFormData) => {
-    console.log("Criando Comunidade:", data);
+    try{
+      // Lógica para criar a comunidade via API
+      setNotification({ message: 'Comunidade criada com sucesso!', type: 'success' });
+      console.log("Criando Comunidade:", data);
+    } catch (error) {
+      console.error('Erro ao criar comunidade:', error);
+      if (error instanceof Error){
+        setNotification({ message: error.message, type: 'error' });
+      }
+    }
+    
   };
 
   return (
@@ -44,8 +61,21 @@ export default function CreateCommunityPage() {
           </S.InputGroup>
 
           <S.InputGroup>
-            <S.Label htmlFor="description">Descrição da Comunidade</S.Label>
-            <S.Input id="description" {...register('description')} />
+            <S.Label htmlFor="description">Descrição do Projeto</S.Label>
+              <S.TextArea 
+                id="description"
+                placeholder="Descreva sua comunidade..."
+                maxLength={MAX_CHARS}
+                {...register('description', {
+                  maxLength: {
+                  value: MAX_CHARS,
+                  message: `A descrição não pode exceder ${MAX_CHARS} caracteres`
+                }
+                })}
+                />
+                <S.CharacterCount>
+                {descriptionLength} / {MAX_CHARS}
+                </S.CharacterCount>
           </S.InputGroup>
           
           <S.InputGroup>

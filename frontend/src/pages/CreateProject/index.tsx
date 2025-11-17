@@ -5,15 +5,11 @@ import { PageWrapper, ContentWrapper } from '../Feed/styles';
 import * as S from '../../components/domain/CreationForm/styles'; 
 import TagInput from '../../components/domain/TagInput';
 import { IMaskInput } from 'react-imask';
-import { NewProject } from '../../API/Project';
+import { NewProject, UpdateProject } from '../../API/Project'; 
 import type { ProjectProps } from '../../API/Project';
 import  Toast  from '../../components/common/Toast';
-import { useNavigate } from 'react-router-dom';
-
-interface NotificationState {
-  message: string;
-  type: 'success' | 'error';
-}
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import type { NotificationState } from '../../components/common/Toast';
 
 const MOCK_TECHS_DB = [
   'React', 'Node.js', 'TypeScript', 'JavaScript', 'Python', 'Django',
@@ -22,32 +18,54 @@ const MOCK_TECHS_DB = [
 ];
 
 export default function CreateProject() {
-  const { register, handleSubmit, control } = useForm<ProjectProps>({
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook para ler o state
+  const { projectId } = useParams<{ projectId?: string }>(); // Hook para ler o ID da URL
+
+  // Verifica se estamos em modo de EDIÇÃO
+  // Tenta pegar o projeto enviado pelo 'state' da navegação
+  const projectToEdit = location.state?.projectToEdit as (ProjectProps & { id: string }) | undefined;
+  const isEditMode = !!projectToEdit; // Se projectToEdit existe, estamos editando
+
+  const { register, handleSubmit, control, watch } = useForm<ProjectProps>({
+    // Preenche os valores padrão se estiver em modo de edição
     defaultValues: {
-      name: "",
-      description: "",
-      technologies: [], 
-      status: "",
-      date: ""
+      name: projectToEdit?.name || "",
+      description: projectToEdit?.description || "",
+      technologies: projectToEdit?.technologies || [], 
+      status: projectToEdit?.status || "",
+      date: projectToEdit?.date || ""
     }
   });
 
+  const descriptionValue = watch('description');
+  const descriptionLength = descriptionValue ? descriptionValue.length : 0;
+  const MAX_CHARS = 2500;
   const [notification, setNotification] = useState<NotificationState | null>(null);
-  const navigate = useNavigate();
 
+  // Lida com CRIAR ou ATUALIZAR
   const onSubmit = (data: ProjectProps) => {
-    console.log("Criando Projeto:", data);
-    try{
-        NewProject(data);
-
+    try {
+      if (isEditMode) {
+        // MODO DE EDIÇÃO
+        console.log("Atualizando Projeto:", projectId, data);
+        // Chame sua função de API de atualização 
+        // UpdateProject(projectId, data); 
+        setNotification({ message: 'Projeto atualizado com sucesso!', type: 'success' });
+      } else {
+        // MODO DE CRIAÇÃO
+        console.log("Criando Projeto:", data);
+        NewProject(data); 
         setNotification({ message: 'Projeto criado com sucesso!', type: 'success' });
-        setTimeout(() => {
-            navigate('/feed'); 
-        }, 1000);
-    }
-    catch(error){
-      console.error('Erro ao criar projeto:', error);
+      }
+      
+      // Redireciona após o sucesso
+      setTimeout(() => {
+          navigate('/feed'); 
+      }, 1000);
 
+    } catch(error) {
+      console.error('Erro ao salvar projeto:', error);
       if (error instanceof Error){
         setNotification({ message: error.message, type: 'error' });
       }
@@ -68,6 +86,8 @@ export default function CreateProject() {
       <ContentWrapper>
         <S.FormContainer onSubmit={handleSubmit(onSubmit)}>
           
+          <h2>{isEditMode ? 'Editar Projeto' : 'Criar Projeto'}</h2>
+
           <S.InputGroup>
             <S.Label htmlFor="name">Nome do Projeto</S.Label>
             <S.Input id="name" {...register('name', { required: true })} />
@@ -75,7 +95,20 @@ export default function CreateProject() {
 
           <S.InputGroup>
             <S.Label htmlFor="description">Descrição do Projeto</S.Label>
-            <S.Input id="description" {...register('description')} />
+            <S.TextArea 
+              id="description"
+              placeholder="Descreva seu projeto..."
+              maxLength={MAX_CHARS}
+              {...register('description', {
+                maxLength: {
+                  value: MAX_CHARS,
+                  message: `A descrição não pode exceder ${MAX_CHARS} caracteres`
+                }
+              })}
+            />
+            <S.CharacterCount>
+              {descriptionLength} / {MAX_CHARS}
+            </S.CharacterCount>
           </S.InputGroup>
 
           <S.InputGroup>
@@ -90,14 +123,15 @@ export default function CreateProject() {
                   id="date"
                   placeholder="DD/MM/AAAA"
                   {...field}
+                  // 9. Desabilita a data se estiver em modo de edição
+                  disabled={isEditMode} 
                 />
               )}
             />
           </S.InputGroup>
           
           <S.InputGroup>
-            <S.Label htmlFor="technologies">Tecnologias</S.Label>
-            
+            <S.Label htmlFor="technologies">Tecnologias (Palavras-chave)</S.Label>
             <Controller
               name="technologies"
               control={control}
@@ -129,7 +163,10 @@ export default function CreateProject() {
             </S.SelectWrapper>
           </S.InputGroup>
 
-          <S.SubmitButton type="submit">Criar Projeto</S.SubmitButton>
+          {/* 10. Botão de submit dinâmico */}
+          <S.SubmitButton type="submit">
+            {isEditMode ? 'Atualizar Projeto' : 'Criar Projeto'}
+          </S.SubmitButton>
 
         </S.FormContainer>
       </ContentWrapper>

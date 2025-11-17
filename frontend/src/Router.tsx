@@ -20,6 +20,7 @@ export function Router() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/createCommunity" element={<CreateCommunity/>} />
       <Route path="/createProject" element={<CreateProject/>} />
+      <Route path="/editProject/:projectId" element={<CreateProject />} />
     </Routes>
   )
 }

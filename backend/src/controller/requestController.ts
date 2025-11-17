@@ -4,6 +4,7 @@ import {userData, loginData } from '../models/User'
 import { projectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
 import { authConfig } from '../config/auth'
+import knex from '../data';
 
 class requestController {
 
@@ -50,6 +51,21 @@ class requestController {
 
             throw new Error("Erro nos dados do projeto.");
 
+        }
+    }
+
+    async getKeywords(){
+        try{
+
+            const keywords = await knex('Keywords').select('tag');
+
+            const tags = keywords.map(kw => kw.tag);
+            
+            return tags;
+
+        }catch(error){
+            console.error("Erro ao buscar keywords:", error);
+            throw new Error("Não foi possível buscar as keywords.");
         }
     }
 }

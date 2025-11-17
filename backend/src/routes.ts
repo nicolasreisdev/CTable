@@ -91,4 +91,18 @@ routes.post('/api/newproject', authMiddleware,  async(request, response) =>{
 });
 
 
+// Endpoint para enviar ao fronend os keywords disponíveis
+routes.get('/api/keywords', async(request, response) => {
+  try{
+
+    const tags = await requestController.getKeywords();
+
+    return response.status(200).json(tags);
+
+  }catch(error){
+    console.log(error);
+    return response.status(500).json({ message: "Erro ao buscar as palavras-chave." });
+  }
+})
+
 export default routes;

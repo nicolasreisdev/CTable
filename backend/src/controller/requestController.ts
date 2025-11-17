@@ -11,7 +11,17 @@ class requestController {
     async createUser(data: userData) { 
         try{
 
-            await businessLogicUser.newUser(data);
+            const userData = await businessLogicUser.newUser(data);
+
+            const payload = { id: userData.id, username: userData.username };
+
+            const token = jwt.sign(
+                payload,        
+                authConfig.secret,   
+                { expiresIn: authConfig.expiresIn } 
+            );
+
+            return { user: userData, token: token };
 
         } catch(error){
 
@@ -36,6 +46,7 @@ class requestController {
             return { user: userData, token: token };
 
         }catch(error){
+            
             throw error;
         }
     }

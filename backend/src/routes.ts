@@ -8,11 +8,17 @@ const routes = express.Router();
 // Endpoint para CADASTRAR um novo usuário
 routes.post('/api/register', async (request, response) => {
   try{
+
     console.log("Recebendo requisição de cadastro:", request.body);
-    await requestController.createUser(request.body);
-    return response.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
+    const {user, token} = await requestController.createUser(request.body);
+    return response.status(201).json({ 
+      user, 
+      token, 
+      message: 'Usuário cadastrado com sucesso!' 
+    });
     
   }catch(error){
+    
     if (error instanceof z.ZodError) {
       console.log("Enviando erro de validação 400 para o cliente...");
       return response.status(400).json({ 
@@ -41,7 +47,8 @@ routes.post('/api/login', async(request, response) => {
     // console.log('Login: ' + user, token);
     return response.status(200).json({
         user,
-        token
+        token,
+        message: 'Usuário autenticado com sucesso.'
     });
 
   }catch(error){

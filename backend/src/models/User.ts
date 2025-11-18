@@ -12,6 +12,7 @@ export interface loginData{
     username: string;
     senha: string;
 }
+
 export class User{
     // userId: string;
     fullName: string;

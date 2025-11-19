@@ -6,22 +6,9 @@ export interface ProjectProps {
   date: string;
 }
 
-// Tipagem do projeto retornado pela API 
-export interface FetchedProjectProps extends ProjectProps {
-  id: string; 
-  author: {
-    id: string;
-    username: string;
-  };
-  community: {
-    name: string;
-    avatarUrl?: string;
-  };
-}
-
 export async function NewProject(data: ProjectProps) {
     
-  const response = await fetch('http://localhost:3000/api/newproject', {
+  const response = await fetch('http://localhost:3000/api/user/newproject', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -72,4 +59,19 @@ export async function getFeedProjects(): Promise<ProjectProps[]> {
       technologies: ['Python'], status: 'finalizado', date: '01/10/2025'
     }
   ];
+}
+
+export async function DeleteProject(projectId: string) {
+  /* const response = await fetch(`http://localhost:3000/api/project/${projectId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Erro ao excluir projeto.");
+  } */
 }

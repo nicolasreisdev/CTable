@@ -3,6 +3,11 @@ import * as S from './styles';
 import * as D from '../../common/Dropdown/styles'; 
 import { useNavigate } from 'react-router-dom'; 
 import type { ProjectProps } from '../../../API/Project';
+import Modal from '../../common/Modal';
+import type { NotificationState } from '../../common/Toast';
+import Toast from '../../common/Toast';
+import * as ModalS from '../../common/Modal/styles';
+
 
 // --- Ícone de Menu (Ellipsis) ---
 const EllipsisIcon = () => (
@@ -20,7 +25,9 @@ interface PostcardProps {
 export default function Postcard({ post, showMenu }: PostcardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate(); // 4. Inicialize o hook de navegação
+  const navigate = useNavigate(); // Inicialize o hook de navegação
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para o modal de exclusão
+  const [notification, setNotification] = useState<NotificationState | null>(null);
 
   // Lógica para fechar o menu ao clicar fora (sem alterações)
   useEffect(() => {
@@ -43,8 +50,32 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
     navigate(`/editProject/${post.name}`, { state: { projectToEdit: post } });
   };
 
+  const handleDeleteProject = async () => {
+    try {
+       console.log("Excluindo projeto");
+       // await DeleteProject(projectId);
+       
+       setNotification({ message: 'Projeto excluído com sucesso!', type: 'success' });
+       
+       setTimeout(() => {
+         navigate('/feed');
+       }, 1000);
+
+    } catch (error) {
+      console.error("Erro ao excluir", error);
+      setNotification({ message: 'Erro ao excluir projeto.', type: 'error' });
+    }
+  };
+
   return (
     <S.PostCardWrapper>
+      {notification && (
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)} 
+        />
+      )}
       
       <S.PostHeader>
         <img src={(post as any).avatarUrl || 'url_placeholder_avatar.png'} alt={post.name} /> 
@@ -63,8 +94,10 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
             {isMenuOpen && (
               <D.DropdownMenu>
                 <D.MenuItem onClick={handleEditClick}>Editar</D.MenuItem>
-                <D.DangerMenuItem onClick={() => alert('Excluir post')}>
-                  Excluir
+                <D.DangerMenuItem onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsDeleteModalOpen(true);}}>
+                    Excluir
                 </D.DangerMenuItem>
               </D.DropdownMenu>
             )}
@@ -73,6 +106,34 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
 
         <p>{post.description}</p>
       </S.PostContent>
+<Modal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Excluir Projeto"
+      >
+        {/* Conteúdo interno do Modal */}
+        <div style={{ textAlign: 'center' }}>
+            <p style={{ marginBottom: '24px', color: '#555' }}>
+                Tem certeza que deseja excluir permanentemente o projeto <strong>{post.name}</strong>?
+            </p>
+
+            <ModalS.ModalActions>
+                <ModalS.ChoiceButton 
+                    onClick={() => setIsDeleteModalOpen(false)}>
+                    Cancelar
+                </ModalS.ChoiceButton>
+
+                {/* Botão Confirmar (Vermelho/Perigo) */}
+                <ModalS.ChoiceButton 
+                    onClick={handleDeleteProject}
+                    style={{ backgroundColor: '#e74c3c' }} // Inline override para cor de erro
+                >
+                    Excluir
+                </ModalS.ChoiceButton>
+            </ModalS.ModalActions>
+        </div>
+      </Modal>
+
     </S.PostCardWrapper>
   );
 }

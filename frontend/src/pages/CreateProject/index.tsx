@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
@@ -10,17 +10,13 @@ import type { ProjectProps } from '../../API/Project';
 import  Toast  from '../../components/common/Toast';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import type { NotificationState } from '../../components/common/Toast';
-
-const MOCK_TECHS_DB = [
-  'React', 'Node.js', 'TypeScript', 'JavaScript', 'Python', 'Django',
-  'Next.js', 'Vue.js', 'Angular', 'Java', 'Spring Boot', 'C#', '.NET'
-  // ... (mais tecnologias)
-];
+import { GetKeywords } from '../../API/Keywords';
 
 export default function CreateProject() {
   const navigate = useNavigate();
   const location = useLocation(); // Hook para ler o state
   const { projectId } = useParams<{ projectId?: string }>(); // Hook para ler o ID da URL
+  const [keywords, setKeywords] = useState<string[]>([]); 
 
   // Verifica se estamos em modo de EDIÇÃO
   // Tenta pegar o projeto enviado pelo 'state' da navegação
@@ -43,13 +39,25 @@ export default function CreateProject() {
   const MAX_CHARS = 2500;
   const [notification, setNotification] = useState<NotificationState | null>(null);
 
+  // Carrega as tecnologias disponíveis do backend
+  useEffect(() => {
+    async function loadTechs() {
+      try {
+        const techsFromDB = await GetKeywords();
+        setKeywords(techsFromDB);
+      } catch (error) {
+        console.error("Falha ao carregar tecnologias:", error);
+      }
+    }
+    loadTechs();
+  }, []);
+
   // Lida com CRIAR ou ATUALIZAR
   const onSubmit = (data: ProjectProps) => {
     try {
       if (isEditMode) {
         // MODO DE EDIÇÃO
         console.log("Atualizando Projeto:", projectId, data);
-        // Chame sua função de API de atualização 
         // UpdateProject(projectId, data); 
         setNotification({ message: 'Projeto atualizado com sucesso!', type: 'success' });
       } else {
@@ -139,7 +147,7 @@ export default function CreateProject() {
                 <TagInput 
                   value={field.value}
                   onChange={field.onChange}
-                  searchList={MOCK_TECHS_DB}
+                  searchList={keywords}
                   limit={6}
                   placeholder="Adicione até 6 tecnologias..."
                 />

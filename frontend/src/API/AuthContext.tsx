@@ -4,7 +4,7 @@ import * as api from './Auth';
 import type { LoginProps } from './Auth';
 
 interface User {
-  id: string; // CRUCIAL: Assumindo que seu 'user' tem um 'id'
+  id: string; 
   username: string;
   nomeCompleto?: string;
   email?: string;

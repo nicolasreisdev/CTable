@@ -1,31 +1,23 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
 import * as S from '../../components/domain/CreationForm/styles'; 
 import TagInput from '../../components/domain/TagInput';
-import { IMaskInput } from 'react-imask';
 import type { NotificationState } from '../../components/common/Toast';
+import { GetKeywords } from '../../API/Keywords';
+import  Toast  from '../../components/common/Toast';
+import type { CommunityProps } from '../../API/Community';
+import { NewCommunity } from '../../API/Community';
 
-const MOCK_KEYWORDS_DB = [
-  'Frontend', 'Backend', 'Web', 'Mobile', 'Design', 'Data Science', 
-  'Inteligência Artificial', 'Blockchain', 'DevOps', 'Carreira', 'Games'
-  // ... (mais palavras-chave)
-];
-
-interface CommunityFormData {
-  name: string;
-  description: string;
-  keywords: string[]; 
-}
-
-export default function CreateCommunityPage() {
+export default function CreateCommunity() {
   
-  const { register, handleSubmit, control, watch } = useForm<CommunityFormData>({
+  const { register, handleSubmit, control, watch } = useForm<CommunityProps>({
     defaultValues: {
+      communityID: "",
       name: "",
       description: "",
-      keywords: [] 
+      keywords: []
     }
   });
 
@@ -33,10 +25,23 @@ export default function CreateCommunityPage() {
   const descriptionLength = descriptionValue ? descriptionValue.length : 0;
   const MAX_CHARS = 500;
   const [notification, setNotification] = useState<NotificationState | null>(null);
+  const [keywords, setKeywords] = useState<string[]>([]); 
 
-  const onSubmit = (data: CommunityFormData) => {
+  useEffect(() => {
+      async function loadTechs() {
+        try {
+          const techsFromDB = await GetKeywords();
+          setKeywords(techsFromDB);
+        } catch (error) {
+          console.error("Falha ao carregar tecnologias:", error);
+        }
+      }
+      loadTechs();
+    }, []);
+
+  const onSubmit = (data: CommunityProps) => {
     try{
-      // Lógica para criar a comunidade via API
+      //await NewCommunity(data);
       setNotification({ message: 'Comunidade criada com sucesso!', type: 'success' });
       console.log("Criando Comunidade:", data);
     } catch (error) {
@@ -51,6 +56,14 @@ export default function CreateCommunityPage() {
   return (
     <PageWrapper>
       <Sidebar />
+
+      {notification && (
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)} 
+        />
+      )}
 
       <ContentWrapper>
         <S.FormContainer onSubmit={handleSubmit(onSubmit)}>
@@ -88,7 +101,7 @@ export default function CreateCommunityPage() {
                 <TagInput 
                   value={field.value}
                   onChange={field.onChange}
-                  searchList={MOCK_KEYWORDS_DB}
+                  searchList={keywords}
                   limit={10} 
                   placeholder="Adicione até 10 palavras-chave..."
                 />

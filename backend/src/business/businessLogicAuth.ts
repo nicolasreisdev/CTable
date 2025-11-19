@@ -9,6 +9,7 @@ import bcrypt from 'bcryptjs';
 class businessLogicAuth{
 
     async newUser(data: userData){
+
         userValidate(data);
 
         const existingUser = await knex('User')
@@ -40,6 +41,15 @@ class businessLogicAuth{
             birthDate: dataNascimento,
             passwordHash: senhaHash
         });
+
+        const user = await knex('User')
+                    .where('username', data.username)
+                    .first();
+
+        const { passwordHash, ...userData} = user;
+
+        return userData;
+
     }
 
     async enterUser(data: loginData){
@@ -61,7 +71,7 @@ class businessLogicAuth{
                 throw new Error('Usuário ou senha incorretos.');
             }
 
-            const { senhaHash, ...userData } = user;
+            const { passwordHash, ...userData } = user;
             
             return userData;
 

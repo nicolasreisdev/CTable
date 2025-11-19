@@ -8,11 +8,17 @@ const routes = express.Router();
 // Endpoint para CADASTRAR um novo usuário
 routes.post('/api/register', async (request, response) => {
   try{
+
     console.log("Recebendo requisição de cadastro:", request.body);
-    await requestController.createUser(request.body);
-    return response.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
+    const {user, token} = await requestController.createUser(request.body);
+    return response.status(201).json({ 
+      user, 
+      token, 
+      message: 'Usuário cadastrado com sucesso!' 
+    });
     
   }catch(error){
+
     if (error instanceof z.ZodError) {
       console.log("Enviando erro de validação 400 para o cliente...");
       return response.status(400).json({ 
@@ -41,7 +47,8 @@ routes.post('/api/login', async(request, response) => {
     // console.log('Login: ' + user, token);
     return response.status(200).json({
         user,
-        token
+        token,
+        message: 'Usuário autenticado com sucesso.'
     });
 
   }catch(error){
@@ -57,7 +64,7 @@ routes.post('/api/login', async(request, response) => {
 });
 
 // Endpoint para criar projeto
-routes.post('/api/newproject', authMiddleware,  async(request, response) =>{
+routes.post('/api/user/newproject', authMiddleware,  async(request, response) =>{
   try{
 
     const projectData = request.body;
@@ -90,5 +97,41 @@ routes.post('/api/newproject', authMiddleware,  async(request, response) =>{
   }
 });
 
+
+// Endpoint para enviar ao fronend os keywords disponíveis
+routes.get('/api/keywords', async(request, response) => {
+  try{
+
+    const tags = await requestController.getKeywords();
+
+    return response.status(200).json(tags);
+
+  }catch(error){
+    console.log(error);
+    return response.status(500).json({ message: "Erro ao buscar as palavras-chave." });
+  }
+})
+
+// Endpoint para enviar ao frontend os projetos de determinado usuário
+routes.get('/api/user/projects', authMiddleware, async(request, response) => {
+    try{
+
+      const creatorID = request.user.id;
+      const projects = await requestController.getUserProjects(creatorID);
+      return response.status(200).json({
+        projects
+      })
+
+    }catch(error){
+      
+      if(error instanceof Error){ 
+        return response.status(400).json({ message: error.message });
+      }
+      
+      console.error("Erro interno ao buscar projetos:", error);
+      return response.status(500).json({ message: "Erro interno no servidor." });
+    
+    }
+})
 
 export default routes;

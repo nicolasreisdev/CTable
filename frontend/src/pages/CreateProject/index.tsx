@@ -1,53 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
 import * as S from '../../components/domain/CreationForm/styles'; 
 import TagInput from '../../components/domain/TagInput';
 import { IMaskInput } from 'react-imask';
-import { NewProject } from '../../API/Project';
+import { NewProject, UpdateProject } from '../../API/Project'; 
 import type { ProjectProps } from '../../API/Project';
 import  Toast  from '../../components/common/Toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import type { NotificationState } from '../../components/common/Toast';
+import { GetKeywords } from '../../API/Keywords';
+import { parseDate } from '../../API/Project';
 
-interface NotificationState {
-  message: string;
-  type: 'success' | 'error';
+interface ProjectFormProps extends Omit<ProjectProps, 'startDate'> {
+  startDate: string; 
 }
 
-const MOCK_TECHS_DB = [
-  'React', 'Node.js', 'TypeScript', 'JavaScript', 'Python', 'Django',
-  'Next.js', 'Vue.js', 'Angular', 'Java', 'Spring Boot', 'C#', '.NET'
-  // ... (mais tecnologias)
-];
-
 export default function CreateProject() {
-  const { register, handleSubmit, control } = useForm<ProjectProps>({
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook para ler o state
+  const { projectId } = useParams<{ projectId?: string }>(); // Hook para ler o ID da URL
+  const [keywords, setKeywords] = useState<string[]>([]); 
+
+  // Verifica se estamos em modo de EDIÇÃO
+  // Tenta pegar o projeto enviado pelo 'state' da navegação
+  const projectToEdit = location.state?.projectToEdit as (ProjectProps & { id: string }) | undefined;
+  const isEditMode = !!projectToEdit; // Se projectToEdit existe, estamos editando
+
+  const formatDateToString = (date?: Date | string) => {
+    if (!date) return "";
+    const d = new Date(date);
+    // Verifica se é data válida
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString('pt-BR'); // Retorna "20/11/2025"
+  };
+
+  const { register, handleSubmit, control, watch } = useForm<ProjectFormProps>({
+    // Preenche os valores padrão se estiver em modo de edição
     defaultValues: {
-      name: "",
-      description: "",
-      technologies: [], 
-      status: "",
-      date: ""
+      title: projectToEdit?.title || "",
+      description: projectToEdit?.description || "",
+      technologies: projectToEdit?.technologies || [], 
+      status: projectToEdit?.status || "",
+      startDate: formatDateToString(projectToEdit?.startDate)
     }
   });
 
+  const descriptionValue = watch('description');
+  const descriptionLength = descriptionValue ? descriptionValue.length : 0;
+  const MAX_CHARS = 2500;
   const [notification, setNotification] = useState<NotificationState | null>(null);
-  const navigate = useNavigate();
 
-  const onSubmit = (data: ProjectProps) => {
-    console.log("Criando Projeto:", data);
-    try{
-        NewProject(data);
-
-        setNotification({ message: 'Projeto criado com sucesso!', type: 'success' });
-        setTimeout(() => {
-            navigate('/feed'); 
-        }, 1000);
+  // Carrega as tecnologias disponíveis do backend
+  useEffect(() => {
+    async function loadTechs() {
+      try {
+        const techsFromDB = await GetKeywords();
+        setKeywords(techsFromDB);
+      } catch (error) {
+        console.error("Falha ao carregar tecnologias:", error);
+      }
     }
-    catch(error){
-      console.error('Erro ao criar projeto:', error);
+    loadTechs();
+  }, []);
 
+  // Lida com CRIAR ou ATUALIZAR
+  const onSubmit = (data: ProjectFormProps) => {
+
+    const finalData: ProjectProps = {
+        ...data,
+        startDate: parseDate(data.startDate) 
+    };
+
+    try {
+      if (isEditMode) {
+        // MODO DE EDIÇÃO
+        console.log("Atualizando Projeto:", projectId, finalData);
+        // UpdateProject(projectId, finalData); 
+        setNotification({ message: 'Projeto atualizado com sucesso!', type: 'success' });
+      } else {
+        // MODO DE CRIAÇÃO
+        console.log("Criando Projeto:", finalData);
+        NewProject(finalData); 
+        setNotification({ message: 'Projeto criado com sucesso!', type: 'success' });
+      }
+      
+      // Redireciona após o sucesso
+      setTimeout(() => {
+          navigate('/feed'); 
+      }, 1000);
+
+    } catch(error) {
+      console.error('Erro ao salvar projeto:', error);
       if (error instanceof Error){
         setNotification({ message: error.message, type: 'error' });
       }
@@ -68,36 +113,52 @@ export default function CreateProject() {
       <ContentWrapper>
         <S.FormContainer onSubmit={handleSubmit(onSubmit)}>
           
+          <h2>{isEditMode ? 'Editar Projeto' : 'Criar Projeto'}</h2>
+
           <S.InputGroup>
-            <S.Label htmlFor="name">Nome do Projeto</S.Label>
-            <S.Input id="name" {...register('name', { required: true })} />
+            <S.Label htmlFor="title">Nome do Projeto</S.Label>
+            <S.Input id="title" {...register('title', { required: true })} />
           </S.InputGroup>
 
           <S.InputGroup>
             <S.Label htmlFor="description">Descrição do Projeto</S.Label>
-            <S.Input id="description" {...register('description')} />
+            <S.TextArea 
+              id="description"
+              placeholder="Descreva seu projeto..."
+              maxLength={MAX_CHARS}
+              {...register('description', {
+                maxLength: {
+                  value: MAX_CHARS,
+                  message: `A descrição não pode exceder ${MAX_CHARS} caracteres`
+                }
+              })}
+            />
+            <S.CharacterCount>
+              {descriptionLength} / {MAX_CHARS}
+            </S.CharacterCount>
           </S.InputGroup>
 
           <S.InputGroup>
-            <S.Label htmlFor="date">Data de Início</S.Label>
+            <S.Label htmlFor="startDate">Data de Início</S.Label>
             <Controller
-              name="date"
+              name="startDate"
               control={control}
-              render={({ field }) => (
+              render={({ field: { onChange, value } }) => (
                 <S.Input
                   as={IMaskInput}
                   mask="00/00/0000"
-                  id="date"
+                  id="startDate"
                   placeholder="DD/MM/AAAA"
-                  {...field}
+                  value={value} 
+                  onAccept={(value: string) => onChange(value)}
+                  disabled={isEditMode} 
                 />
-              )}
+              )} 
             />
           </S.InputGroup>
           
           <S.InputGroup>
-            <S.Label htmlFor="technologies">Tecnologias</S.Label>
-            
+            <S.Label htmlFor="technologies">Tecnologias (Palavras-chave)</S.Label>
             <Controller
               name="technologies"
               control={control}
@@ -105,7 +166,7 @@ export default function CreateProject() {
                 <TagInput 
                   value={field.value}
                   onChange={field.onChange}
-                  searchList={MOCK_TECHS_DB}
+                  searchList={keywords}
                   limit={6}
                   placeholder="Adicione até 6 tecnologias..."
                 />
@@ -129,7 +190,10 @@ export default function CreateProject() {
             </S.SelectWrapper>
           </S.InputGroup>
 
-          <S.SubmitButton type="submit">Criar Projeto</S.SubmitButton>
+          {/* 10. Botão de submit dinâmico */}
+          <S.SubmitButton type="submit">
+            {isEditMode ? 'Atualizar Projeto' : 'Criar Projeto'}
+          </S.SubmitButton>
 
         </S.FormContainer>
       </ContentWrapper>

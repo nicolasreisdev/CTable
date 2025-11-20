@@ -20,7 +20,7 @@ Construir um sistema de ponta a ponta que rastreia fóruns, processa o texto das
 
 ### Rode a migration
 
-- Para criar o arquivo em databse.bd, no terminal, na pasta backend, execute: npx knex migrate:latest --knexfile knexfile.ts
+- Para criar o arquivo em databse.bd, no terminal, na pasta backend/src, execute: npx knex migrate:latest --knexfile knexfile.ts
 
 
 ## Criar seeds (popular tabelas)

@@ -1,39 +1,69 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
 import * as S from '../../components/domain/CreationForm/styles'; 
 import TagInput from '../../components/domain/TagInput';
+import type { NotificationState } from '../../components/common/Toast';
+import { GetKeywords } from '../../API/Keywords';
+import  Toast  from '../../components/common/Toast';
+import type { CommunityProps } from '../../API/Community';
+import { NewCommunity } from '../../API/Community';
 
-const MOCK_KEYWORDS_DB = [
-  'Frontend', 'Backend', 'Web', 'Mobile', 'Design', 'Data Science', 
-  'Inteligência Artificial', 'Blockchain', 'DevOps', 'Carreira', 'Games'
-  // ... (mais palavras-chave)
-];
-
-interface CommunityFormData {
-  name: string;
-  description: string;
-  keywords: string[]; 
-}
-
-export default function CreateCommunityPage() {
+export default function CreateCommunity() {
   
-  const { register, handleSubmit, control } = useForm<CommunityFormData>({
+  const { register, handleSubmit, control, watch } = useForm<CommunityProps>({
     defaultValues: {
+      communityID: "",
       name: "",
       description: "",
-      keywords: [] 
+      keywords: []
     }
   });
 
-  const onSubmit = (data: CommunityFormData) => {
-    console.log("Criando Comunidade:", data);
+  const descriptionValue = watch('description');
+  const descriptionLength = descriptionValue ? descriptionValue.length : 0;
+  const MAX_CHARS = 500;
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const [keywords, setKeywords] = useState<string[]>([]); 
+
+  useEffect(() => {
+      async function loadTechs() {
+        try {
+          const techsFromDB = await GetKeywords();
+          setKeywords(techsFromDB);
+        } catch (error) {
+          console.error("Falha ao carregar tecnologias:", error);
+        }
+      }
+      loadTechs();
+    }, []);
+
+  const onSubmit = (data: CommunityProps) => {
+    try{
+      //await NewCommunity(data);
+      setNotification({ message: 'Comunidade criada com sucesso!', type: 'success' });
+      console.log("Criando Comunidade:", data);
+    } catch (error) {
+      console.error('Erro ao criar comunidade:', error);
+      if (error instanceof Error){
+        setNotification({ message: error.message, type: 'error' });
+      }
+    }
+    
   };
 
   return (
     <PageWrapper>
       <Sidebar />
+
+      {notification && (
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)} 
+        />
+      )}
 
       <ContentWrapper>
         <S.FormContainer onSubmit={handleSubmit(onSubmit)}>
@@ -44,8 +74,21 @@ export default function CreateCommunityPage() {
           </S.InputGroup>
 
           <S.InputGroup>
-            <S.Label htmlFor="description">Descrição da Comunidade</S.Label>
-            <S.Input id="description" {...register('description')} />
+            <S.Label htmlFor="description">Descrição do Projeto</S.Label>
+              <S.TextArea 
+                id="description"
+                placeholder="Descreva sua comunidade..."
+                maxLength={MAX_CHARS}
+                {...register('description', {
+                  maxLength: {
+                  value: MAX_CHARS,
+                  message: `A descrição não pode exceder ${MAX_CHARS} caracteres`
+                }
+                })}
+                />
+                <S.CharacterCount>
+                {descriptionLength} / {MAX_CHARS}
+                </S.CharacterCount>
           </S.InputGroup>
           
           <S.InputGroup>
@@ -58,7 +101,7 @@ export default function CreateCommunityPage() {
                 <TagInput 
                   value={field.value}
                   onChange={field.onChange}
-                  searchList={MOCK_KEYWORDS_DB}
+                  searchList={keywords}
                   limit={10} 
                   placeholder="Adicione até 10 palavras-chave..."
                 />

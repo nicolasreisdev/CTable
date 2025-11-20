@@ -11,6 +11,11 @@ import  Toast  from '../../components/common/Toast';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import type { NotificationState } from '../../components/common/Toast';
 import { GetKeywords } from '../../API/Keywords';
+import { parseDate } from '../../API/Project';
+
+interface ProjectFormProps extends Omit<ProjectProps, 'startDate'> {
+  startDate: string; 
+}
 
 export default function CreateProject() {
   const navigate = useNavigate();
@@ -23,14 +28,22 @@ export default function CreateProject() {
   const projectToEdit = location.state?.projectToEdit as (ProjectProps & { id: string }) | undefined;
   const isEditMode = !!projectToEdit; // Se projectToEdit existe, estamos editando
 
-  const { register, handleSubmit, control, watch } = useForm<ProjectProps>({
+  const formatDateToString = (date?: Date | string) => {
+    if (!date) return "";
+    const d = new Date(date);
+    // Verifica se é data válida
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString('pt-BR'); // Retorna "20/11/2025"
+  };
+
+  const { register, handleSubmit, control, watch } = useForm<ProjectFormProps>({
     // Preenche os valores padrão se estiver em modo de edição
     defaultValues: {
-      name: projectToEdit?.name || "",
+      title: projectToEdit?.title || "",
       description: projectToEdit?.description || "",
       technologies: projectToEdit?.technologies || [], 
       status: projectToEdit?.status || "",
-      date: projectToEdit?.date || ""
+      startDate: formatDateToString(projectToEdit?.startDate)
     }
   });
 
@@ -53,17 +66,23 @@ export default function CreateProject() {
   }, []);
 
   // Lida com CRIAR ou ATUALIZAR
-  const onSubmit = (data: ProjectProps) => {
+  const onSubmit = (data: ProjectFormProps) => {
+
+    const finalData: ProjectProps = {
+        ...data,
+        startDate: parseDate(data.startDate) 
+    };
+
     try {
       if (isEditMode) {
         // MODO DE EDIÇÃO
-        console.log("Atualizando Projeto:", projectId, data);
-        // UpdateProject(projectId, data); 
+        console.log("Atualizando Projeto:", projectId, finalData);
+        // UpdateProject(projectId, finalData); 
         setNotification({ message: 'Projeto atualizado com sucesso!', type: 'success' });
       } else {
         // MODO DE CRIAÇÃO
-        console.log("Criando Projeto:", data);
-        NewProject(data); 
+        console.log("Criando Projeto:", finalData);
+        NewProject(finalData); 
         setNotification({ message: 'Projeto criado com sucesso!', type: 'success' });
       }
       
@@ -97,8 +116,8 @@ export default function CreateProject() {
           <h2>{isEditMode ? 'Editar Projeto' : 'Criar Projeto'}</h2>
 
           <S.InputGroup>
-            <S.Label htmlFor="name">Nome do Projeto</S.Label>
-            <S.Input id="name" {...register('name', { required: true })} />
+            <S.Label htmlFor="title">Nome do Projeto</S.Label>
+            <S.Input id="title" {...register('title', { required: true })} />
           </S.InputGroup>
 
           <S.InputGroup>
@@ -120,21 +139,21 @@ export default function CreateProject() {
           </S.InputGroup>
 
           <S.InputGroup>
-            <S.Label htmlFor="date">Data de Início</S.Label>
+            <S.Label htmlFor="startDate">Data de Início</S.Label>
             <Controller
-              name="date"
+              name="startDate"
               control={control}
-              render={({ field }) => (
+              render={({ field: { onChange, value } }) => (
                 <S.Input
                   as={IMaskInput}
                   mask="00/00/0000"
-                  id="date"
+                  id="startDate"
                   placeholder="DD/MM/AAAA"
-                  {...field}
-                  // 9. Desabilita a data se estiver em modo de edição
+                  value={value} 
+                  onAccept={(value: string) => onChange(value)}
                   disabled={isEditMode} 
                 />
-              )}
+              )} 
             />
           </S.InputGroup>
           

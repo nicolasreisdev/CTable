@@ -18,6 +18,7 @@ export async function Login(data: LoginProps) {
   }
 
   const {user, token} = await response.json();
+  console.log("Dados do usuário logado:", user);
   return { user, token };
   
 }

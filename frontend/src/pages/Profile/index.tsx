@@ -5,12 +5,8 @@ import * as S from './styles';
 import * as D from '../../components/common/Dropdown/styles';
 import type { ProjectProps } from '../../API/Project';
 import type { CommentProps } from '../../API/Comment';
-
-// 3. Tipagem do Usuário
-type UserProps = {
-  username: string;
-  avatarUrl: string;
-};
+import { GetUserProjects } from '../../API/Project';
+import { useAuth } from '../../API/AuthContext';
 
 // --- ÍCONES ---
 const PostsIcon = () => (
@@ -34,43 +30,23 @@ const SettingsIcon = () => (
 type ViewState = 'posts' | 'comments';
 
 export default function Profile() {
+  const { currentUser, logout } = useAuth();
   const [view, setView] = useState<ViewState>('posts');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Estados para os dados da API
-  const [user, setUser] = useState<UserProps | null>(null);
   const [userPosts, setUserPosts] = useState<ProjectProps[]>([]);
   const [userComments, setUserComments] = useState<CommentProps[]>([]);
 
-  // Simulação de chamada de API (useEffect)
   useEffect(() => {
     // Função assíncrona para buscar todos os dados
+    console.log("Efeito de busca de dados do perfil disparado.");
     const fetchProfileData = async () => {
       try {;
-
-        // Dados que viriam da sua API
-        const apiUserData: UserProps = {
-          username: 'ceci',
-          avatarUrl: '' // URL da imagem do avatar
-        };
         
-        const apiUserPosts: ProjectProps[] = [
-          {
-            name: 'Projeto CTable (React)',
-            description: 'Este é o projeto que estamos construindo agora!',
-            technologies: ['React', 'TypeScript', 'Node.js'],
-            status: 'em-andamento',
-            date: '10/11/2025'
-          },
-          {
-            name: 'API de Análise de Dados',
-            description: 'Um backend em Python para análise.',
-            technologies: ['Python', 'Django'],
-            status: 'finalizado',
-            date: '01/08/2025'
-          }
-        ];
+        console.log("Usuário atual no Profile:", currentUser);
+        const apiUserPosts = await GetUserProjects();
         
         const apiUserComments: CommentProps[] = [
           {
@@ -80,18 +56,17 @@ export default function Profile() {
           }
         ];
         
-        // Atualiza os estados
-        setUser(apiUserData);
         setUserPosts(apiUserPosts);
         setUserComments(apiUserComments);
 
       } catch (error) {
         console.error("Falha ao buscar dados do perfil:", error);
       } 
+      
     };
-
-    fetchProfileData();
-  }, []); // O array vazio [] garante que isso rode apenas uma vez
+    if(currentUser)
+      fetchProfileData();
+  }, [currentUser]); 
 
   // Lógica para fechar o menu ao clicar fora 
   useEffect(() => {
@@ -110,11 +85,13 @@ export default function Profile() {
 
   // Função para renderizar o feed (posts ou comentários)
   const renderFeed = () => {
-
     if (view === 'posts') {
-      // Mapeia 'userPosts' e passa o 'post' (ProjectProps)
-      return userPosts.map(post => (
-        <S.PostContainer >
+      if (userPosts.length === 0) {
+        return <p style={{ color: '#fff', padding: '20px' }}>Nenhum projeto encontrado.</p>;
+      }
+
+     return userPosts.map((post, index) => (
+        <S.PostContainer key={index}>
           <Postcard post={post} showMenu={true} />
         </S.PostContainer>
       ));
@@ -179,10 +156,10 @@ export default function Profile() {
         <S.ProfileInfo>
             <S.ProfileAvatar 
               style={{ 
-                backgroundImage: user?.avatarUrl ? `url(${user.avatarUrl})` : undefined 
+                backgroundImage: undefined 
               }} 
             />
-            <S.Username>{user ? user.username : '...'}</S.Username>
+            <S.Username>{currentUser?.nomeCompleto || currentUser?.username || 'Carregando...'}</S.Username>
         </S.ProfileInfo>
 
         <S.PostList>

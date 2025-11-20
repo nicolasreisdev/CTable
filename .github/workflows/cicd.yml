@@ -35,7 +35,7 @@ jobs:
 
       - name: 5. Executar Análise de Qualidade (QLTY)
         # Usa a Action oficial da Qlty para análise e envio dos dados
-        uses: qlty-sh/qlty-action@vmain
+        uses: qltysh/qlty-action 
         with:
           token: ${{ secrets.QLTY_TOKEN }}
           path: .

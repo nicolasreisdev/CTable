@@ -37,13 +37,13 @@ jobs:
         run: npm run test:coverage
         working-directory: ./backend
 
-      - name: Instalar e Rodar Qlty
-        run: |
-          /home/runner/work/_actions/qltysh/qlty-action/main/install_qlty.sh
+      - name: Install Qlty CLI
+        uses: qltysh/qlty-action/install@main
 
-          cd ./backend 
-          qlty check --all --output-format json > ../qlty_report.json
-          
+      - name: Run Qlty smells and save output
+        run: qlty check --all --output-format json > ../qlty_report.json
+        working-directory: ./backend 
+
       - name: Instalar GitHub CLI (gh)
         run: sudo apt-get install gh -y
 

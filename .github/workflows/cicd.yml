@@ -14,30 +14,65 @@ jobs:
 
   test-pipeline:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
     steps:
-      - name: 1. Obter o código (Checkout)
+      - name: Obter o código (Checkout)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 
 
-      - name: 2. Configurar Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18' 
           cache: 'npm'
 
-      - name: 3. Instalar dependências do backend
+      - name: Instalar dependências do backend
         run: npm install
         working-directory: ./backend
 
-      - name: 4. Rodar Testes e Gerar Cobertura (lcov)
+      - name: Rodar Testes e Gerar Cobertura (lcov)
         run: npm run test:coverage
         working-directory: ./backend
 
-      # - name: 5. Executar Análise de Qualidade (QLTY)
-      #   # Usa a Action oficial da Qlty para análise e envio dos dados
-      #   uses: qltysh/qlty-action/coverage@v2
-      #   with:
-      #     token: ${{ secrets.QLTY_TOKEN }}
-      #     files: backend/src/coverage/lcov.info
+      - name: Install Qlty CLI
+        uses: qltysh/qlty-action/install@main
+
+      - name: Run Qlty smells and save output
+        run: qlty check --all --output-format json > ../qlty_report.json
+        working-directory: ./backend
+
+      - name: Instalar GitHub CLI (gh)
+        run: sudo apt-get install gh -y
+
+      - name: Debug - Mostrar Conteúdo do Relatório Qlty
+        run: cat qlty_report.json
+
+      - name: Criar Issues no GitHub a partir do Relatório
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -s qlty_report.json ]; then
+            echo "Relatório Qlty não encontrado ou vazio. Nenhuma Issue será criada."
+            exit 0
+          fi
+          
+          echo "Processando o relatório Qlty e criando Issues..."
+
+          sudo apt-get install jq -y
+          
+          jq -c '.issues[]' qlty_report.json | while read i; do
+            
+            RULE=$(echo $i | jq -r '.ruleName')
+            FILE=$(echo $i | jq -r '.path')
+            LINE=$(echo $i | jq -r '.lineNumber')
+            MESSAGE=$(echo $i | jq -r '.message' | sed 's/"/\\"/g') # Escapa aspas
+            
+            TITLE="[Qlty Smell] $RULE em $FILE"
+            BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE\n- **Arquivo:** \`$FILE\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
+            
+            gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
+            echo "Issue criada para: $TITLE"
+          done

@@ -40,4 +40,4 @@ jobs:
         uses: qltysh/qlty-action/coverage@v2
         with:
           token: ${{ secrets.QLTY_TOKEN }}
-          files: backend/coverage/lcov.info
+          files: backend/src/coverage/lcov.info

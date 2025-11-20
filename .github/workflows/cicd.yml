@@ -37,9 +37,9 @@ jobs:
         run: npm run test:coverage
         working-directory: ./backend
 
-      - name: Install Qlty CLI
-        uses: qltysh/qlty-action/install@main
-
+      - name: Run Qlty smells and save output
+        run: qlty check --output-format json > ../qlty_report.json
+        working-directory: ./backend
       - name: Run Qlty smells and save output
         run: qlty check --all --output-format json > ../qlty_report.json
         working-directory: ./backend

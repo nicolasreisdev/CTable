@@ -15,6 +15,7 @@ jobs:
   test-pipeline:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       issues: write
 
     steps:
@@ -41,10 +42,10 @@ jobs:
         uses: qltysh/qlty-action/install@main
 
       - name: Initialize Qlty
-        run: qlty init --non-interactive
+        run: qlty init --no
 
       - name: Run Qlty smells and save output
-        run: qlty check --all --sarif --non-interactive > ../qlty_report.json
+        run: qlty check report json --non-interactive > ../qlty_report.json
         working-directory: ./backend 
 
       - name: Instalar GitHub CLI (gh)

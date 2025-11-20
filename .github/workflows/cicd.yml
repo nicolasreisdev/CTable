@@ -27,15 +27,17 @@ jobs:
           node-version: '18' 
           cache: 'npm'
 
-      - name: 3. Instalar dependências do projeto
+      - name: 3. Instalar dependências do backend
         run: npm install
+        working-directory: ./backend
 
       - name: 4. Rodar Testes e Gerar Cobertura (lcov)
-        run: npm test -- --coverage 
+        run: npm run test:coverage
+        working-directory: ./backend
 
       - name: 5. Executar Análise de Qualidade (QLTY)
         # Usa a Action oficial da Qlty para análise e envio dos dados
         uses: qltysh/qlty-action/coverage@v2
         with:
           token: ${{ secrets.QLTY_TOKEN }}
-          files: coverage/lcov.info
+          files: backend/coverage/lcov.info

@@ -35,9 +35,9 @@ jobs:
         run: npm run test:coverage
         working-directory: ./backend
 
-      - name: 5. Executar Análise de Qualidade (QLTY)
-        # Usa a Action oficial da Qlty para análise e envio dos dados
-        uses: qltysh/qlty-action/coverage@v2
-        with:
-          token: ${{ secrets.QLTY_TOKEN }}
-          files: backend/src/coverage/lcov.info
+      # - name: 5. Executar Análise de Qualidade (QLTY)
+      #   # Usa a Action oficial da Qlty para análise e envio dos dados
+      #   uses: qltysh/qlty-action/coverage@v2
+      #   with:
+      #     token: ${{ secrets.QLTY_TOKEN }}
+      #     files: backend/src/coverage/lcov.info

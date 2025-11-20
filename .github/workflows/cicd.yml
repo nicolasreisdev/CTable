@@ -42,10 +42,9 @@ jobs:
 
       - name: Initialize Qlty
         run: qlty init
-        working-directory: ./backend
 
       - name: Run Qlty smells and save output
-        run: qlty check --all --json > ../qlty_report.json
+        run: qlty check --all --sarif > ../qlty_report.json
         working-directory: ./backend 
 
       - name: Instalar GitHub CLI (gh)

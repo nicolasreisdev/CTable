@@ -1,4 +1,5 @@
 export interface ProjectProps {
+  id?: string;
   title: string;
   description: string;
   technologies: string[]; 
@@ -33,7 +34,7 @@ export async function NewProject(data: ProjectProps) {
 
 export async function UpdateProject(projectId: string, data: ProjectProps) {
     
-  /* const response = await fetch(`http://localhost:3000/api/editproject/${projectId}`, {
+  const response = await fetch(`http://localhost:3000/api/user/updateproject/${projectId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ export async function UpdateProject(projectId: string, data: ProjectProps) {
   if (!response.ok) {
     const errorData = await response.json();  
     throw new Error(errorData.message);  
-  } */
+  } 
 }
 
 export async function GetFeedProjects(): Promise<ProjectProps[]> {
@@ -57,11 +58,13 @@ export async function GetFeedProjects(): Promise<ProjectProps[]> {
   // Por agora, vamos simular a resposta da API:
   return [
     {
+      id: '1',
       title: 'Projeto CTable (React)',
       description: 'Post da "ceci" (usuário logado)',
       technologies: ['React', 'TS'], status: 'em-andamento', startDate: parseDate('01/10/2026')
     },
     {
+      id: '2',
       title: 'Projeto de Outra Pessoa',
       description: 'Post de outro usuário...',
       technologies: ['Python'], status: 'finalizado', startDate: parseDate('01/10/2025')

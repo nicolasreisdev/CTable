@@ -45,9 +45,13 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
   }, [isMenuOpen]);
 
   const handleEditClick = () => {
-    // Navega para a página de edição e passa o objeto 'post' (projeto)
-    // O 'state' é uma forma segura de passar os dados
-    navigate(`/editProject/${post.name}`, { state: { projectToEdit: post } });
+    const projectId = (post as any).id || (post as any).projectID;
+    
+    if (projectId) {
+        navigate(`/editProject/${projectId}`, { state: { projectToEdit: post } });
+    } else {
+        console.error("Erro: ID do projeto não encontrado no objeto:", post);
+    }
   };
 
   const handleDeleteProject = async () => {
@@ -78,10 +82,10 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
       )}
       
       <S.PostHeader>
-        <img src={(post as any).avatarUrl || 'url_placeholder_avatar.png'} alt={post.name} /> 
-        <span>{post.name}</span> 
+        <img src={(post as any).avatarUrl || 'url_placeholder_avatar.png'} alt={post.title} /> 
+        <span>{post.title}</span> 
         {/* Assumindo que você tenha um autor no post */}
-        <small>• {(post as any).author?.name || 'Autor'}</small> 
+        <small>• {(post as any).author?.title || 'Autor'}</small> 
       </S.PostHeader>
 
       <S.PostContent>
@@ -114,7 +118,7 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
         {/* Conteúdo interno do Modal */}
         <div style={{ textAlign: 'center' }}>
             <p style={{ marginBottom: '24px', color: '#555' }}>
-                Tem certeza que deseja excluir permanentemente o projeto <strong>{post.name}</strong>?
+                Tem certeza que deseja excluir permanentemente o projeto <strong>{post.title}</strong>?
             </p>
 
             <ModalS.ModalActions>

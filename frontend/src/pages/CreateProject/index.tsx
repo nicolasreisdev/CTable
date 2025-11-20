@@ -20,13 +20,18 @@ interface ProjectFormProps extends Omit<ProjectProps, 'startDate'> {
 export default function CreateProject() {
   const navigate = useNavigate();
   const location = useLocation(); // Hook para ler o state
-  const { projectId } = useParams<{ projectId?: string }>(); // Hook para ler o ID da URL
   const [keywords, setKeywords] = useState<string[]>([]); 
 
-  // Verifica se estamos em modo de EDIÇÃO
-  // Tenta pegar o projeto enviado pelo 'state' da navegação
-  const projectToEdit = location.state?.projectToEdit as (ProjectProps & { id: string }) | undefined;
-  const isEditMode = !!projectToEdit; // Se projectToEdit existe, estamos editando
+  const { projectId: paramId } = useParams<{ projectId?: string }>(); 
+
+  // Recupera o projeto do estado
+  const projectToEdit = location.state?.projectToEdit as (ProjectProps & { id?: string; projectID?: string }) | undefined;
+  // Define se é modo edição
+  const isEditMode = !!projectToEdit;
+
+  const validProjectId = projectToEdit?.id 
+                      || projectToEdit?.projectID 
+                      || (paramId !== 'undefined' ? paramId : undefined);
 
   const formatDateToString = (date?: Date | string) => {
     if (!date) return "";
@@ -74,10 +79,10 @@ export default function CreateProject() {
     };
 
     try {
-      if (isEditMode) {
+      if (isEditMode && validProjectId) {
         // MODO DE EDIÇÃO
-        console.log("Atualizando Projeto:", projectId, finalData);
-        // UpdateProject(projectId, finalData); 
+        console.log("Atualizando Projeto:", validProjectId, finalData);
+        UpdateProject(validProjectId, finalData); 
         setNotification({ message: 'Projeto atualizado com sucesso!', type: 'success' });
       } else {
         // MODO DE CRIAÇÃO

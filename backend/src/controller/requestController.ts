@@ -91,6 +91,18 @@ class requestController {
             throw error;
         }
     }
+
+    async updateProject(projectId: string, data: projectData, userId: number){
+        try{
+
+            const updatedProject = await businessLogicProject.updateProject(projectId, data, userId);
+
+            return updatedProject;
+
+        }catch(error){
+            throw error;
+        }
+    }
 }
 
 export default new requestController();

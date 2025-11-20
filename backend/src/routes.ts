@@ -134,4 +134,37 @@ routes.get('/api/user/projects', authMiddleware, async(request, response) => {
     }
 })
 
+// Endpoint para atualizar um projeto existente
+routes.put('/api/user/updateproject/:projectId', authMiddleware, async(request, response) => {
+  try{
+    const { projectId } = request.params;
+    const updatedData = request.body;
+    const creatorID = request.user.id;
+
+    const updatedProject = await requestController.updateProject(projectId, updatedData, creatorID);
+
+    return response.status(200).json({
+      message: "Projeto atualizado com sucesso!",
+      project: updatedProject
+    });
+
+  }catch(error){
+
+    if (error instanceof z.ZodError) { 
+      return response.status(400).json({ 
+           message: "Erro de validação",
+           errors: error.flatten().fieldErrors 
+      });
+    }
+
+    if(error instanceof Error){ 
+      return response.status(400).json({ message: error.message });
+    }
+    
+    console.error("Erro interno no servidor:", error);
+    return response.status(500).json({ message: "Erro interno no servidor." });
+
+  }
+});
+
 export default routes;

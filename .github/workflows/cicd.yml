@@ -1,23 +1,41 @@
-# Nome do workflow que aparecerá na aba "Actions" do GitHub
-name: Teste de CI/CD
+name: CI/CD
 
-# Define o gatilho (trigger) para rodar este workflow
 on:
-  # Roda quando você fizer um push para a branch 'main'
   push:
     branches:
       - main
-  # Permite que você rode este workflow manualmente pela interface do GitHub
+
+  pull_request:
+    types: [opened, synchronize, reopened]
+
   workflow_dispatch:
 
-# Define os "trabalhos" (jobs) que o workflow irá executar
 jobs:
-  # Nome do nosso único job de teste
+
   test-pipeline:
-    # O tipo de máquina virtual que o job irá rodar
     runs-on: ubuntu-latest
 
-    # A sequência de passos que este job irá executar
     steps:
-      - name: Hello world!
-        run: echo "Hello world!"
+      - name: 1. Obter o código (Checkout)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: 2. Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' 
+          cache: 'npm'
+
+      - name: 3. Instalar dependências do projeto
+        run: npm install
+
+      - name: 4. Rodar Testes e Gerar Cobertura (lcov)
+        run: npm test -- --coverage 
+
+      - name: 5. Executar Análise de Qualidade (QLTY)
+        # Usa a Action oficial da Qlty para análise e envio dos dados
+        uses: qltysh/qlty-action 
+        with:
+          token: ${{ secrets.QLTY_TOKEN }}
+          path: .

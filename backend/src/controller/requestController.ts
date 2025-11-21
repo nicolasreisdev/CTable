@@ -24,7 +24,7 @@ class RequestController {
             return { user: userData, token: token };
 
         } catch(error){
-            throw new Error("Erro nos dados do usuário.");   
+            throw error;   
         }
     }
 
@@ -45,7 +45,7 @@ class RequestController {
 
         }catch(error){
 
-            throw new Error("Usuário ou senha incorretos.");
+            throw error;
         }
     }
 

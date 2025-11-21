@@ -1,6 +1,6 @@
 
 import knex from '../data/index';
-import { User, userData } from '../models/User'
+import { User, UserData } from '../models/User'
 
 
 

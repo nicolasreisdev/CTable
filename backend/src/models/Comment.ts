@@ -1,5 +1,5 @@
 
-export interface commentData{
+export interface CommentData{
     commentID: string;
     content: string;
     createdAt: Date;

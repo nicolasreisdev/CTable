@@ -1,5 +1,5 @@
 
-export interface projectData{
+export interface ProjectData{
     title: string;
     description: string;
     technologies: string[];

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { userData } from '../models/User';
+import { UserData } from '../models/User';
 
 const userSchema = z.object({
   nomeCompleto: z.string().min(3, "Nome muito curto"),
@@ -10,6 +10,6 @@ const userSchema = z.object({
 });
 
 
-export function userValidate(data: userData){
+export function userValidate(data: UserData){
     userSchema.parse(data); // validação dos dados
 }

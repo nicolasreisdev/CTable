@@ -1,14 +1,16 @@
 import businessLogicUser  from '../business/businessLogicAuth'
 import businessLogicProject from '../business/businessLogicProject';
-import {userData, loginData } from '../models/User'
-import { projectData } from '../models/Project';
+import {UserData, LoginData } from '../models/User'
+import { ProjectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
 import { authConfig } from '../config/auth'
 import knex from '../data';
+import { CommunityData } from '../models/Community';
+import businessLogicCommunity from '../business/businessLogicCommunity';
 
-class requestController {
+class RequestController {
 
-    async createUser(data: userData) { 
+    async createUser(data: UserData) { 
         try{
 
             const userData = await businessLogicUser.newUser(data);
@@ -24,13 +26,11 @@ class requestController {
             return { user: userData, token: token };
 
         } catch(error){
-
-            throw error;
-            
+            throw error;   
         }
     }
 
-    async enterUser(data: loginData){
+    async enterUser(data: LoginData){
         try{
 
             const userData = await businessLogicUser.enterUser(data);
@@ -51,7 +51,7 @@ class requestController {
         }
     }
 
-    async createProject(data: projectData, creatorID: number){
+    async createProject(data: ProjectData, creatorID: number){
         try{
             console.log(data);
             const newProject = await businessLogicProject.newProject(data, creatorID);
@@ -88,11 +88,11 @@ class requestController {
             return projects;
 
         }catch(error){
-            throw error;
+            throw new Error("Erro ao buscar os projetos do usuário.");
         }
     }
 
-    async updateProject(projectId: string, data: projectData, userId: number){
+    async updateProject(projectId: string, data: ProjectData, userId: number){
         try{
 
             const updatedProject = await businessLogicProject.updateProject(projectId, data, userId);
@@ -100,9 +100,20 @@ class requestController {
             return updatedProject;
 
         }catch(error){
+            throw new Error("Erro ao atualizar o projeto.");
+        }
+    }
+
+    async newCommunity(data: CommunityData, creatorID: number){
+        try{
+
+            const newCommunity = await businessLogicCommunity.newCommunity(data, creatorID);
+            return newCommunity;
+
+        }catch(error){
             throw error;
         }
     }
 }
 
-export default new requestController();
+export default new RequestController();

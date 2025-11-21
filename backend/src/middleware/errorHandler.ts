@@ -10,6 +10,12 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
     });
   }
 
+  if(err instanceof Error) {
+    return res.status(400).json({
+      message: err.message
+    });
+  }
+
   console.error(err);
 
   // Retorna erro genérico para o usuário

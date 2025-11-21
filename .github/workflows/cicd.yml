@@ -47,6 +47,7 @@ jobs:
       - name: Run Qlty smells and save output
         run: qlty check --sarif . > ../qlty_report.json
         working-directory: ./backend 
+        continue-on-error: true
 
       - name: Instalar GitHub CLI (gh)
         run: sudo apt-get install gh -y

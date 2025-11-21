@@ -45,7 +45,7 @@ jobs:
         run: qlty init --no
 
       - name: Run Qlty smells and save output
-        run: qlty check --format json . > ../qlty_report.json
+        run: qlty check --sarif --output-file ../qlty_report.json .
         working-directory: ./backend 
 
       - name: Instalar GitHub CLI (gh)

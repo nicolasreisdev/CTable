@@ -1,12 +1,36 @@
 import knex from '../data/index';
-import { Community, communityData } from '../models/Community'
+import { communityData } from '../models/Community'
 
 
 
 class businessLogicCommunity{
 
-    async newCommunity(data: communityData){
-        console.log("Lógica de negócios de criação de comunidade");
+    async newCommunity(data: communityData, creatorID: number){
+        return knex.transaction(async (trx) => {
+            
+            const communityToInsert = {
+                name: data.name,
+                description: data.description,
+                creatorID: creatorID 
+            };
+
+            const [createdCommunity] = await trx('Communities')
+                .insert(communityToInsert)
+                .returning('*');
+
+            if (!createdCommunity) {
+                throw new Error("Falha ao criar comunidade.");
+            }
+
+            await trx('CommunityMembers').insert({
+                communityID: createdCommunity.communityID, 
+                userID: creatorID,
+                role: 'admin',
+                joinedAt: new Date()
+            });
+
+            return createdCommunity;
+        });
     }
 
     updateCommunity(){

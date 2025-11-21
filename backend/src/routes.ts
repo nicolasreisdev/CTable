@@ -1,8 +1,6 @@
 import express from 'express';
 import requestController from './controller/requestController';
 import authMiddleware from './middleware/auth';
-import 'express-async-errors';
-import { z } from 'zod';
 
 const routes = express.Router();
 
@@ -47,7 +45,7 @@ routes.get('/api/keywords', async(request, response) => {
     const tags = await requestController.getKeywords();
 
     return response.status(200).json(tags);
-})
+});
 
 // Endpoint para enviar ao frontend os projetos de determinado usuário
 routes.get('/api/user/projects', authMiddleware, async(request, response) => {
@@ -56,7 +54,7 @@ routes.get('/api/user/projects', authMiddleware, async(request, response) => {
       return response.status(200).json({
         projects
       })
-})
+});
 
 // Endpoint para atualizar um projeto existente
 routes.put('/api/user/updateproject/:projectId', authMiddleware, async(request, response) => {
@@ -70,6 +68,11 @@ routes.put('/api/user/updateproject/:projectId', authMiddleware, async(request, 
       message: "Projeto atualizado com sucesso!",
       project: updatedProject
     });
+});
+
+// Endpoint para criar uma comunidade
+routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
+    
 });
 
 export default routes;

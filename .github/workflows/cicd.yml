@@ -81,12 +81,16 @@ jobs:
             MESSAGE=$(echo $i | jq -r '.message.text' | sed 's/"/\\"/g') 
             
             TITLE="[Qlty Smell] $RULE_ID em $FILE_URI"
-            
+       
+            EXISTING_ISSUES=$(gh issue list --search "$TITLE label:technical-debt is:open" --json number --jq '.[0].number' --repo ${{ github.repository }} || echo "")
+
             
             if [ -n "$EXISTING_ISSUES" ]; then
               echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
             else
               BODY="**Detalhes do Débito Técnico**"$'\n\n'"- **Regra:** $RULE_ID"$'\n'"- **Arquivo:** \`$FILE_URI\`"$'\n'"- **Linha:** $LINE"$'\n\n'"---"$'\n\n'"**Mensagem do Qlty:** $MESSAGE"$'\n\n'"Criado automaticamente pelo pipeline de CI."
+
+              BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
               
               gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
               echo "Issue criada para: $TITLE"

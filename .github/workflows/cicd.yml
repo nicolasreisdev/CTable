@@ -70,7 +70,7 @@ jobs:
 
           sudo apt-get install jq -y
           
-          jq -c '.runs[0].results[]' $REPORT_FILE | while read i; do
+          jq -c '.runs[0].results[]' $REPORT_FILE | while read -r i; do
             
             RULE_ID=$(echo $i | jq -r '.ruleId')
             
@@ -87,7 +87,7 @@ jobs:
             if [ -n "$EXISTING_ISSUES" ]; then
               echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
             else
-            
+
               BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
               
               gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}

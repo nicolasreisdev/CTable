@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import CreateCommunity from "./pages/CreateCommunity";  
 import CreateProject from "./pages/CreateProject";
+import CommunityPage from "./pages/CommunityPage";
 
 
 export function Router() {
@@ -20,6 +21,8 @@ export function Router() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/createCommunity" element={<CreateCommunity/>} />
       <Route path="/createProject" element={<CreateProject/>} />
+      <Route path="/editProject/:projectId" element={<CreateProject />} />
+      <Route path="/communityName" element={<CommunityPage />} />
     </Routes>
   )
 }

@@ -11,16 +11,18 @@ import * as ModalS from '../../components/common/Modal/styles';
 // --- DADOS MOCKADOS ---
 const mockPosts = [
     {
-        id: '1',
-        community: { name: 'r/Python', avatarUrl: '' },
-        author: { name: 'ceci' },
-        content: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam eget ligula eu lectus lobortis condimentum. Aliquam nonummy auctor massa. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla at risus. Quisque purus magna, auctor et, sagittis ac, posuere eu, lectus. Nam mattis, felis ut adipiscing.'
+        name: 'API de Análise de Dados',
+            description: 'Um backend em Python para análise.',
+            technologies: ['Python', 'Django'],
+            status: 'finalizado',
+            date: '01/08/2025'
     },
     {
-        id: '2',
-        community: { name: 'r/Python', avatarUrl: '' },
-        author: { name: 'ceci' },
-        content: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam eget ligula eu lectus lobortis condimentum. Aliquam nonummy auctor massa. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla at risus. Quisque purus magna, auctor et, sagittis ac, posuere eu, lectus. Nam mattis, felis ut adipiscing.'
+        name: 'API de Análise de Dados',
+            description: 'Um backend em Python para análise.',
+            technologies: ['Python', 'Django'],
+            status: 'finalizado',
+            date: '01/08/2025'
     }
 ];
 // -----------------------------------------------------------
@@ -41,16 +43,14 @@ export default function Feed() {
     return (
         <S.PageWrapper>
             
-            {/* Componentes de Layout renderizados aqui */}
             <Header onCreateClick={() => setIsCreateModalOpen(true)}/>
             <Sidebar />
 
-            {/* Conteúdo da Página */}
             <S.ContentWrapper>
                 <S.FeedContainer>
                     <S.PostList>
                         {mockPosts.map(post => (
-                            <Postcard key={post.id} post={post} />
+                            <Postcard post={post} showMenu={false}/>
                         ))}
                     </S.PostList>
                 </S.FeedContainer>

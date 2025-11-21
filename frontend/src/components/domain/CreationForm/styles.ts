@@ -157,3 +157,39 @@ export const SubmitButton = styled.button`
     background-color: ${props => props.theme['hover-button']};
   }
 `;
+
+// Estilo para o campo de texto de várias linhas (Descrição)
+export const TextArea = styled.textarea`
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 1em;
+  font-family: inherit; /* Garante que a fonte seja a mesma do site */
+  
+  background-color: #FFFFFF; 
+  border: 1px solid ${props => props.theme.placeholder};
+  border-radius: 12px; /* Menos arredondado que o input, fica melhor */
+  color: ${props => props.theme.title};
+  box-sizing: border-box; 
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  resize: vertical; /* Permite que o usuário redimensione verticalmente */
+  min-height: 150px; /* Altura inicial maior */
+
+  &::placeholder {
+    color: ${props => props.theme.placeholder};
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: ${props => props.theme.keyword};
+    box-shadow: 0 0 0 3px ${props => props.theme.keyword}33;
+  }
+`;
+
+// Contador de caracteres
+export const CharacterCount = styled.div`
+  text-align: right;
+  font-size: 0.85em;
+  color: ${props => props.theme.placeholder};
+  margin-top: 4px;
+  margin-right: 8px;
+`;

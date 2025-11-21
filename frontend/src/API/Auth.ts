@@ -1,4 +1,4 @@
-interface LoginProps {
+export interface LoginProps {
   username: string;
   senha: string;
 }
@@ -18,11 +18,12 @@ export async function Login(data: LoginProps) {
   }
 
   const {user, token} = await response.json();
-  localStorage.setItem('token', token);
+  console.log("Dados do usuário logado:", user);
+  return { user, token };
   
 }
 
-interface RegisterProps {
+export interface RegisterProps {
   nomeCompleto: string;
   username: string;
   email: string;
@@ -44,4 +45,15 @@ export async function Register(data: RegisterProps) {
     const errorData = await response.json();  
     throw new Error(errorData.message);  
   }
+}
+
+export function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+}
+
+export function getCurrentUser() {
+  const userString = localStorage.getItem('user');
+  if (!userString) return null;
+  return JSON.parse(userString);
 }

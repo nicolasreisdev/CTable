@@ -5,21 +5,8 @@ import { IMaskInput } from 'react-imask';
 import  Toast  from '../../components/common/Toast';
 import { useNavigate } from 'react-router-dom';
 import {Register as RegisterAPI} from '../../API/Auth'
-
-
-interface NotificationState {
-  message: string;
-  type: 'success' | 'error';
-}
-
-interface RegisterProps {
-  nomeCompleto: string;
-  username: string;
-  email: string;
-  senha: string;
-  telefone: string;
-  dataNascimento: string; 
-}
+import type { RegisterProps } from '../../API/Auth';
+import type { NotificationState } from '../../components/common/Toast';
 
 export default function Register() {
   // Estado para a notificação - usado no Toast

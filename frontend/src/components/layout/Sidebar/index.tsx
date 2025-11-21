@@ -7,15 +7,14 @@ import * as S from './styles';
 interface Community {
     id: string;
     name: string;
-    iconUrl: string;
 }
 
 // --- DADOS MOCKADOS ---
 const mockCommunities: Community[] = [
-    { id: 'react', name: 'r/React', iconUrl: 'https://styles.redditmedia.com/t5_2zldd/styles/communityIcon_fbblpo38o0x11.png' },
-    { id: 'node', name: 'r/Node', iconUrl: 'https://styles.redditmedia.com/t5_2qgct/styles/communityIcon_i4e0vjze1w2y1.png' },
-    { id: 'python', name: 'r/Python', iconUrl: 'https://styles.redditmedia.com/t5_2qh0y/styles/communityIcon_h9b7f16n1af31.png' },
-    { id: 'scikit', name: 'r/Scikit-Learn', iconUrl: 'https://styles.redditmedia.com/t5_2tby0/styles/communityIcon_d8j4iz4o9k731.png' },
+    { id: 'react', name: 'r/React' },
+    { id: 'node', name: 'r/Node' },
+    { id: 'python', name: 'r/Python'},
+    { id: 'scikit', name: 'r/Scikit-Learn'},
 ];
 // ----------------------
 
@@ -52,7 +51,6 @@ export default function Sidebar() {
                                 key={community.id}
                             >
                                 <S.CommunityIcon
-                                    src={community.iconUrl}
                                     alt={`${community.name} icon`}
                                 />
                                 <span>{community.name}</span>

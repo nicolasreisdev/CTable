@@ -1,5 +1,5 @@
 
-import { userData, loginData } from "../models/User";
+import { UserData, LoginData } from "../models/User";
 import { userValidate } from "../utils/validationUser";
 import knex from '../data/index'; 
 import bcrypt from 'bcryptjs';
@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 
 class businessLogicAuth{
 
-    async newUser(data: userData){
+    async newUser(data: UserData){
 
         userValidate(data);
 
@@ -52,7 +52,7 @@ class businessLogicAuth{
 
     }
 
-    async enterUser(data: loginData){
+    async enterUser(data: LoginData){
         try{
             const user = await knex('User')
                     .where('username', data.username)

@@ -1,10 +1,10 @@
 
 import knex from '../data/index';
-import { projectData } from '../models/Project'; 
+import { ProjectData } from '../models/Project'; 
 
 class businessLogicProject{
 
-    async newProject(data: projectData, creatorID: number){
+    async newProject(data: ProjectData, creatorID: number){
 
         return knex.transaction(async (trx) => {
             

@@ -1,5 +1,4 @@
-
-export interface userData {
+export interface UserData {
     nomeCompleto: string;
     username: string;
     email: string;
@@ -8,67 +7,9 @@ export interface userData {
     senha: string,
 }
 
-export interface loginData{
+export interface LoginData{
     username: string;
     senha: string;
 }
 
-export class User{
-    // userId: string;
-    fullName: string;
-    username: string;
-    // password: string;
-    birthDate: Date;
-    // createdAt: Date;
-    // updatedAt: Date;
-
-    constructor(data: userData){
-        this.fullName = data.nomeCompleto
-        this.username = data.username
-        this.birthDate = data.dataNascimento
-        
-    }
-
-    createProject(){
-
-    }
-
-    updateProfile(){
-
-    }
-
-    deleteProfile(){
-
-    }
-
-    joinCommunity(){
-
-    }
-
-    leaveCommunity(){
-
-    }
-
-    postComment(){
-
-    }
-
-    deleteComment(){
-
-    }
-
-    manageComment(){
-
-    }
-
-    getUserID(){
-        
-    }
-
-    getFullName(){
-        return this.fullName
-    }
-
-
-}
 

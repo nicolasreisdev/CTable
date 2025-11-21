@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './routes';
+import { errorHandler } from './middleware/errorHandler';
 
 class App {
     public server: express.Application;
@@ -9,6 +10,7 @@ class App {
         this.server = express();
         this.middlewares();
         this.routes();
+        this.handleErrors();
     }
 
     private middlewares(): void {
@@ -18,6 +20,10 @@ class App {
 
     private routes(): void {
         this.server.use(routes);
+    }
+
+    private handleErrors(): void {
+        this.server.use(errorHandler);
     }
 }
 

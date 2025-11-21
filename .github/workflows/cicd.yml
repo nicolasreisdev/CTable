@@ -59,25 +59,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ ! -s qlty_report.json ]; then
+          REPORT_FILE="qlty_report.json"
+          
+          if [ ! -s $REPORT_FILE ]; then
             echo "Relatório Qlty não encontrado ou vazio. Nenhuma Issue será criada."
             exit 0
           fi
           
-          echo "Processando o relatório Qlty e criando Issues..."
+          echo "Processando o relatório Qlty SARIF..."
 
           sudo apt-get install jq -y
           
-          jq -c '.issues[]' qlty_report.json | while read i; do
+          jq -c '.runs[0].results[]' $REPORT_FILE | while read i; do
             
-            RULE=$(echo $i | jq -r '.ruleName')
-            FILE=$(echo $i | jq -r '.path')
-            LINE=$(echo $i | jq -r '.lineNumber')
-            MESSAGE=$(echo $i | jq -r '.message' | sed 's/"/\\"/g') # Escapa aspas
+            RULE_ID=$(echo $i | jq -r '.ruleId')
             
-            TITLE="[Qlty Smell] $RULE em $FILE"
-            BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE\n- **Arquivo:** \`$FILE\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
+            FILE_URI=$(echo $i | jq -r '.locations[0].physicalLocation.artifactLocation.uri')
             
-            gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
-            echo "Issue criada para: $TITLE"
+            LINE=$(echo $i | jq -r '.locations[0].physicalLocation.region.startLine')
+            
+            MESSAGE=$(echo $i | jq -r '.message.text' | sed 's/"/\\"/g') 
+            
+            TITLE="[Qlty Smell] $RULE_ID em $FILE_URI"
+            
+            EXISTING_ISSUES=$(gh issue list --search "$TITLE label:technical-debt is:open" --json number --jq '.[0].number' --repo ${{ github.repository }} || echo "")
+            
+            if [ -n "$EXISTING_ISSUES" ]; then
+              echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
+            else
+            
+              BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
+              
+              gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
+              echo "Issue criada para: $TITLE"
+            fi
           done

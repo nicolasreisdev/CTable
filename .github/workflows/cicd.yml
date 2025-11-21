@@ -14,28 +14,83 @@ jobs:
 
   test-pipeline:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
 
     steps:
-      - name: 1. Obter o código (Checkout)
+      - name: Obter o código (Checkout)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 
 
-      - name: 2. Configurar Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18' 
           cache: 'npm'
 
-      - name: 3. Instalar dependências do projeto
+      - name: Instalar dependências do backend
         run: npm install
+        working-directory: ./backend
 
-      - name: 4. Rodar Testes e Gerar Cobertura (lcov)
-        run: npm test -- --coverage 
+      - name: Rodar Testes e Gerar Cobertura (lcov)
+        run: npm run test:coverage
+        working-directory: ./backend
 
-      - name: 5. Executar Análise de Qualidade (QLTY)
-        # Usa a Action oficial da Qlty para análise e envio dos dados
-        uses: qltysh/qlty-action 
-        with:
-          token: ${{ secrets.QLTY_TOKEN }}
-          path: .
+      - name: Instalar Qlty CLI
+        uses: qltysh/qlty-action/install@main
+
+      - name: Inicializar Qlty
+        run: qlty init --no
+
+      - name: Rodar Qlty smells e salvar resultados
+        run: qlty check --sarif . > ../qlty_report.json
+        working-directory: ./backend 
+        continue-on-error: true
+
+      - name: Instalar GitHub CLI (gh)
+        run: sudo apt-get install gh -y
+
+      - name: Debug - Mostrar Conteúdo do Relatório Qlty
+        run: cat qlty_report.json
+
+      - name: Criar Issues no GitHub a partir do Relatório
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPORT_FILE="qlty_report.json"
+          
+          if [ ! -s $REPORT_FILE ]; then
+            echo "Relatório Qlty não encontrado ou vazio. Nenhuma Issue será criada."
+            exit 0
+          fi
+          
+          echo "Processando o relatório Qlty SARIF..."
+
+          sudo apt-get install jq -y
+          
+          jq -c '.runs[0].results[]' $REPORT_FILE | while read -r i; do
+            
+            RULE_ID=$(echo $i | jq -r '.ruleId')
+            
+            FILE_URI=$(echo $i | jq -r '.locations[0].physicalLocation.artifactLocation.uri')
+            
+            LINE=$(echo $i | jq -r '.locations[0].physicalLocation.region.startLine')
+            
+            MESSAGE=$(echo $i | jq -r '.message.text' | sed 's/"/\\"/g') 
+            
+            TITLE="[Qlty Smell] $RULE_ID em $FILE_URI"
+            
+            EXISTING_ISSUES=$(gh issue list --search "$TITLE label:technical-debt is:open" --json number --jq '.[0].number' --repo ${{ github.repository }} || echo "")
+            
+            if [ -n "$EXISTING_ISSUES" ]; then
+              echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
+            else
+
+              BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
+              
+              gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
+              echo "Issue criada para: $TITLE"
+            fi
+          done

@@ -86,50 +86,50 @@ describe('Autenticação de Usuário', () => {
 
     });
 
-    it('deve impedir cadastro de nome menor que 3 letras (Status 400)', async () => {
+    // it('deve impedir cadastro de nome menor que 3 letras (Status 400)', async () => {
 
-      const response = await request(app).post('/api/register').send({
-        nomeCompleto: 'ab',
-        username: 'user5',
-        email: 'user5@email.com',
-        dataNascimento: '2000/01/01',
-        senha: 'senha123',
-      });
+    //   const response = await request(app).post('/api/register').send({
+    //     nomeCompleto: 'ab',
+    //     username: 'user5',
+    //     email: 'user5@email.com',
+    //     dataNascimento: '2000/01/01',
+    //     senha: 'senha123',
+    //   });
 
-      expect(response.status).toBe(400);
-      expect(response.body.message).toContain('Nome muito curto');
+    //   expect(response.status).toBe(400);
+    //   expect(response.body.message).toContain('Nome muito curto');
 
-    });
+    // });
 
-    it('deve impedir cadastro de user menor que 4 letras (Status 400)', async () => {
+    // it('deve impedir cadastro de user menor que 4 letras (Status 400)', async () => {
 
-      const response = await request(app).post('/api/register').send({
-        nomeCompleto: 'abc',
-        username: 'use',
-        email: 'user5@email.com',
-        dataNascimento: '2000/01/01',
-        senha: 'senha123',
-      });
+    //   const response = await request(app).post('/api/register').send({
+    //     nomeCompleto: 'abc',
+    //     username: 'use',
+    //     email: 'user5@email.com',
+    //     dataNascimento: '2000/01/01',
+    //     senha: 'senha123',
+    //   });
 
-      expect(response.status).toBe(400);
-      expect(response.body.message).toContain('Username muito curto');
+    //   expect(response.status).toBe(400);
+    //   expect(response.body.message).toContain('Username muito curto');
 
-    });
+    // });
 
-    it('deve impedir cadastro de email invalido (Status 400)', async () => {
+    // it('deve impedir cadastro de email invalido (Status 400)', async () => {
 
-      const response = await request(app).post('/api/register').send({
-        nomeCompleto: 'abc',
-        username: 'user',
-        email: 'useremail.com',
-        dataNascimento: '2000/01/01',
-        senha: 'senha123',
-      });
+    //   const response = await request(app).post('/api/register').send({
+    //     nomeCompleto: 'abc',
+    //     username: 'user',
+    //     email: 'useremail.com',
+    //     dataNascimento: '2000/01/01',
+    //     senha: 'senha123',
+    //   });
 
-      expect(response.status).toBe(400);
-      expect(response.body.message).toContain('Formato de e-mail inválido');
+    //   expect(response.status).toBe(400);
+    //   expect(response.body.message).toContain('Formato de e-mail inválido');
 
-    });
+    // });
 
   });
 

@@ -38,13 +38,13 @@ jobs:
         run: npm run test:coverage
         working-directory: ./backend
 
-      - name: Install Qlty CLI
+      - name: Instalar Qlty CLI
         uses: qltysh/qlty-action/install@main
 
-      - name: Initialize Qlty
+      - name: Inicializar Qlty
         run: qlty init --no
 
-      - name: Run Qlty smells and save output
+      - name: Rodar Qlty smells e salvar resultados
         run: qlty check --sarif . > ../qlty_report.json
         working-directory: ./backend 
         continue-on-error: true

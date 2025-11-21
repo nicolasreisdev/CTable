@@ -11,5 +11,5 @@ const userSchema = z.object({
 
 
 export function userValidate(data: UserData){
-    const validation = userSchema.parse(data); // validação dos dados
+    userSchema.parse(data); // validação dos dados
 }

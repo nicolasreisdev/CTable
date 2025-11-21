@@ -5,6 +5,8 @@ import { ProjectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
 import { authConfig } from '../config/auth'
 import knex from '../data';
+import { CommunityData } from '../models/Community';
+import businessLogicCommunity from '../business/businessLogicCommunity';
 
 class RequestController {
 
@@ -99,6 +101,17 @@ class RequestController {
 
         }catch(error){
             throw new Error("Erro ao atualizar o projeto.");
+        }
+    }
+
+    async newCommunity(data: CommunityData, creatorID: number){
+        try{
+
+            const newCommunity = await businessLogicCommunity.newCommunity(data, creatorID);
+            return newCommunity;
+
+        }catch(error){
+            throw error;
         }
     }
 }

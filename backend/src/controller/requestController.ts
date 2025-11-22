@@ -114,6 +114,27 @@ class RequestController {
             throw error;
         }
     }
+
+    async getAllCommunities() {
+        try {
+            const communities = await businessLogicCommunity.getAllCommunities();
+            return communities;
+        } catch (error) {
+            console.error("Erro ao buscar comunidades:", error);
+            throw new Error("Erro ao carregar as comunidades.");
+        }
+    }
+
+    async newMemberCommunity(userID: number, communityID: string){
+        try{
+
+            const result = await businessLogicCommunity.newMemberCommunity(userID, communityID);
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+    }
 }
 
 export default new RequestController();

@@ -60,6 +60,42 @@ class businessLogicCommunity{
         });
     }
 
+    async newMemberCommunity(userID: number, communityID: string){
+
+        const community = await knex('Communities')
+            .where('communityID', communityID) 
+            .first();
+
+        if (!community) {
+            throw new Error("Comunidade não encontrada.");
+        }
+
+        const existingMember = await knex('CommunityMembers')
+            .where('communityID', communityID)
+            .andWhere('userID', userID)
+            .first();
+
+        if (existingMember) {
+            throw new Error("Usuário já é membro desta comunidade.");
+        }
+
+        await knex('CommunityMembers').insert({
+            communityID: communityID,
+            userID: userID,
+            role: 'member',
+            joinedAt: new Date()
+        });
+
+        return { message: "Membro adicionado com sucesso", communityID, userID };
+    }
+
+    async getAllCommunities() {
+
+        const communities = await knex('Communities').select('*');
+        return communities;
+        
+    }
+
     updateCommunity(){
 
     }

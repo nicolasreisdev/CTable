@@ -12,4 +12,8 @@ export interface LoginData{
     senha: string;
 }
 
+export interface AssociateCommunity{
+    
+}
+
 

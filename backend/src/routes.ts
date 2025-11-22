@@ -80,4 +80,21 @@ routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
     
 });
 
+routes.get('/api/communities', async (request, response) => {
+
+    const communities = await RequestController.getAllCommunities();
+    return response.status(200).json(communities);
+
+});
+
+routes.post('/api/newmember/:communityId', authMiddleware, async(request, response) =>{
+
+    const userID = request.user.id;
+    const { communityId } = request.params;
+
+    const result = await RequestController.newMemberCommunity(userID, communityId);
+
+    return response.status(201).json(result);
+});
+
 export default routes;

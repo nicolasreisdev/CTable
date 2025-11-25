@@ -118,7 +118,23 @@ class businessLogicProject{
         return projects;
     }
 
-    removeProject(){
+    async removeProject(creatorID: number, projectID: string){
+        
+        const project = await knex('Projects')
+            .where('projectID', projectID)
+            .first();
+
+        if (!project) {
+            throw new Error("Projeto não encontrado.");
+        }
+
+        if (project.creatorID !== creatorID) {
+            throw new Error("Você não tem permissão para deletar este projeto.");
+        }
+
+        await knex('Projects')
+            .where('projectID', projectID)
+            .del();
     }
     
 }

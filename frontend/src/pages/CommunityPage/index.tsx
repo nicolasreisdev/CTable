@@ -5,38 +5,68 @@ import Postcard from '../../components/domain/Postcard';
 import * as S from './styles';
 import { FiMoreHorizontal } from 'react-icons/fi'; 
 import { useEffect, useState } from 'react';
-import { GetCommunityById } from '../../API/Community';
+import { GetCommunityById, JoinCommunity } from '../../API/Community';
+import type { NotificationState } from '../../components/common/Toast';
+import Toast from '../../components/common/Toast';
+import type { CommunityProps } from '../../API/Community';
 
 export default function CommunityPage() {
-  const { communityId } = useParams<{ communityId: string }>();
-
+  const { communityID } = useParams<{ communityID: string }>();
+  const [notification, setNotification] = useState<NotificationState | null>(null);
   const [community, setCommunity] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-        if (!communityId) return;
+        console.log("Carregando dados da comunidade para ID:", communityID);
+        if (!communityID) return;
         try {
-            setLoading(true);
-            const data = await GetCommunityById(communityId);
+            const data = await GetCommunityById(communityID);
             setCommunity(data.community);
             setPosts(data.posts);
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading(false);
-        }
+        } 
     }
     loadData();
-  }, [communityId]);
+  }, [communityID]);
 
-  if (loading) return <div>Carregando...</div>;
+  const handleJoin = async () => {
+    if (!community) return;
+
+    try {
+        await JoinCommunity(community.communityID);
+        
+        // Atualiza a interface após entrar na comunidade
+        setCommunity((prev: CommunityProps | null) => prev ? ({
+            ...prev,
+            isMember: true, // Esconde o botão
+            memberCount: (prev.memberCount || 0) + 1 // Atualiza o contador visualmente
+        }) : null);
+
+        setNotification({ message: 'Você entrou na comunidade!', type: 'success' });
+
+    } catch (error) {
+        if (error instanceof Error) {
+            setNotification({ message: error.message, type: 'error' });
+        }
+    }
+  };
+
   if (!community) return <div>Comunidade não encontrada</div>;
 
   return (
     <S.PageWrapper>
       <Sidebar />
+
+      {notification && (
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)} 
+        />
+      )}
+
       <S.MainContent>
         <S.Banner />
         
@@ -48,7 +78,11 @@ export default function CommunityPage() {
           </S.HeaderInfo>
 
           <S.HeaderActions>
-            <S.JoinButton>Join</S.JoinButton>
+            {!community.isMember && (
+            <S.JoinButton onClick={handleJoin}>
+                Join
+            </S.JoinButton>
+            )}
             <S.OptionsButton>
                 <FiMoreHorizontal />
             </S.OptionsButton>

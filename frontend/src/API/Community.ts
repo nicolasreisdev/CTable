@@ -5,6 +5,8 @@ export interface CommunityProps {
     technologies: string[];
     createdAt: Date;
     updatedAt: Date;
+    memberCount?: number; 
+    isMember?: boolean;
 }
 
 export async function NewCommunity(data: CommunityProps) { 
@@ -44,7 +46,7 @@ export async function GetAllCommunities(): Promise<CommunityProps[]> {
 } 
 
 export async function GetCommunityById(communityId: string) {
-  const response = await fetch(`http://localhost:3000/api/communities/${communityId}`, {
+  const response = await fetch(`http://localhost:3000/api/communities/data/${communityId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -55,6 +57,23 @@ export async function GetCommunityById(communityId: string) {
   if (!response.ok) {
     if (response.status === 404) throw new Error('Comunidade não encontrada');
     throw new Error('Erro ao carregar a comunidade');
+  }
+
+  return await response.json();
+}
+
+export async function JoinCommunity(communityId: string) {
+  const response = await fetch(`http://localhost:3000/api/communities/${communityId}/join`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Erro ao entrar na comunidade');
   }
 
   return await response.json();

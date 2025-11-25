@@ -93,6 +93,22 @@ routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
 
 routes.get('/api/user/communities', authMiddleware, async (request, response) => {
 
+    const communities = await RequestController.getAllUserCommunities(request.user.id);
+    return response.status(200).json(communities);
+
+});
+
+routes.get('/api/communities/data/:communityId', async (request, response) =>{
+
+    const { communityId } = request.params;
+
+    const data = await RequestController.getCommunityData(communityId);
+
+    return response.status(200).json(data);
+});
+
+routes.get('/api/communities', async(request, response) => {
+
     const communities = await RequestController.getAllCommunities(request.user.id);
     return response.status(200).json(communities);
 
@@ -108,6 +124,28 @@ routes.post('/api/communities/:communityId/join', authMiddleware, async(request,
     return response.status(201).json(result);
 });
 
-//TODO: Endpoint para pegar informações de uma comunidade específica 
+
+routes.put('/api/communities/updatecommunity/:communityId', authMiddleware, async(request, response) => {
+    const { communityId } = request.params;
+    const data = request.body;
+
+    const updatedCommunity = await RequestController.updateCommunity(request.user.id, communityId, data);
+
+    return response.status(200).json({
+      message: "Comunidade atualizada com sucesso!",
+      community: updatedCommunity
+    });
+
+});
+
+
+routes.delete('/api/communitites/deletecommunity/:communityId', authMiddleware, async(request, response) => {
+    const { communityId } = request.params;
+
+    await RequestController.removeCommunity(request.user.id, communityId);
+
+    return response.status(200).json({ message: "Comunidade deletada com sucesso." });
+
+})
 
 export default routes;

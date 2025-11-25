@@ -104,6 +104,16 @@ class RequestController {
         }
     }
 
+    async removeProject(userID: number, projectID: string){
+        try{
+
+            businessLogicProject.removeProject(userID, projectID);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
     async newCommunity(data: CommunityData, creatorID: number){
         try{
 
@@ -115,13 +125,38 @@ class RequestController {
         }
     }
 
-    async getAllCommunities(userID: number) {
+    async getAllUserCommunities(userID: number) {
         try {
-            const communities = await businessLogicCommunity.getAllCommunities(userID);
+            const communities = await businessLogicCommunity.getAllUserCommunities(userID);
             return communities;
         } catch (error) {
             console.error("Erro ao buscar comunidades:", error);
             throw new Error("Erro ao carregar as comunidades.");
+        }
+    }
+
+    async getAllCommunities(){
+        try{
+
+            const communities = await businessLogicCommunity.getAllCommunities();
+            
+            return communities;
+
+        }catch(error){
+            throw error;
+        }
+
+    }
+
+    async getCommunityData(communityID: string){
+        try{    
+
+            const result = await businessLogicCommunity.getCommunityData(communityID);
+
+            return result;
+
+        }catch(error){
+            throw error;
         }
     }
 
@@ -136,15 +171,28 @@ class RequestController {
         }
     }
 
-    async removeProject(userID: number, projectID: string){
+    async updateCommunity(creatorID: number, communityID: string, data: CommunityData){
         try{
 
-            businessLogicProject.removeProject(userID, projectID);
+            const updatedCommunity = await businessLogicCommunity.updateCommunity(creatorID, communityID, data);
+
+            return updatedCommunity;
 
         }catch(error){
             throw error;
         }
     }
+
+    async removeCommunity(creatorID: number, communityID: string){
+        try{
+
+            await businessLogicCommunity.removeCommunity(creatorID, communityID);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
 }
 
 export default new RequestController();

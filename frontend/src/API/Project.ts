@@ -73,7 +73,7 @@ export async function GetFeedProjects(): Promise<ProjectProps[]> {
 }
 
 export async function DeleteProject(projectId: string) {
-  /* const response = await fetch(`http://localhost:3000/api/project/${projectId}`, {
+    const response = await fetch(`http://localhost:3000/api/user/deleteproject/${projectId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ export async function DeleteProject(projectId: string) {
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || "Erro ao excluir projeto.");
-  } */
+  } 
 }
 
 export async function GetUserProjects(): Promise<ProjectProps[]> {

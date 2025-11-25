@@ -1,6 +1,7 @@
 import express from 'express';
 import RequestController from './controller/requestController';
 import authMiddleware from './middleware/auth';
+import auth from './middleware/auth';
 
 const routes = express.Router();
 
@@ -25,6 +26,14 @@ routes.post('/api/login', async(request, response) => {
     });
 });
 
+
+// Endpoint para enviar ao fronend os keywords disponíveis
+routes.get('/api/keywords', async(request, response) => {
+    const tags = await RequestController.getKeywords();
+
+    return response.status(200).json(tags);
+});
+
 // Endpoint para criar projeto
 routes.post('/api/user/newproject', authMiddleware,  async(request, response) =>{
     const projectData = request.body;
@@ -39,13 +48,6 @@ routes.post('/api/user/newproject', authMiddleware,  async(request, response) =>
     });
 });
 
-
-// Endpoint para enviar ao fronend os keywords disponíveis
-routes.get('/api/keywords', async(request, response) => {
-    const tags = await RequestController.getKeywords();
-
-    return response.status(200).json(tags);
-});
 
 // Endpoint para enviar ao frontend os projetos de determinado usuário
 routes.get('/api/user/projects', authMiddleware, async(request, response) => {
@@ -70,6 +72,15 @@ routes.put('/api/user/updateproject/:projectId', authMiddleware, async(request, 
     });
 });
 
+routes.delete('/api/user/deleteproject/:projectId', authMiddleware, async(request, response) =>{
+
+    const { projectId } = request.params;
+
+    await RequestController.removeProject(request.user.id, projectId);
+
+    return response.status(200).json({ message: "Projeto deletado com sucesso." });
+});
+
 // Endpoint para criar uma comunidade
 routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
 
@@ -80,14 +91,14 @@ routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
     
 });
 
-routes.get('/api/communities', async (request, response) => {
+routes.get('/api/user/communities', authMiddleware, async (request, response) => {
 
-    const communities = await RequestController.getAllCommunities();
+    const communities = await RequestController.getAllCommunities(request.user.id);
     return response.status(200).json(communities);
 
 });
 
-routes.post('/api/newmember/:communityId', authMiddleware, async(request, response) =>{
+routes.post('/api/communities/:communityId/join', authMiddleware, async(request, response) =>{
 
     const userID = request.user.id;
     const { communityId } = request.params;

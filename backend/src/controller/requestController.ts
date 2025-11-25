@@ -115,9 +115,9 @@ class RequestController {
         }
     }
 
-    async getAllCommunities() {
+    async getAllCommunities(userID: number) {
         try {
-            const communities = await businessLogicCommunity.getAllCommunities();
+            const communities = await businessLogicCommunity.getAllCommunities(userID);
             return communities;
         } catch (error) {
             console.error("Erro ao buscar comunidades:", error);
@@ -130,6 +130,16 @@ class RequestController {
 
             const result = await businessLogicCommunity.newMemberCommunity(userID, communityID);
             return result;
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    async removeProject(userID: number, projectID: string){
+        try{
+
+            businessLogicProject.removeProject(userID, projectID);
 
         }catch(error){
             throw error;

@@ -89,10 +89,18 @@ class businessLogicCommunity{
         return { message: "Membro adicionado com sucesso", communityID, userID };
     }
 
-    async getAllCommunities() {
+    async getAllCommunities(userID: number) {
 
-        const communities = await knex('Communities').select('*');
-        return communities;
+        const userCommunities = await knex('Communities')
+            .join('CommunityMembers', 'Communities.communityID', '=', 'CommunityMembers.communityID')
+            .where('CommunityMembers.userID', userID)
+            .select(
+                'Communities.*', 
+                'CommunityMembers.role', 
+                'CommunityMembers.joinedAt'
+            );
+
+        return userCommunities;
         
     }
 

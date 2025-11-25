@@ -108,4 +108,6 @@ routes.post('/api/communities/:communityId/join', authMiddleware, async(request,
     return response.status(201).json(result);
 });
 
+//TODO: Endpoint para pegar informações de uma comunidade específica 
+
 export default routes;

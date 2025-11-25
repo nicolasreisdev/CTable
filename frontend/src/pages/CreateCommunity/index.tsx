@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
@@ -17,10 +18,11 @@ export default function CreateCommunity() {
       communityID: "",
       name: "",
       description: "",
-      keywords: []
+      technologies: []
     }
   });
 
+  const navigate = useNavigate();
   const descriptionValue = watch('description');
   const descriptionLength = descriptionValue ? descriptionValue.length : 0;
   const MAX_CHARS = 500;
@@ -41,9 +43,14 @@ export default function CreateCommunity() {
 
   const onSubmit = (data: CommunityProps) => {
     try{
-      //await NewCommunity(data);
+      NewCommunity(data);
       setNotification({ message: 'Comunidade criada com sucesso!', type: 'success' });
       console.log("Criando Comunidade:", data);
+
+      setTimeout(() => {
+          navigate('/feed'); 
+      }, 1000);
+
     } catch (error) {
       console.error('Erro ao criar comunidade:', error);
       if (error instanceof Error){
@@ -95,7 +102,7 @@ export default function CreateCommunity() {
             <S.Label htmlFor="keywords">Palavras-chave</S.Label>
             
             <Controller
-              name="keywords"
+              name="technologies"
               control={control}
               render={({ field }) => (
                 <TagInput 

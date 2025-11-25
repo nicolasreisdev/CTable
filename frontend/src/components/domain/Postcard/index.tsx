@@ -3,6 +3,7 @@ import * as S from './styles';
 import * as D from '../../common/Dropdown/styles'; 
 import { useNavigate } from 'react-router-dom'; 
 import type { ProjectProps } from '../../../API/Project';
+import { DeleteProject } from '../../../API/Project';
 import Modal from '../../common/Modal';
 import type { NotificationState } from '../../common/Toast';
 import Toast from '../../common/Toast';
@@ -57,7 +58,11 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
   const handleDeleteProject = async () => {
     try {
        console.log("Excluindo projeto");
-       // await DeleteProject(projectId);
+       const projectId = (post as any).id || (post as any).projectID;
+       if (!projectId) {
+         throw new Error("ID do projeto não encontrado.");
+       }
+       await DeleteProject(projectId);
        
        setNotification({ message: 'Projeto excluído com sucesso!', type: 'success' });
        

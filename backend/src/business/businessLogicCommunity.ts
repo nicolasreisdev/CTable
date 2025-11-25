@@ -89,7 +89,7 @@ class businessLogicCommunity{
         return { message: "Membro adicionado com sucesso", communityID, userID };
     }
 
-    async getAllCommunities(userID: number) {
+    async getAllUserCommunities(userID: number) {
 
         const userCommunities = await knex('Communities')
             .join('CommunityMembers', 'Communities.communityID', '=', 'CommunityMembers.communityID')
@@ -104,12 +104,97 @@ class businessLogicCommunity{
         
     }
 
-    updateCommunity(){
-
+    async getAllCommunities(){
+       return await knex('Communities').select('*'); 
     }
 
-    removeCommunity(){
+    async getCommunityData(communityID: string){
 
+        const community = await knex('Communities')
+            .where('communityID', communityID)
+            .first();
+
+        if (!community) {
+            throw new Error("Comunidade não encontrada.");
+        }
+
+        const projects = await knex('Projects')
+            .join('ProjectCommunities', 'Projects.projectID', '=', 'ProjectCommunities.projectID')
+            .where('ProjectCommunities.communityID', communityID)
+            .select('Projects.*');
+
+        return { community, projects };
+    }   
+
+    async updateCommunity(creatorID: number, communityID: string, data: CommunityData){
+
+        return knex.transaction(async (trx) => {
+
+            const community = await trx('Communities')
+                .where('communityID', communityID)
+                .first();
+
+            if (!community) {
+                throw new Error("Comunidade não encontrada.");
+            }
+
+            if (community.creatorID !== creatorID) {
+                throw new Error("Você não tem permissão para editar esta comunidade.");
+            }
+
+            const fieldsToUpdate: any = {};
+            if (data.name) fieldsToUpdate.name = data.name;
+            if (data.description) fieldsToUpdate.description = data.description;
+            
+            if (Object.keys(fieldsToUpdate).length > 0) {
+                fieldsToUpdate.updatedAt = new Date();
+                await trx('Communities')
+                    .where('communityID', communityID)
+                    .update(fieldsToUpdate);
+            }
+
+            if (data.technologies !== undefined) { 
+                 await trx('CommunitiesKeywords')
+                    .where('communityID', communityID)
+                    .del();
+
+                 if (Array.isArray(data.technologies) && data.technologies.length > 0) {
+                    const keywordIDs = await trx('Keywords')
+                        .whereIn('tag', data.technologies)
+                        .select('keywordID');
+
+                    const linksToInsert = keywordIDs.map((k: any) => ({
+                        communityID: communityID,
+                        keywordID: k.keywordID
+                    }));
+
+                    if (linksToInsert.length > 0) {
+                        await trx('CommunitiesKeywords').insert(linksToInsert);
+                    }
+                 }
+            }
+
+            return await trx('Communities').where('communityID', communityID).first();
+        });
+    }
+
+    async removeCommunity(creatorID: number, communityID: string){
+        const community = await knex('Communities')
+            .where('communityID', communityID)
+            .first();
+
+        if (!community) {
+            throw new Error("Comunidade não encontrada.");
+        }
+
+        if (community.creatorID !== creatorID) {
+            throw new Error("Você não tem permissão para deletar esta comunidade.");
+        }
+
+        // O CASCADE configurado nas migrations cuidará das tabelas de junção!
+        await knex('Communities')
+            .where('communityID', communityID)
+            .del();
     }
     
 }

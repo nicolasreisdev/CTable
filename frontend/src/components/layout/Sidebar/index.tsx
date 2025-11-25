@@ -18,23 +18,20 @@ export default function Sidebar() {
 
       useEffect(() => {
         // Função assíncrona para buscar todos os dados
-        console.log("Efeito de busca de dados do perfil disparado.");
-        const fetchProfileData = async () => {
+        const fetchCommunities = async () => {
           try {;
             
-            console.log("Usuário atual no Profile:", currentUser);
             const apiUserCommunities = await GetAllCommunities();
-            
-            
+            console.log("Comunidades do usuário:", apiUserCommunities);
             setUserCommunities(apiUserCommunities);
     
           } catch (error) {
-            console.error("Falha ao buscar dados do perfil:", error);
+            console.error("Falha ao buscar comunidades:", error);
           } 
           
         };
         if(currentUser)
-          fetchProfileData();
+          fetchCommunities();
       }, [currentUser]); 
 
     return (
@@ -55,7 +52,7 @@ export default function Sidebar() {
                     <S.CommunitiesList>
                         {userCommunities.map((community) => (
                             <S.CommunityLink
-                                to={`/r/${community.name}`}
+                                to={`/r/${community.communityID}`}
                                 key={community.communityID}
                             >
                                 <S.CommunityIcon

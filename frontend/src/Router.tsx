@@ -22,7 +22,7 @@ export function Router() {
       <Route path="/createCommunity" element={<CreateCommunity/>} />
       <Route path="/createProject" element={<CreateProject/>} />
       <Route path="/editProject/:projectId" element={<CreateProject />} />
-      <Route path="/r/:name" element={<CommunityPage />} />
+      <Route path="/r/:communityID" element={<CommunityPage />} />
     </Routes>
   )
 }

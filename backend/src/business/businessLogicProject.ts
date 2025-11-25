@@ -2,7 +2,7 @@
 import knex from '../data/index';
 import { ProjectData } from '../models/Project'; 
 
-class businessLogicProject{
+class BusinessLogicProject{
 
     async newProject(data: ProjectData, creatorID: number){
 
@@ -139,4 +139,4 @@ class businessLogicProject{
     
 }
 
-export default new businessLogicProject();
+export default new BusinessLogicProject();

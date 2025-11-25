@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 
 
 
-class businessLogicAuth{
+class BusinessLogicAuth{
 
     async newUser(data: UserData){
 
@@ -85,4 +85,4 @@ class businessLogicAuth{
 }
 
 
-export default new businessLogicAuth();
+export default new BusinessLogicAuth();

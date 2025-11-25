@@ -1,12 +1,12 @@
 import businessLogicUser  from '../business/businessLogicAuth'
-import businessLogicProject from '../business/businessLogicProject';
+import BusinessLogicProject from '../business/businessLogicProject';
 import {UserData, LoginData } from '../models/User'
 import { ProjectData } from '../models/Project';
 import jwt from 'jsonwebtoken';
 import { authConfig } from '../config/auth'
 import knex from '../data';
 import { CommunityData } from '../models/Community';
-import businessLogicCommunity from '../business/businessLogicCommunity';
+import BusinessLogicCommunity from '../business/businessLogicCommunity';
 
 class RequestController {
 
@@ -54,7 +54,7 @@ class RequestController {
     async createProject(data: ProjectData, creatorID: number){
         try{
             console.log(data);
-            const newProject = await businessLogicProject.newProject(data, creatorID);
+            const newProject = await BusinessLogicProject.newProject(data, creatorID);
             
             return newProject;
 
@@ -83,7 +83,7 @@ class RequestController {
     async getUserProjects(creatorID: number){
         try{
 
-            const projects = await businessLogicProject.userProjects(creatorID);
+            const projects = await BusinessLogicProject.userProjects(creatorID);
 
             return projects;
 
@@ -95,7 +95,7 @@ class RequestController {
     async updateProject(projectId: string, data: ProjectData, userId: number){
         try{
 
-            const updatedProject = await businessLogicProject.updateProject(projectId, data, userId);
+            const updatedProject = await BusinessLogicProject.updateProject(projectId, data, userId);
 
             return updatedProject;
 
@@ -104,10 +104,20 @@ class RequestController {
         }
     }
 
+    async removeProject(userID: number, projectID: string){
+        try{
+
+            BusinessLogicProject.removeProject(userID, projectID);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
     async newCommunity(data: CommunityData, creatorID: number){
         try{
 
-            const newCommunity = await businessLogicCommunity.newCommunity(data, creatorID);
+            const newCommunity = await BusinessLogicCommunity.newCommunity(data, creatorID);
             return newCommunity;
 
         }catch(error){
@@ -115,9 +125,9 @@ class RequestController {
         }
     }
 
-    async getAllCommunities(userID: number) {
+    async getAllUserCommunities(userID: number) {
         try {
-            const communities = await businessLogicCommunity.getAllCommunities(userID);
+            const communities = await BusinessLogicCommunity.getAllUserCommunities(userID);
             return communities;
         } catch (error) {
             console.error("Erro ao buscar comunidades:", error);
@@ -125,10 +135,24 @@ class RequestController {
         }
     }
 
-    async newMemberCommunity(userID: number, communityID: string){
+    async getAllCommunities(){
         try{
 
-            const result = await businessLogicCommunity.newMemberCommunity(userID, communityID);
+            const communities = await BusinessLogicCommunity.getAllCommunities();
+            
+            return communities;
+
+        }catch(error){
+            throw error;
+        }
+
+    }
+
+    async getCommunityData(communityID: string, userID: number){
+        try{    
+
+            const result = await BusinessLogicCommunity.getCommunityData(communityID,userID);
+
             return result;
 
         }catch(error){
@@ -136,15 +160,39 @@ class RequestController {
         }
     }
 
-    async removeProject(userID: number, projectID: string){
+    async newMemberCommunity(userID: number, communityID: string){
         try{
 
-            businessLogicProject.removeProject(userID, projectID);
+            const result = await BusinessLogicCommunity.newMemberCommunity(userID, communityID);
+            return result;
 
         }catch(error){
             throw error;
         }
     }
+
+    async updateCommunity(creatorID: number, communityID: string, data: CommunityData){
+        try{
+
+            const updatedCommunity = await BusinessLogicCommunity.updateCommunity(creatorID, communityID, data);
+
+            return updatedCommunity;
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    async removeCommunity(creatorID: number, communityID: string){
+        try{
+
+            await BusinessLogicCommunity.removeCommunity(creatorID, communityID);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
 }
 
 export default new RequestController();

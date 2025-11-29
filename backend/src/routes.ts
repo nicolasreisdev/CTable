@@ -140,7 +140,7 @@ routes.put('/api/communities/updatecommunity/:communityId', authMiddleware, asyn
 });
 
 
-routes.delete('/api/communitites/deletecommunity/:communityId', authMiddleware, async(request, response) => {
+routes.delete('/api/communities/deletecommunity/:communityId', authMiddleware, async(request, response) => {
     const { communityId } = request.params;
 
     await RequestController.removeCommunity(request.user.id, communityId);
@@ -148,5 +148,30 @@ routes.delete('/api/communitites/deletecommunity/:communityId', authMiddleware, 
     return response.status(200).json({ message: "Comunidade deletada com sucesso." });
 
 })
+
+
+routes.post('/api/project/:projectID/comments', authMiddleware, async(request, response) =>{
+
+    const { projectID } = request.params;
+    const { content } = request.body;
+
+    const comment = await RequestController.newComment(request.user.id, projectID, content);
+
+    return response.status(201).json(comment);
+
+})
+
+routes.get('/api/project/:projectID/comments', async(request, response) => {
+
+    const { projectID } = request.params;
+
+    const projectComments = await RequestController.getProjectComments( projectID );
+
+    return response.status(200).json(projectComments);
+
+})
+
+
+
 
 export default routes;

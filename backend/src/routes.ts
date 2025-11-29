@@ -140,7 +140,7 @@ routes.put('/api/communities/updatecommunity/:communityId', authMiddleware, asyn
 });
 
 
-routes.delete('/api/communitites/deletecommunity/:communityId', authMiddleware, async(request, response) => {
+routes.delete('/api/communities/deletecommunity/:communityId', authMiddleware, async(request, response) => {
     const { communityId } = request.params;
 
     await RequestController.removeCommunity(request.user.id, communityId);

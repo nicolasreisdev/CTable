@@ -8,6 +8,7 @@ import knex from '../data';
 import { CommunityData } from '../models/Community';
 import BusinessLogicCommunity from '../business/businessLogicCommunity';
 import businessLogicProject from '../business/businessLogicProject';
+import businessLogicCommunity from '../business/businessLogicCommunity';
 
 class RequestController {
 
@@ -170,6 +171,19 @@ class RequestController {
         }catch(error){
             throw error;
         }
+    }
+
+    async leaveMemberCommunity(userID: number, communityID: string){
+        try{
+
+           const result = await businessLogicCommunity.leaveMemberCommunity(userID, communityID);
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+
     }
 
     async updateCommunity(creatorID: number, communityID: string, data: CommunityData){

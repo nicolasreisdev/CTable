@@ -89,6 +89,35 @@ class BusinessLogicCommunity{
         return { message: "Membro adicionado com sucesso", communityID, userID };
     }
 
+    async leaveMemberCommunity(userID: number, communityID: string){
+        
+        const community = await knex('Communities')
+            .where('communityID', communityID)
+            .first();
+
+        if (!community) {
+            throw new Error("Comunidade não encontrada.");
+        }
+
+        if (community.creatorID === userID) {
+            throw new Error("O criador não pode sair da comunidade. Você deve deletá-la ou transferir a propriedade.");
+        }
+
+        const member = await knex('CommunityMembers')
+            .where({ communityID, userID })
+            .first();
+
+        if (!member) {
+            throw new Error("Você não é membro desta comunidade.");
+        }
+
+        await knex('CommunityMembers')
+            .where({ communityID, userID })
+            .del();
+            
+        return { message: "Você saiu da comunidade com sucesso." };
+    }
+
     async getAllUserCommunities(userID: number) {
 
         const userCommunities = await knex('Communities')
@@ -100,12 +129,45 @@ class BusinessLogicCommunity{
                 'CommunityMembers.joinedAt'
             );
 
-        return userCommunities;
-        
+        const communityIds = userCommunities.map(c => c.communityID);
+
+        if (communityIds.length === 0) return [];
+
+        const keywords = await knex('CommunitiesKeywords')
+            .join('Keywords', 'CommunitiesKeywords.keywordID', '=', 'Keywords.keywordID')
+            .whereIn('CommunitiesKeywords.communityID', communityIds)
+            .select('CommunitiesKeywords.communityID', 'Keywords.tag');
+
+        const result = userCommunities.map(comm => ({
+            ...comm,
+            technologies: keywords
+                .filter((k: any) => k.communityID === comm.communityID) 
+                .map((k: any) => k.tag) 
+        }));
+
+        return result;
     }
 
     async getAllCommunities(){
-       return await knex('Communities').select('*'); 
+        const communities = await knex('Communities').select('*');
+
+        const communityIds = communities.map(c => c.communityID);
+
+        if (communityIds.length === 0) return [];
+
+        const keywords = await knex('CommunitiesKeywords')
+            .join('Keywords', 'CommunitiesKeywords.keywordID', '=', 'Keywords.keywordID')
+            .whereIn('CommunitiesKeywords.communityID', communityIds)
+            .select('CommunitiesKeywords.communityID', 'Keywords.tag');
+
+        const result = communities.map(comm => ({
+            ...comm,
+            technologies: keywords
+                .filter((k: any) => k.communityID === comm.communityID)
+                .map((k: any) => k.tag)
+        }));
+
+        return result;
     }
 
     async getCommunityData(communityID: string, userID: number) {

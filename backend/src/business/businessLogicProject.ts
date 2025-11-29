@@ -6,7 +6,7 @@ class BusinessLogicProject{
 
     async newProject(data: ProjectData, creatorID: number){
 
-        return knex.transaction(async (trx) => {
+       return knex.transaction(async (trx) => {
             
             const projectToInsert = {
                 title: data.title,
@@ -18,23 +18,41 @@ class BusinessLogicProject{
 
             const [newProject] = await trx('Projects')
                                         .insert(projectToInsert)
-                                        .returning('*'); // retorna o projeto que foi criado com todos seus campos
+                                        .returning('*'); 
 
             if (data.technologies && data.technologies.length > 0) {
                 
                 const keywordIDs = await trx('Keywords')
                                         .whereIn('tag', data.technologies)
-                                        .select('keywordID'); // retrona o ID das tags selecionadas
+                                        .select('keywordID'); 
 
                 const keywordsToInsert = keywordIDs.map(keyword => {
                     return {
-                        projectID: newProject.projectID, // ID do projeto 
-                        keywordID: keyword.keywordID // ID da tag
+                        projectID: newProject.projectID, 
+                        keywordID: keyword.keywordID 
                     };
                 });
 
                 if (keywordsToInsert.length > 0) {
                     await trx('ProjectsKeywords').insert(keywordsToInsert); 
+                    
+                    // --- NOVA LÓGICA DE ASSOCIAÇÃO AUTOMÁTICA ---
+
+                    // 3. Busca Comunidades que usam essas mesmas Keywords
+                    // Usamos .distinct() para evitar duplicatas (caso uma comunidade tenha React E Node, por exemplo)
+                    const matchingCommunities = await trx('CommunitiesKeywords')
+                        .whereIn('keywordID', keywordIDs.map(k => k.keywordID))
+                        .distinct('communityID');
+
+                    if (matchingCommunities.length > 0) {
+                        const communitiesToLink = matchingCommunities.map(comm => ({
+                            projectID: newProject.projectID,
+                            communityID: comm.communityID,
+                            associatedAt: new Date() 
+                        }));
+
+                        await trx('ProjectCommunities').insert(communitiesToLink);
+                    }
                 }
             }
             
@@ -46,7 +64,6 @@ class BusinessLogicProject{
         
         return knex.transaction(async (trx) => {
             
-            // Busca projeto e valida autoria
             const existingProject = await trx('Projects') 
                 .where({ projectID: projectId })
                 .first();
@@ -59,53 +76,60 @@ class BusinessLogicProject{
                 throw new Error("Você não tem permissão para editar este projeto.");
             }
 
-            // Prepara campos da tabela PRINCIPAL (Projects)
             const fieldsToUpdate: any = {};
-
             if (projectData.title !== undefined) fieldsToUpdate.title = projectData.title;
             if (projectData.description !== undefined) fieldsToUpdate.description = projectData.description;
             if (projectData.status !== undefined) fieldsToUpdate.status = projectData.status;
             if (projectData.startDate !== undefined) fieldsToUpdate.startDate = projectData.startDate;
 
-            // Atualiza o 'updatedAt' se houver mudanças nos campos principais
             if (Object.keys(fieldsToUpdate).length > 0) {
                 fieldsToUpdate.updatedAt = new Date();
-                
                 await trx('Projects')
                     .where({ projectID: projectId })
                     .update(fieldsToUpdate);
             }
 
-            // Atualiza a tabela de relacionamento (ProjectsKeywords)
             if (projectData.technologies !== undefined) {
                 
-                // Remove TODAS as associações antigas desse projeto
                 await trx('ProjectsKeywords')
                     .where({ projectID: projectId })
                     .del();
 
-                // Se a nova lista não estiver vazia, insere as novas
+                await trx('ProjectCommunities')
+                    .where({ projectID: projectId })
+                    .del();
+
                 if (Array.isArray(projectData.technologies) && projectData.technologies.length > 0) {
                     
-                    // Busca os IDs das tags (Keywords) baseadas no nome (string) enviado pelo front
                     const keywordIDs = await trx('Keywords')
                         .whereIn('tag', projectData.technologies)
                         .select('keywordID');
 
-                    // Prepara o array de inserção
-                    const linksToInsert = keywordIDs.map((k: any) => ({
+                    const keywordsToInsert = keywordIDs.map((k: any) => ({
                         projectID: projectId,
                         keywordID: k.keywordID
                     }));
 
-                    // Insere
-                    if (linksToInsert.length > 0) {
-                        await trx('ProjectsKeywords').insert(linksToInsert);
+                    if (keywordsToInsert.length > 0) {
+                        await trx('ProjectsKeywords').insert(keywordsToInsert);
+                    }
+
+                    const matchingCommunities = await trx('CommunitiesKeywords')
+                        .whereIn('keywordID', keywordIDs.map((k:any) => k.keywordID))
+                        .distinct('communityID');
+
+                    if (matchingCommunities.length > 0) {
+                        const communitiesToLink = matchingCommunities.map((comm:any) => ({
+                            projectID: projectId,
+                            communityID: comm.communityID,
+                            associatedAt: new Date()
+                        }));
+
+                        await trx('ProjectCommunities').insert(communitiesToLink);
                     }
                 }
             }
 
-            // Retorna o projeto atualizado
             return await trx('Projects').where({ projectID: projectId }).first();
         });
     }
@@ -116,6 +140,36 @@ class BusinessLogicProject{
                         .where('creatorID', creatorID);
         
         return projects;
+    }
+
+    async newComment(userID: number, projectID: string, content: string){
+        
+        const project = await knex('Projects').where('projectID', projectID).first();
+        
+        if (!project) throw new Error("Projeto não encontrado.");
+
+        const [newComment] = await knex('Comments').insert({
+            authorID: userID,
+            projectID: projectID,
+            content: content,
+            createdAt: new Date()
+        }).returning('*');
+
+        return newComment;
+    }
+
+    async getProjectComments(projectID: string){
+        const comments = await knex('Comments')
+            .join('User', 'Comments.authorID', '=', 'User.id') 
+            .where('Comments.projectID', projectID)
+            .select(
+                'Comments.*',           
+                'User.fullName',        
+                'User.username'         
+            )
+            .orderBy('Comments.createdAt', 'desc'); 
+
+        return comments;
     }
 
     async removeProject(creatorID: number, projectID: string){

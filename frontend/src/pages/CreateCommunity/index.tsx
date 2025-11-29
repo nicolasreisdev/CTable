@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 
@@ -9,20 +9,25 @@ import type { NotificationState } from '../../components/common/Toast';
 import { GetKeywords } from '../../API/Keywords';
 import  Toast  from '../../components/common/Toast';
 import type { CommunityProps } from '../../API/Community';
-import { NewCommunity } from '../../API/Community';
+import { NewCommunity, UpdateCommunity } from '../../API/Community';
 
 export default function CreateCommunity() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const communityToEdit = location.state?.communityToEdit as CommunityProps | undefined;
+  const isEditMode = !!communityToEdit;
   
   const { register, handleSubmit, control, watch } = useForm<CommunityProps>({
+    // Preenche os valores iniciais com os dados da comunidade se estiver editando
     defaultValues: {
-      communityID: "",
-      name: "",
-      description: "",
-      technologies: []
+      communityID: communityToEdit?.communityID || "",
+      name: communityToEdit?.name || "",
+      description: communityToEdit?.description || "",
+      technologies: communityToEdit?.technologies || []
     }
   });
 
-  const navigate = useNavigate();
   const descriptionValue = watch('description');
   const descriptionLength = descriptionValue ? descriptionValue.length : 0;
   const MAX_CHARS = 500;
@@ -43,9 +48,17 @@ export default function CreateCommunity() {
 
   const onSubmit = (data: CommunityProps) => {
     try{
-      NewCommunity(data);
-      setNotification({ message: 'Comunidade criada com sucesso!', type: 'success' });
-      console.log("Criando Comunidade:", data);
+      if (isEditMode && communityToEdit) {
+        // --- MODO EDIÇÃO ---
+        console.log("Atualizando Comunidade:", communityToEdit.communityID, data);
+        UpdateCommunity(communityToEdit.communityID, data);
+        setNotification({ message: 'Comunidade atualizada com sucesso!', type: 'success' });
+      } else {
+        // --- MODO CRIAÇÃO ---
+        console.log("Criando Comunidade:", data);
+        NewCommunity(data);
+        setNotification({ message: 'Comunidade criada com sucesso!', type: 'success' });
+      }
 
       setTimeout(() => {
           navigate('/feed'); 
@@ -74,6 +87,8 @@ export default function CreateCommunity() {
 
       <ContentWrapper>
         <S.FormContainer onSubmit={handleSubmit(onSubmit)}>
+
+          <h2>{isEditMode ? 'Editar Comunidade' : 'Criar Comunidade'}</h2>
           
           <S.InputGroup>
             <S.Label htmlFor="name">Nome da Comunidade</S.Label>
@@ -116,7 +131,7 @@ export default function CreateCommunity() {
             />
           </S.InputGroup>
 
-          <S.SubmitButton type="submit">Criar Comunidade</S.SubmitButton>
+          <S.SubmitButton type="submit">{isEditMode ? 'Salvar Alterações' : 'Criar Comunidade'}</S.SubmitButton>
 
         </S.FormContainer>
       </ContentWrapper>

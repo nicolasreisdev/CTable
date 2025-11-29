@@ -73,7 +73,7 @@ export default function CommunityPage() {
   };
 
   const handleEdit = () => {
-    navigate('/create-community', { state: { communityToEdit: community } });
+    navigate('/editCommunity', { state: { communityToEdit: community } });
   };
 
   const handleDelete = async () => {
@@ -194,7 +194,6 @@ export default function CommunityPage() {
             </ModalS.ModalActions>
         </div>
       </Modal>
-      
     </S.PageWrapper>
   );
 }

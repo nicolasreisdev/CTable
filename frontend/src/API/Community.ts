@@ -94,3 +94,21 @@ export async function DeleteCommunity(communityId: string) {
     throw new Error(errorData.message || "Erro ao excluir comunidade.");
   }
 }
+
+export async function UpdateCommunity(communityId: string, data: CommunityProps) {
+  const response = await fetch(`http://localhost:3000/api/communities/updatecommunity/${communityId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Erro ao atualizar comunidade.");
+  }
+  
+  return await response.json();
+}

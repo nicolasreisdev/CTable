@@ -11,18 +11,18 @@ import * as ModalS from '../../components/common/Modal/styles';
 // --- DADOS MOCKADOS ---
 const mockPosts = [
     {
-        name: 'API de Análise de Dados',
+        title: 'API de Análise de Dados',
             description: 'Um backend em Python para análise.',
             technologies: ['Python', 'Django'],
             status: 'finalizado',
-            date: '01/08/2025'
+            startDate: new Date('01/08/2025')
     },
     {
-        name: 'API de Análise de Dados',
+        title: 'API de Análise de Dados',
             description: 'Um backend em Python para análise.',
             technologies: ['Python', 'Django'],
             status: 'finalizado',
-            date: '01/08/2025'
+            startDate: new Date('01/08/2025')
     }
 ];
 // -----------------------------------------------------------

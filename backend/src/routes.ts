@@ -98,11 +98,12 @@ routes.get('/api/user/communities', authMiddleware, async (request, response) =>
 
 });
 
-routes.get('/api/communities/data/:communityId', async (request, response) =>{
+routes.get('/api/communities/data/:communityId', authMiddleware, async (request, response) =>{
 
     const { communityId } = request.params;
+    const userID = request.user.id;
 
-    const data = await RequestController.getCommunityData(communityId);
+    const data = await RequestController.getCommunityData(communityId, userID);
 
     return response.status(200).json(data);
 });

@@ -3,95 +3,112 @@ import { useParams } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import Postcard from '../../components/domain/Postcard';
 import * as S from './styles';
-import { FiMoreHorizontal } from 'react-icons/fi'; // Biblioteca de ícones comum 
-
-// Dados fictícios para preencher a tela
-const MOCK_COMMUNITY = {
-  name: 'r/React',
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eget ligula eu lectus lobortis condimentum. Aliquam nonummy auctor massa.',
-  keywords: ['Frontend', 'Web', 'Framework', 'JavaScript'],
-  memberCount: 'ceci', 
-};
-
-const MOCK_POSTS = [
-  {
-    id: '1',
-    name: 'r/React', // Nome do projeto/post
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eget ligula eu lectus lobortis condimentum.',
-    technologies: ['React', 'TS'],
-    status: 'em-andamento',
-    date: '19/11/2025',
-    avatarUrl: '', // Url vazia usa placeholder
-    author: { id: '1', username: 'ceci', name: 'ceci' },
-    community: { name: 'r/React' }
-  },
-  {
-    id: '2',
-    name: 'r/React',
-    description: 'Outro post de exemplo com texto simulado para compor o feed da comunidade.',
-    technologies: ['React'],
-    status: 'finalizado',
-    date: '18/11/2025',
-    avatarUrl: '',
-    author: { id: '1', username: 'ceci', name: 'ceci' },
-    community: { name: 'r/React' }
-  }
-];
+import { FiMoreHorizontal } from 'react-icons/fi'; 
+import { useEffect, useState } from 'react';
+import { GetCommunityById, JoinCommunity } from '../../API/Community';
+import type { NotificationState } from '../../components/common/Toast';
+import Toast from '../../components/common/Toast';
+import type { CommunityProps } from '../../API/Community';
 
 export default function CommunityPage() {
-  const { communityName } = useParams<{ communityName: string }>();
+  const { communityID } = useParams<{ communityID: string }>();
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const [community, setCommunity] = useState<any>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+        console.log("Carregando dados da comunidade para ID:", communityID);
+        if (!communityID) return;
+        try {
+            const data = await GetCommunityById(communityID);
+            setCommunity(data.community);
+            setPosts(data.posts);
+        } catch (error) {
+            console.error(error);
+        } 
+    }
+    loadData();
+  }, [communityID]);
+
+  const handleJoin = async () => {
+    if (!community) return;
+
+    try {
+        await JoinCommunity(community.communityID);
+        
+        // Atualiza a interface após entrar na comunidade
+        setCommunity((prev: CommunityProps | null) => prev ? ({
+            ...prev,
+            isMember: true, // Esconde o botão
+            memberCount: (prev.memberCount || 0) + 1 // Atualiza o contador visualmente
+        }) : null);
+
+        setNotification({ message: 'Você entrou na comunidade!', type: 'success' });
+
+    } catch (error) {
+        if (error instanceof Error) {
+            setNotification({ message: error.message, type: 'error' });
+        }
+    }
+  };
+
+  if (!community) return <div>Comunidade não encontrada</div>;
 
   return (
     <S.PageWrapper>
       <Sidebar />
+
+      {notification && (
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)} 
+        />
+      )}
 
       <S.MainContent>
         <S.Banner />
         
         <S.HeaderContainer>
           <S.Avatar /> 
-          
-          <S.HeaderInfo> {/* TODO puxar dados da tabela da comunidade */}
-            <h1>{MOCK_COMMUNITY.name}</h1>
-            <span>{MOCK_COMMUNITY.memberCount}</span>
+          <S.HeaderInfo>
+            <h1>{community.name}</h1>
+            <span>{community.memberCount} membros</span>
           </S.HeaderInfo>
 
           <S.HeaderActions>
-            <S.JoinButton>Join</S.JoinButton> {/* TODO: lógica de API e não mostrar o botão a quem já for membro */}
+            {!community.isMember && (
+            <S.JoinButton onClick={handleJoin}>
+                Join
+            </S.JoinButton>
+            )}
             <S.OptionsButton>
-                <FiMoreHorizontal /> {/* Aplicar menu dropdown com opções (considerar que algumas opções só existem pro admin) */}
+                <FiMoreHorizontal />
             </S.OptionsButton>
           </S.HeaderActions>
         </S.HeaderContainer>
 
         <S.ContentGrid>
-          
           <S.FeedColumn>
-            {MOCK_POSTS.map(post => (
-              <S.FeedCardWrapper key={post.id}>
-                <Postcard 
-                  post={post} 
-                  showMenu={false} 
-                />
+            {posts.map(post => (
+              <S.FeedCardWrapper key={post.projectID || post.id}>
+                <Postcard post={post} showMenu={false} />
               </S.FeedCardWrapper>
             ))}
           </S.FeedColumn>
 
           <S.InfoSidebar>
             <h3>DESCRIPTION</h3>
-            <p>{MOCK_COMMUNITY.description}</p>
-            <p>Nulla at risus. Quisque purus magna, auctor et, sagittis ac, posuere eu, lectus.</p>
+            <p>{community.description}</p>
 
-            <h3>KEYWORDS</h3> {/* TODO puxar palavras da tabela da comunidade */}
+            <h3>KEYWORDS</h3>
             <S.KeywordsContainer>
-              {MOCK_COMMUNITY.keywords.map(keyword => (
-                <S.KeywordTag key={keyword}>
-                  {keyword}
-                </S.KeywordTag>
+              {community.technologies?.map((keyword: string) => (
+                <S.KeywordTag key={keyword}>{keyword}</S.KeywordTag>
               ))}
             </S.KeywordsContainer>
           </S.InfoSidebar>
-
         </S.ContentGrid>
       </S.MainContent>
     </S.PageWrapper>

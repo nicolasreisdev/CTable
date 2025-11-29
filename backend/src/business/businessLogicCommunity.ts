@@ -3,7 +3,7 @@ import { CommunityData } from '../models/Community'
 
 
 
-class businessLogicCommunity{
+class BusinessLogicCommunity{
 
     async newCommunity(data: CommunityData, creatorID: number){
 
@@ -108,7 +108,7 @@ class businessLogicCommunity{
        return await knex('Communities').select('*'); 
     }
 
-    async getCommunityData(communityID: string){
+    async getCommunityData(communityID: string, userID: number) {
 
         const community = await knex('Communities')
             .where('communityID', communityID)
@@ -118,12 +118,36 @@ class businessLogicCommunity{
             throw new Error("Comunidade não encontrada.");
         }
 
+        const membership = await knex('CommunityMembers')
+            .where({ communityID: communityID, userID: userID })
+            .first();
+        
+        const isMember = !!membership;
+
+        const keywords = await knex('CommunitiesKeywords')
+        .join('Keywords', 'CommunitiesKeywords.keywordID', '=', 'Keywords.keywordID')
+        .where('CommunitiesKeywords.communityID', communityID)
+        .select('Keywords.tag');
+
+        const memberCount = await knex('CommunityMembers')
+        .where('communityID', communityID)
+        .count('userID as count')
+        .first();
+
         const projects = await knex('Projects')
             .join('ProjectCommunities', 'Projects.projectID', '=', 'ProjectCommunities.projectID')
             .where('ProjectCommunities.communityID', communityID)
             .select('Projects.*');
 
-        return { community, projects };
+        return {
+        community: {
+            ...community,
+            technologies: keywords.map((k: any) => k.tag),
+            memberCount: memberCount?.count || 0,
+            isMember: isMember
+        },
+        posts: projects || []
+    };
     }   
 
     async updateCommunity(creatorID: number, communityID: string, data: CommunityData){
@@ -191,7 +215,6 @@ class businessLogicCommunity{
             throw new Error("Você não tem permissão para deletar esta comunidade.");
         }
 
-        // O CASCADE configurado nas migrations cuidará das tabelas de junção!
         await knex('Communities')
             .where('communityID', communityID)
             .del();
@@ -200,4 +223,4 @@ class businessLogicCommunity{
 }
 
 
-export default new businessLogicCommunity();
+export default new BusinessLogicCommunity();

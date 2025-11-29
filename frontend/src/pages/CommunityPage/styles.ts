@@ -178,3 +178,9 @@ export const KeywordTag = styled.span`
   font-weight: 700;
   background-color: transparent;
 `;
+
+export const MenuWrapper = styled.div`
+  position: relative; /* Importante para o DropdownMenu absolute funcionar */
+  display: flex;
+  align-items: center;
+`;

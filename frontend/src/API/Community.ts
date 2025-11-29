@@ -7,6 +7,7 @@ export interface CommunityProps {
     updatedAt: Date;
     memberCount?: number; 
     isMember?: boolean;
+    isAdmin?: boolean;
 }
 
 export async function NewCommunity(data: CommunityProps) { 
@@ -77,4 +78,19 @@ export async function JoinCommunity(communityId: string) {
   }
 
   return await response.json();
+}
+
+export async function DeleteCommunity(communityId: string) {
+  const response = await fetch(`http://localhost:3000/api/communities/deletecommunity/${communityId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Erro ao excluir comunidade.");
+  }
 }

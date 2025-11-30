@@ -7,13 +7,13 @@ const config: { [key: string]: Knex.Config } = {
   development: {
     client: 'sqlite3',
     connection: {
-      filename: path.resolve(__dirname, 'src', 'data', 'database.db')
+      filename: path.resolve(process.cwd(), 'src', 'data', 'database.db')
     },
     migrations: {
-      directory: path.resolve(__dirname, 'src', 'data', 'migrations')
+      directory: path.resolve(process.cwd(), 'src', 'data', 'migrations')
     },
     seeds: {
-      directory: path.resolve(__dirname, 'src', 'data', 'seeds')
+      directory: path.resolve(process.cwd(), 'src', 'data', 'seeds')
     },
     useNullAsDefault: true,
   },
@@ -24,7 +24,7 @@ const config: { [key: string]: Knex.Config } = {
       filename: ':memory:'
     },
     migrations: {
-      directory: path.resolve(__dirname, 'src', 'data', 'migrations')
+      directory: path.resolve(process.cwd(), 'src', 'data', 'migrations')
     },
     useNullAsDefault: true,
   },
@@ -38,7 +38,6 @@ const config: { [key: string]: Knex.Config } = {
     seeds: {
       directory: path.resolve(__dirname, 'src', 'data', 'seeds')
     },
-    ssl: { rejectUnauthorized: false } 
   }
 };
 

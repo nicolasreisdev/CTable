@@ -172,6 +172,19 @@ class BusinessLogicProject{
         return comments;
     }
 
+    async getUserComments(userID: number){
+        const comments = await knex('Comments')
+            .join('Projects', 'Comments.projectID', '=', 'Projects.projectID')
+            .where('Comments.authorID', userID)
+            .select(
+                'Comments.*',           
+                'Projects.title as projectTitle' 
+            )
+            .orderBy('Comments.createdAt', 'desc'); 
+
+        return comments;
+    }
+
     async removeComment(userID: number, commentID: string){
 
         const comment = await knex('Comments')

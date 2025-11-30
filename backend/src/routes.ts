@@ -172,6 +172,13 @@ routes.post('/api/project/:projectID/comments', authMiddleware, async(request, r
 
 })
 
+routes.get('/api/user/comments', authMiddleware, async(request, response) => {
+    
+    const allComments = await RequestController.getUserComments(request.user.id);
+
+    return response.status(200).json(allComments);
+})
+
 routes.delete('/api/project/:commentID/deletecomment', authMiddleware, async(request, response) =>{
 
     const { commentID } = request.params;    
@@ -205,6 +212,13 @@ routes.delete('/api/user/deleteprofile', authMiddleware, async(request, response
     const message = await RequestController.deleteProfile(request.user.id);
 
     return response.status(200).json(message);
+})
+
+routes.get('/api/user/home', authMiddleware, async(request, response) => {
+    
+    const homeData = await RequestController.getUserHome(request.user.id);
+    
+    return response.status(200).json(homeData);
 })
 
 

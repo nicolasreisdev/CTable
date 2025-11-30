@@ -139,6 +139,21 @@ class RequestController {
         }
     }
 
+    async getUserHome(userID: number){
+        try{
+            const communities = await businessLogicCommunity.getAllUserCommunities(userID);
+
+            const feed = await businessLogicCommunity.getUserFeed(userID);
+    
+            return {
+                communities: communities,
+                feed: feed
+            };
+            
+        }catch(error){
+            throw error;
+        }
+    }
     async getAllCommunities(){
         try{
 
@@ -266,6 +281,18 @@ class RequestController {
         try{
 
             await businessLogicProject.removeComment(userID, commentID);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    async getUserComments(userID: number){
+        try{
+
+            const allComments = await businessLogicProject.getUserComments(userID);
+            
+            return allComments;
 
         }catch(error){
             throw error;

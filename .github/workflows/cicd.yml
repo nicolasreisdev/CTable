@@ -67,7 +67,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install gh jq -y
 
-      - name: Criar Issues no GitHub a partir do Relatório
+      - name: Processar Relatórios e Criar Issues
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

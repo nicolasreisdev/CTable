@@ -67,7 +67,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install gh jq -y
 
-      - name: Processar Relatórios e Criar Issues
+      - name: Criar Issues no GitHub a partir do Relatório
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -104,9 +104,25 @@ jobs:
               if [ -n "$EXISTING_ISSUES" ]; then
                 echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
               else
-                BODY="**Detalhes do Débito Técnico ($FOLDER_PREFIX)**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
                 
-                gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
+                # --- CORREÇÃO AQUI: Criação do corpo usando Heredoc (Markdown real) ---
+                cat <<EOF > issue_body.md
+              **Detalhes do Débito Técnico ($FOLDER_PREFIX)**
+
+              - **Regra:** $RULE_ID
+              - **Arquivo:** \`$FILE_URI\`
+              - **Linha:** $LINE
+
+              ---
+
+              **Mensagem do Qlty:**
+              $MESSAGE
+
+
+              Criado automaticamente pelo pipeline de CI.
+              EOF
+                gh issue create --title "$TITLE" --body-file issue_body.md --label "technical-debt" --repo ${{ github.repository }}
+                
                 echo "Nova Issue criada: $TITLE"
               fi
             done

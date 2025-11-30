@@ -66,9 +66,9 @@ export async function GetFeedProjects(): Promise<ProjectProps[]> {
   }
 
   const data = await response.json();
-  console.log("Dados dos projetos do feed:", data.projects);
+  console.log("Dados do feed de projetos:", data);
 
-  return data.projects;
+  return data.feed;
 }
 
 export async function DeleteProject(projectId: string) {

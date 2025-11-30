@@ -6,6 +6,7 @@ import * as D from '../../components/common/Dropdown/styles';
 import type { ProjectProps } from '../../API/Project';
 import type { CommentProps } from '../../API/Comment';
 import { GetUserProjects } from '../../API/Project';
+import { GetUserComments } from '../../API/Comment';
 import { useAuth } from '../../API/AuthContext';
 
 // --- ÍCONES ---
@@ -48,13 +49,7 @@ export default function Profile() {
         console.log("Usuário atual no Profile:", currentUser);
         const apiUserPosts = await GetUserProjects();
         
-        const apiUserComments: CommentProps[] = [
-          {
-            name: 'Comentário em r/react',
-            description: 'Ótima sugestão sobre o `useNavigate`!',
-            technologies: [], status: '', date: '' 
-          }
-        ];
+        const apiUserComments: CommentProps[] = await GetUserComments();
         
         setUserPosts(apiUserPosts);
         setUserComments(apiUserComments);
@@ -100,8 +95,23 @@ export default function Profile() {
     if (view === 'comments') {
       // Mapeia 'userComments' 
       return userComments.map(comment => (
-        <S.PostContainer >
-          <Postcard post={comment as any} showMenu={true} />
+        <S.PostContainer key={comment.commentID || Math.random()}>
+          {/* ADAPTAÇÃO AQUI: Criamos um objeto fake de Projeto para o Postcard entender */}
+          <Postcard 
+            post={{
+              id: comment.commentID,
+              // Usa 'projectTitle' que vem do backend para mostrar onde foi o comentário
+              title: `Comentou em: ${comment.projectTitle || 'Projeto'}`, 
+              // AQUI ESTÁ A CORREÇÃO PRINCIPAL: Mapeia 'content' para 'description'
+              description: comment.content, 
+              technologies: [],
+              status: '',
+              startDate: comment.createdAt,
+              // Passa o usuário atual como autor para o cabeçalho do card
+              author: { title: currentUser?.username || 'Você' } 
+            } as any} 
+            showMenu={true} // Se quiser permitir deletar comentários, precisará adaptar a lógica do menu depois
+          />
         </S.PostContainer>
       ));
     }

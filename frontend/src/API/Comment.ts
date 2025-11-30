@@ -1,4 +1,5 @@
 export interface CommentProps {
+  projectTitle?: string;
   commentID?: string;
   content: string;
   createdAt?: string;
@@ -37,6 +38,22 @@ export async function GetComments(projectId: string): Promise<CommentProps[]> {
 
   if (!response.ok) {
     throw new Error("Erro ao carregar comentários.");
+  }
+
+  return await response.json();
+}
+
+export async function GetUserComments(): Promise<CommentProps[]> {
+  const response = await fetch('http://localhost:3000/api/user/comments', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao carregar comentários do usuário.");
   }
 
   return await response.json();

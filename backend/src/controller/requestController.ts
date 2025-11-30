@@ -9,6 +9,8 @@ import { CommunityData } from '../models/Community';
 import BusinessLogicCommunity from '../business/businessLogicCommunity';
 import businessLogicProject from '../business/businessLogicProject';
 import businessLogicCommunity from '../business/businessLogicCommunity';
+import { error } from 'console';
+import businessLogicProfile from '../business/businessLogicProfile';
 
 class RequestController {
 
@@ -230,6 +232,40 @@ class RequestController {
             const projectComments = await businessLogicProject.getProjectComments(projectID);
 
             return projectComments;
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    async updateProfile(data: UserData, userID: number){
+        try{
+
+            const result = await businessLogicProfile.updateProfile(data, userID);
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+
+    }
+
+    async deleteProfile(userID: number){
+        try{
+
+            await businessLogicProfile.removeProfile(userID);
+
+        }catch(error){
+            throw error;
+        }
+
+    }
+
+    async deleteComment(userID: number, commentID: string){
+        try{
+
+            await businessLogicProject.removeComment(userID, commentID);
 
         }catch(error){
             throw error;

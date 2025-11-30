@@ -172,6 +172,26 @@ class BusinessLogicProject{
         return comments;
     }
 
+    async removeComment(userID: number, commentID: string){
+
+        const comment = await knex('Comments')
+            .where('commentID', commentID)
+            .first();
+
+        if (!comment) {
+            throw new Error("Comentário não encontrado.");
+        }
+
+        if (comment.authorID !== userID) {
+            throw new Error("Você não tem permissão para deletar este comentário.");
+        }
+
+        await knex('Comments')
+            .where('commentID', commentID)
+            .del();
+        
+    }
+
     async removeProject(creatorID: number, projectID: string){
         
         const project = await knex('Projects')

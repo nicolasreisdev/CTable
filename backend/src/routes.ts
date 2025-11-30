@@ -2,6 +2,7 @@ import express from 'express';
 import RequestController from './controller/requestController';
 import authMiddleware from './middleware/auth';
 import auth from './middleware/auth';
+import { request } from 'http';
 
 const routes = express.Router();
 
@@ -81,6 +82,16 @@ routes.delete('/api/user/deleteproject/:projectId', authMiddleware, async(reques
     return response.status(200).json({ message: "Projeto deletado com sucesso." });
 });
 
+
+routes.delete('/api/user/leavecommunity/:communityID', authMiddleware, async(request, response) =>{
+
+    const { communityID } = request.params;
+
+    const result = await RequestController.leaveMemberCommunity(request.user.id, communityID);
+
+    return response.status(200).json(result);
+})
+
 // Endpoint para criar uma comunidade
 routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
 
@@ -148,5 +159,31 @@ routes.delete('/api/communities/deletecommunity/:communityId', authMiddleware, a
     return response.status(200).json({ message: "Comunidade deletada com sucesso." });
 
 })
+
+
+routes.post('/api/project/:projectID/comments', authMiddleware, async(request, response) =>{
+
+    const { projectID } = request.params;
+    const { content } = request.body;
+
+    const comment = await RequestController.newComment(request.user.id, projectID, content);
+
+    return response.status(201).json(comment);
+
+})
+
+routes.get('/api/project/:projectID/comments', async(request, response) => {
+
+    const { projectID } = request.params;
+
+    const projectComments = await RequestController.getProjectComments( projectID );
+
+    return response.status(200).json(projectComments);
+
+})
+
+
+
+
 
 export default routes;

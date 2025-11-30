@@ -7,6 +7,8 @@ import { authConfig } from '../config/auth'
 import knex from '../data';
 import { CommunityData } from '../models/Community';
 import BusinessLogicCommunity from '../business/businessLogicCommunity';
+import businessLogicProject from '../business/businessLogicProject';
+import businessLogicCommunity from '../business/businessLogicCommunity';
 
 class RequestController {
 
@@ -171,6 +173,19 @@ class RequestController {
         }
     }
 
+    async leaveMemberCommunity(userID: number, communityID: string){
+        try{
+
+           const result = await businessLogicCommunity.leaveMemberCommunity(userID, communityID);
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+
+    }
+
     async updateCommunity(creatorID: number, communityID: string, data: CommunityData){
         try{
 
@@ -187,6 +202,34 @@ class RequestController {
         try{
 
             await BusinessLogicCommunity.removeCommunity(creatorID, communityID);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    async newComment(userID: number, projectID: string, content: string){
+        try{
+
+            if (!content || content.trim() === "") {
+                throw new Error("O comentário não pode ser vazio.");
+            }
+
+            const comment = await businessLogicProject.newComment(userID, projectID, content);
+
+            return comment;
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    async getProjectComments(projectID: string) {
+        try{
+
+            const projectComments = await businessLogicProject.getProjectComments(projectID);
+
+            return projectComments;
 
         }catch(error){
             throw error;

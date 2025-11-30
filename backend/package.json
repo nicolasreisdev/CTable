@@ -8,7 +8,8 @@
     "test": "NODE_ENV=test jest",
     "test:coverage": "NODE_ENV=test jest --coverage",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "migrate:prod": "knex migrate:latest --knexfile dist/knexfile.js --env production"
   },
   "keywords": [],
   "author": "",

@@ -45,6 +45,9 @@ Construir um sistema de ponta a ponta que rastreia fóruns, processa o texto das
 
 ### Cobertura de testes:
 - No terminal dentro da pasta backend, execute o comando: npm run test:coverage
+
+- No terminal dentro da pasta frontend, execute o comando: npm run test:coverage
+
 - Para verificar a cobertura de testes, entre na pasta backend/src/coverage/lcov-report e abra o arquivo index.html no navegador para melhor análise.
 
 

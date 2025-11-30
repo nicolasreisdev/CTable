@@ -5,6 +5,9 @@ export interface ProjectProps {
   technologies: string[]; 
   status: string;
   startDate: Date;
+  authorUsername?: string; 
+  authorName?: string;
+  creatorID?: number;
 }
 
 export function parseDate(dataString: string): Date {
@@ -106,4 +109,20 @@ export async function GetUserProjects(): Promise<ProjectProps[]> {
   console.log("Dados dos projetos do usuário:", data.projects);
 
   return data.projects;
+}
+
+export async function GetProjectById(projectId: string): Promise<ProjectProps> {
+  const response = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao carregar projeto');
+  }
+
+  return await response.json();
 }

@@ -223,6 +223,36 @@ class BusinessLogicProject{
             .where('projectID', projectID)
             .del();
     }
+
+    async getProjectById(projectId: string) {
+        // Busca o projeto com dados do autor (join)
+        const project = await knex('Projects')
+            .join('User', 'Projects.creatorID', '=', 'User.id')
+            .where('Projects.projectID', projectId)
+            .select(
+                'Projects.*',
+                'User.username as authorUsername',
+                'User.fullName as authorName',
+                'User.id as authorID'
+            )
+            .first();
+
+        if (!project) {
+            throw new Error("Projeto não encontrado.");
+        }
+
+        // Busca as tecnologias (keywords) associadas
+        const keywords = await knex('ProjectsKeywords')
+            .join('Keywords', 'ProjectsKeywords.keywordID', '=', 'Keywords.keywordID')
+            .where('ProjectsKeywords.projectID', projectId)
+            .select('Keywords.tag');
+
+        // Retorna o objeto formatado
+        return {
+            ...project,
+            technologies: keywords.map((k: any) => k.tag)
+        };
+    }
     
 }
 

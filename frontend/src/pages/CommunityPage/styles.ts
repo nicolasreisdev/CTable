@@ -84,6 +84,17 @@ export const JoinButton = styled.button`
   }
 `;
 
+export const LeaveButton = styled(JoinButton)`
+  border-color: ${props => props.theme['red-500']};
+  color: ${props => props.theme['red-500']};
+
+  &:hover {
+    background-color: ${props => props.theme['red-500']};
+    border-color: ${props => props.theme['red-500']};
+    color: ${props => props.theme.white};
+  }
+`;
+
 export const OptionsButton = styled.button`
   width: 40px;
   height: 40px;

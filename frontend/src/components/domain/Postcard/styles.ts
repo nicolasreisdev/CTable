@@ -96,8 +96,7 @@ export const MenuButton = styled.button`
   justify-content: center;
   border-radius: 50%;
   
-  /* Cor sutil que combine com o balão */
-  color: ${props => props.theme.black}; 
+  color: ${props => props.theme['gray-100']}; 
   opacity: 0.5;
 
   &:hover {
@@ -109,4 +108,153 @@ export const MenuButton = styled.button`
     width: 20px;
     height: 20px;
   }
+`;
+
+export const ActionRow = styled.div`
+  display: flex;
+  align-items: center;
+  padding-top: 12px;
+  gap: 16px;
+  border-top: 1px solid ${props => props.theme.placeholder}33; /* Linha sutil separando */
+  margin-top: 12px;
+`;
+
+export const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${props => props.theme['gray-100']};
+  font-size: 0.9em;
+  font-weight: 600;
+  transition: color 0.2s;
+
+  &:hover {
+    color: ${props => props.theme.button};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+// Container para o formulário de comentário
+export const CommentForm = styled.form`
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+
+export const CommentTextArea = styled.textarea`
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid ${props => props.theme.placeholder};
+  background-color: ${props => props.theme.white};
+  color: ${props => props.theme.black};
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+
+  &:focus {
+    border-color: ${props => props.theme.button};
+    box-shadow: 0 0 0 2px ${props => props.theme.button}33;
+  }
+`;
+
+export const CommentFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const CharacterCount = styled.span<{ isLimit?: boolean }>`
+  font-size: 0.8em;
+  color: ${props => props.isLimit ? props.theme['red-500'] : props.theme['gray-100']};
+`;
+
+export const SubmitCommentButton = styled.button`
+  padding: 6px 16px;
+  background-color: ${props => props.theme.button};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.85em;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: ${props => props.theme['hover-button']};
+  }
+`;
+
+export const CommentsSection = styled.div`
+  margin-top: 20px;
+  border-top: 1px solid ${props => props.theme.placeholder}55;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const CommentItem = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+`;
+
+export const CommentAvatar = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: ${props => props.theme['gray-300']};
+  flex-shrink: 0;
+`;
+
+export const CommentBubble = styled.div`
+  background-color: ${props => props.theme['gray-100']};
+  padding: 10px 14px;
+  border-radius: 12px;
+  border-top-left-radius: 2px; /* Dá um estilo de balão de fala */
+  flex: 1;
+`;
+
+export const CommentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  
+  strong {
+    font-size: 0.9em;
+    color: ${props => props.theme.black};
+  }
+  
+  span {
+    font-size: 0.75em;
+    color: ${props => props.theme['gray-500']};
+  }
+`;
+
+export const CommentText = styled.p`
+  font-size: 0.9em !important; /* Força sobre o estilo genérico do PostContent */
+  color: ${props => props.theme['gray-700']} !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  padding: 0 !important; /* Remove padding do p do PostContent */
 `;

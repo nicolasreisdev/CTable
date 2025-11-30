@@ -112,3 +112,20 @@ export async function UpdateCommunity(communityId: string, data: CommunityProps)
   
   return await response.json();
 }
+
+export async function LeaveCommunity(communityId: string) {
+  const response = await fetch(`http://localhost:3000/api/user/leavecommunity/${communityId}`, {
+    method: 'DELETE', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Erro ao sair da comunidade.");
+  }
+  
+  return await response.json();
+}

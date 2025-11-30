@@ -9,7 +9,7 @@ import { GetUserProjects } from '../../API/Project';
 import { GetUserComments, DeleteComment } from '../../API/Comment';
 import { useAuth } from '../../API/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { DeleteProfile, UpdateProfile } from '../../API/User';
+import { DeleteProfile } from '../../API/User';
 import Toast from '../../components/common/Toast';
 import Modal from '../../components/common/Modal';
 import * as ModalS from '../../components/common/Modal/styles';
@@ -88,6 +88,11 @@ export default function Profile() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  const handleLogout = () => {
+    logout(); // Limpa o estado e o localStorage
+    navigate('/login'); // Redireciona para a tela de login
+  };
 
   const handleDeleteComment = async (commentId: string) => {
       await DeleteComment(commentId);
@@ -217,7 +222,7 @@ export default function Profile() {
                 {isMenuOpen && (
                 <D.DropdownMenu>
                     <D.MenuItem onClick={handleEditProfile}>Editar Perfil</D.MenuItem>
-                    <D.MenuItem onClick={logout}>Sair</D.MenuItem>
+                    <D.MenuItem onClick={handleLogout}>Sair</D.MenuItem>
                     <D.Separator />
                     <D.DangerMenuItem onClick={() => {
                         setIsMenuOpen(false);

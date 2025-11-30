@@ -5,6 +5,9 @@ export interface ProjectProps {
   technologies: string[]; 
   status: string;
   startDate: Date;
+  authorUsername?: string; 
+  authorName?: string;
+  creatorID?: number;
 }
 
 export function parseDate(dataString: string): Date {
@@ -50,26 +53,25 @@ export async function UpdateProject(projectId: string, data: ProjectProps) {
 }
 
 export async function GetFeedProjects(): Promise<ProjectProps[]> {
-  // Em um app real, você faria um fetch
-  // const response = await fetch('http://localhost:3000/api/projects', ...);
-  // const data = await response.json();
-  // return data;
+  const token = localStorage.getItem('token');
 
-  // Por agora, vamos simular a resposta da API:
-  return [
-    {
-      id: '1',
-      title: 'Projeto CTable (React)',
-      description: 'Post da "ceci" (usuário logado)',
-      technologies: ['React', 'TS'], status: 'em-andamento', startDate: parseDate('01/10/2026')
+  const response = await fetch('http://localhost:3000/api/user/home', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, 
     },
-    {
-      id: '2',
-      title: 'Projeto de Outra Pessoa',
-      description: 'Post de outro usuário...',
-      technologies: ['Python'], status: 'finalizado', startDate: parseDate('01/10/2025')
-    }
-  ];
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message);
+  }
+
+  const data = await response.json();
+  console.log("Dados do feed de projetos:", data);
+
+  return data.feed;
 }
 
 export async function DeleteProject(projectId: string) {
@@ -107,4 +109,20 @@ export async function GetUserProjects(): Promise<ProjectProps[]> {
   console.log("Dados dos projetos do usuário:", data.projects);
 
   return data.projects;
+}
+
+export async function GetProjectById(projectId: string): Promise<ProjectProps> {
+  const response = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao carregar projeto');
+  }
+
+  return await response.json();
 }

@@ -1,5 +1,5 @@
 // frontend/src/pages/FeedPage/FeedPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/common/Modal';
 import Postcard from '../../components/domain/Postcard';
@@ -7,29 +7,32 @@ import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import * as S from './styles';
 import * as ModalS from '../../components/common/Modal/styles';
+import { GetFeedProjects } from '../../API/Project';
+import type { ProjectProps } from '../../API/Project';
+import Toast from '../../components/common/Toast'; 
+import type { NotificationState } from '../../components/common/Toast';
 
-// --- DADOS MOCKADOS ---
-const mockPosts = [
-    {
-        title: 'API de Análise de Dados',
-            description: 'Um backend em Python para análise.',
-            technologies: ['Python', 'Django'],
-            status: 'finalizado',
-            startDate: new Date('01/08/2025')
-    },
-    {
-        title: 'API de Análise de Dados',
-            description: 'Um backend em Python para análise.',
-            technologies: ['Python', 'Django'],
-            status: 'finalizado',
-            startDate: new Date('01/08/2025')
-    }
-];
-// -----------------------------------------------------------
 
 export default function Feed() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
+    const [posts, setPosts] = useState<ProjectProps[]>([]);
+    const [notification, setNotification] = useState<NotificationState | null>(null);
+
+    useEffect(() => {
+        async function loadFeed() {
+            try {
+                const feedData = await GetFeedProjects();
+                setPosts(feedData || []);
+            } catch (error) {
+                console.error("Erro ao carregar feed:", error);
+                if (error instanceof Error) {
+                    setNotification({ message: "Não foi possível carregar o feed.", type: 'error' });
+                }
+            }
+        }
+        loadFeed();
+    }, []);
 
     const handleCreateProject = () => {
         setIsCreateModalOpen(false);
@@ -42,17 +45,35 @@ export default function Feed() {
     };
     return (
         <S.PageWrapper>
+
+            {notification && (
+                <Toast 
+                    message={notification.message} 
+                    type={notification.type} 
+                    onClose={() => setNotification(null)} 
+                />
+            )}
             
             <Header onCreateClick={() => setIsCreateModalOpen(true)}/>
             <Sidebar />
 
             <S.ContentWrapper>
                 <S.FeedContainer>
-                    <S.PostList>
-                        {mockPosts.map(post => (
-                            <Postcard post={post} showMenu={false}/>
-                        ))}
-                    </S.PostList>
+                        <S.PostList>
+                            {posts.length > 0 ? (
+                                posts.map((post, index) => (
+                                    <Postcard 
+                                        key={(post as any).id || (post as any).projectID || index} 
+                                        post={post} 
+                                        showMenu={false} 
+                                    />
+                                ))
+                            ) : (
+                                <p style={{ color: '#ccc', textAlign: 'center', marginTop: '20px' }}>
+                                    Nenhum post encontrado. Entre em comunidades para ver atualizações!
+                                </p>
+                            )}
+                        </S.PostList>
                 </S.FeedContainer>
             </S.ContentWrapper>
 

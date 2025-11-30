@@ -8,7 +8,8 @@ import Profile from "./pages/Profile";
 import CreateCommunity from "./pages/CreateCommunity";  
 import CreateProject from "./pages/CreateProject";
 import CommunityPage from "./pages/CommunityPage";
-
+import EditProfile from "./pages/EditProfile";
+import ProjectPage from "./pages/ProjectPage";
 
 export function Router() {
   return (
@@ -24,6 +25,9 @@ export function Router() {
       <Route path="/editProject/:projectId" element={<CreateProject />} />
       <Route path="/editCommunity" element={<CreateCommunity />} />
       <Route path="/r/:communityID" element={<CommunityPage />} />
+      <Route path="/editProfile" element={<EditProfile />} />
+      <Route path="/project/:projectId" element={<ProjectPage />} />
+      
     </Routes>
   )
 }

@@ -118,6 +118,15 @@ class RequestController {
         }
     }
 
+    async getProjectById(projectId: string) {
+        try {
+            const project = await businessLogicProject.getProjectById(projectId);
+            return project;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async newCommunity(data: CommunityData, creatorID: number){
         try{
 
@@ -269,7 +278,8 @@ class RequestController {
     async deleteProfile(userID: number){
         try{
 
-            await businessLogicProfile.removeProfile(userID);
+            const message = await businessLogicProfile.removeProfile(userID);
+            return message;
 
         }catch(error){
             throw error;

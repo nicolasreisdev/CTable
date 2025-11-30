@@ -209,6 +209,7 @@ class BusinessLogicCommunity{
             .first();
         
         const isMember = !!membership;
+        const isAdmin = (community.creatorID === userID) || (membership && membership.role === 'admin');
 
         const keywords = await knex('CommunitiesKeywords')
         .join('Keywords', 'CommunitiesKeywords.keywordID', '=', 'Keywords.keywordID')
@@ -230,7 +231,8 @@ class BusinessLogicCommunity{
             ...community,
             technologies: keywords.map((k: any) => k.tag),
             memberCount: memberCount?.count || 0,
-            isMember: isMember
+            isMember: isMember,
+            isAdmin: isAdmin
         },
         posts: projects || []
     };

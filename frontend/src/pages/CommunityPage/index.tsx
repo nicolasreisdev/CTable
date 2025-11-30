@@ -1,20 +1,31 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import Postcard from '../../components/domain/Postcard';
 import * as S from './styles';
 import { FiMoreHorizontal } from 'react-icons/fi'; 
-import { useEffect, useState } from 'react';
-import { GetCommunityById, JoinCommunity } from '../../API/Community';
+import { useEffect, useState, useRef } from 'react';
+import { GetCommunityById, JoinCommunity, DeleteCommunity, LeaveCommunity } from '../../API/Community';
 import type { NotificationState } from '../../components/common/Toast';
 import Toast from '../../components/common/Toast';
 import type { CommunityProps } from '../../API/Community';
+import * as D from '../../components/common/Dropdown/styles';
+import Modal from '../../components/common/Modal';
+import * as ModalS from '../../components/common/Modal/styles';
 
 export default function CommunityPage() {
   const { communityID } = useParams<{ communityID: string }>();
+  const navigate = useNavigate();
+
   const [notification, setNotification] = useState<NotificationState | null>(null);
   const [community, setCommunity] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -30,6 +41,16 @@ export default function CommunityPage() {
     }
     loadData();
   }, [communityID]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    if (isMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
   const handleJoin = async () => {
     if (!community) return;
@@ -50,6 +71,54 @@ export default function CommunityPage() {
         if (error instanceof Error) {
             setNotification({ message: error.message, type: 'error' });
         }
+    }
+  };
+
+  const handleEdit = () => {
+    navigate('/editCommunity', { state: { communityToEdit: community } });
+  };
+
+  const handleDelete = async () => {
+    if (!community) return;
+    try {
+        await DeleteCommunity(community.communityID);
+        setNotification({ message: 'Comunidade excluída com sucesso.', type: 'success' });
+        setIsDeleteModalOpen(false);
+        
+        // Redireciona para home após excluir
+        setTimeout(() => {
+            navigate('/feed');
+        }, 1500);
+
+    } catch (error) {
+        if (error instanceof Error) {
+            setNotification({ message: error.message, type: 'error' });
+        }
+        setIsDeleteModalOpen(false);
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!community) return;
+
+    try {
+        await LeaveCommunity(community.communityID);
+        
+        // Atualiza a interface otimisticamente
+        setCommunity((prev: CommunityProps | null) => prev ? ({
+            ...prev,
+            isMember: false, // O usuário não é mais membro
+            memberCount: Math.max((prev.memberCount || 0) - 1, 0) // Decrementa contador
+        }) : null);
+
+        setNotification({ message: 'Você saiu da comunidade.', type: 'success' });
+        setIsLeaveModalOpen(false); // Fecha o modal
+
+    } catch (error) {
+        if (error instanceof Error) {
+            setNotification({ message: error.message, type: 'error' });
+        }
+        setIsLeaveModalOpen(false);
     }
   };
 
@@ -83,9 +152,33 @@ export default function CommunityPage() {
                 Join
             </S.JoinButton>
             )}
-            <S.OptionsButton>
-                <FiMoreHorizontal />
-            </S.OptionsButton>
+            {community.isMember && !community.isAdmin && (
+                <S.LeaveButton onClick={() => setIsLeaveModalOpen(true)}>
+                    Sair
+                </S.LeaveButton>
+            )}
+           {community.isAdmin && (
+                <S.MenuWrapper ref={menuRef}>
+                    <S.OptionsButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        <FiMoreHorizontal />
+                    </S.OptionsButton>
+
+                    {isMenuOpen && (
+                        <D.DropdownMenu>
+                            <D.MenuItem onClick={handleEdit}>
+                                Editar Comunidade
+                            </D.MenuItem>
+                            <D.Separator />
+                            <D.DangerMenuItem onClick={() => {
+                                setIsMenuOpen(false);
+                                setIsDeleteModalOpen(true);
+                            }}>
+                                Excluir Comunidade
+                            </D.DangerMenuItem>
+                        </D.DropdownMenu>
+                    )}
+                </S.MenuWrapper>
+            )}
           </S.HeaderActions>
         </S.HeaderContainer>
 
@@ -111,6 +204,50 @@ export default function CommunityPage() {
           </S.InfoSidebar>
         </S.ContentGrid>
       </S.MainContent>
+
+      <Modal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Excluir Comunidade"
+      >
+        <div style={{ textAlign: 'center' }}>
+            <p style={{ marginBottom: '24px', color: '#555' }}>
+                Tem certeza que deseja excluir a comunidade <strong>{community.name}</strong>?<br/>
+                Todos os posts e vínculos serão removidos.
+            </p>
+            <ModalS.ModalActions>
+                <ModalS.ChoiceButton onClick={() => setIsDeleteModalOpen(false)}>
+                    Cancelar
+                </ModalS.ChoiceButton>
+                <ModalS.ChoiceButton onClick={handleDelete} style={{ backgroundColor: '#e74c3c' }}>
+                    Excluir
+                </ModalS.ChoiceButton>
+            </ModalS.ModalActions>
+        </div>
+      </Modal>
+
+      <Modal 
+        isOpen={isLeaveModalOpen} 
+        onClose={() => setIsLeaveModalOpen(false)}
+        title="Sair da Comunidade"
+      >
+        <div style={{ textAlign: 'center' }}>
+            <p style={{ marginBottom: '24px', color: '#555' }}>
+                Tem certeza que deseja sair da comunidade <strong>{community.name}</strong>?
+            </p>
+            <ModalS.ModalActions>
+                <ModalS.ChoiceButton onClick={() => setIsLeaveModalOpen(false)}>
+                    Cancelar
+                </ModalS.ChoiceButton>
+                <ModalS.ChoiceButton 
+                    onClick={handleLeave} 
+                    style={{ backgroundColor: '#e74c3c' }} // Botão vermelho
+                >
+                    Sair
+                </ModalS.ChoiceButton>
+            </ModalS.ModalActions>
+        </div>
+      </Modal>
     </S.PageWrapper>
   );
 }

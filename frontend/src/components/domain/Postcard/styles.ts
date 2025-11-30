@@ -258,3 +258,24 @@ export const CommentText = styled.p`
   line-height: 1.4 !important;
   padding: 0 !important; /* Remove padding do p do PostContent */
 `;
+
+export const DeleteCommentButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+  color: ${props => props.theme['red-500'] || '#e74c3c'};
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+`;

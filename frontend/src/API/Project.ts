@@ -50,26 +50,25 @@ export async function UpdateProject(projectId: string, data: ProjectProps) {
 }
 
 export async function GetFeedProjects(): Promise<ProjectProps[]> {
-  // Em um app real, você faria um fetch
-  // const response = await fetch('http://localhost:3000/api/projects', ...);
-  // const data = await response.json();
-  // return data;
+  const token = localStorage.getItem('token');
 
-  // Por agora, vamos simular a resposta da API:
-  return [
-    {
-      id: '1',
-      title: 'Projeto CTable (React)',
-      description: 'Post da "ceci" (usuário logado)',
-      technologies: ['React', 'TS'], status: 'em-andamento', startDate: parseDate('01/10/2026')
+  const response = await fetch('http://localhost:3000/api/user/home', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, 
     },
-    {
-      id: '2',
-      title: 'Projeto de Outra Pessoa',
-      description: 'Post de outro usuário...',
-      technologies: ['Python'], status: 'finalizado', startDate: parseDate('01/10/2025')
-    }
-  ];
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message);
+  }
+
+  const data = await response.json();
+  console.log("Dados do feed de projetos:", data);
+
+  return data.feed;
 }
 
 export async function DeleteProject(projectId: string) {

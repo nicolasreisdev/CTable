@@ -8,8 +8,16 @@ import Modal from '../../common/Modal';
 import type { NotificationState } from '../../common/Toast';
 import Toast from '../../common/Toast';
 import * as ModalS from '../../common/Modal/styles';
-import { CreateComment, GetComments } from '../../../API/Comment';
+import { CreateComment, GetComments, DeleteComment } from '../../../API/Comment';
 import type { CommentProps } from '../../../API/Comment';
+import { useAuth } from '../../../API/AuthContext';
+
+const TrashIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+  </svg>
+);
 
 // Ícone de Comentário (Balão)
 const CommentIcon = () => (
@@ -29,10 +37,14 @@ const EllipsisIcon = () => (
 interface PostcardProps {
   post: ProjectProps; 
   showMenu: boolean;         // Verifica se o menu deve ser mostrado (se é dono do post)
+  onDelete?: (id: string) => Promise<void>; 
+  deleteLabel?: string;
 }
 
 // --- Componente Postcard ---
-export default function Postcard({ post, showMenu }: PostcardProps) {
+export default function Postcard({ post, showMenu, onDelete, deleteLabel = 'Projeto' }: PostcardProps) {
+  const { currentUser } = useAuth();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate(); // Inicialize o hook de navegação
@@ -45,6 +57,8 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const MAX_COMMENT_CHARS = 500;
   const [comments, setComments] = useState<CommentProps[]>([]);
+
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
 
   const projectId = (post as any).id || (post as any).projectID;
 
@@ -88,27 +102,27 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
     }
   };
 
-  const handleDeleteProject = async () => {
+  const handleDeleteMainItem = async () => {
     try {
-       console.log("Excluindo projeto");
-       const projectId = (post as any).id || (post as any).projectID;
-       if (!projectId) {
-         throw new Error("ID do projeto não encontrado.");
+       const id = (post as any).id || (post as any).projectID || (post as any).commentID;
+       
+       if (!id) throw new Error("ID não encontrado.");
+
+       if (onDelete) {
+           await onDelete(id);
+       } else {
+           await DeleteProject(id);
+           setTimeout(() => navigate('/feed'), 1000);
        }
-       await DeleteProject(projectId);
        
-       setNotification({ message: 'Projeto excluído com sucesso!', type: 'success' });
-       
-       setTimeout(() => {
-         navigate('/feed');
-       }, 1000);
+       setNotification({ message: `${deleteLabel} excluído com sucesso!`, type: 'success' });
+       setIsDeleteModalOpen(false);
 
     } catch (error) {
-      console.error("Erro ao excluir", error);
-      setNotification({ message: 'Erro ao excluir projeto.', type: 'error' });
+      setNotification({ message: `Erro ao excluir ${deleteLabel?.toLowerCase()}.`, type: 'error' });
     }
   };
-  
+
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -136,6 +150,19 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
     }
   };
 
+  const handleConfirmDeleteInternalComment = async () => {
+    if (!commentToDelete) return;
+    try {
+        await DeleteComment(commentToDelete);
+        setNotification({ message: 'Comentário excluído.', type: 'success' });
+        setCommentToDelete(null); 
+        await loadComments(); 
+    } catch (error: any) {
+        setNotification({ message: error.message, type: 'error' });
+        setCommentToDelete(null);
+    }
+  };
+
   const formatDate = (dateString?: string) => {
       if (!dateString) return "";
       return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -156,7 +183,6 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
       <S.PostHeader>
         <img src={(post as any).avatarUrl || 'url_placeholder_avatar.png'} alt={post.title} /> 
         <span>{post.title}</span> 
-        {/* Assumindo que você tenha um autor no post */}
         <small>• {(post as any).author?.title || 'Autor'}</small> 
       </S.PostHeader>
 
@@ -169,7 +195,9 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
 
             {isMenuOpen && (
               <D.DropdownMenu>
-                <D.MenuItem onClick={handleEditClick}>Editar</D.MenuItem>
+                {deleteLabel === 'Projeto' && (
+                    <D.MenuItem onClick={handleEditClick}>Editar</D.MenuItem>
+                )}
                 <D.DangerMenuItem onClick={() => {
                     setIsMenuOpen(false);
                     setIsDeleteModalOpen(true);}}>
@@ -215,18 +243,35 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
                 {/* LISTA DE COMENTÁRIOS */}
                 {comments.length > 0 && (
                     <S.CommentsSection>
-                        {comments.map((comment) => (
-                            <S.CommentItem key={comment.commentID || Math.random()}>
-                                <S.CommentAvatar /> {/* Pode adicionar avatarUrl do autor se tiver */}
-                                <S.CommentBubble>
-                                    <S.CommentHeader>
-                                        <strong>{comment.username || "Usuário"}</strong>
-                                        <span>{formatDate(comment.createdAt)}</span>
-                                    </S.CommentHeader>
-                                    <S.CommentText>{comment.content}</S.CommentText>
-                                </S.CommentBubble>
-                            </S.CommentItem>
-                        ))}
+                        {comments.map((comment) => {
+                            // Verifica se o usuário atual é o autor do comentário
+                            const isAuthor = currentUser?.id && String(currentUser.id) === String(comment.authorID);
+
+                            return (
+                                <S.CommentItem key={comment.commentID || Math.random()}>
+                                    <S.CommentAvatar /> 
+                                    <S.CommentBubble>
+                                        <S.CommentHeader>
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                <strong>{comment.username || "Usuário"}</strong>
+                                                <span>{formatDate(comment.createdAt)}</span>
+                                            </div>
+                                            
+                                            {/* Botão de Deletar (Só aparece para o dono) */}
+                                            {isAuthor && (
+                                                <S.DeleteCommentButton 
+                                                    onClick={() => setCommentToDelete(comment.commentID!)}
+                                                    title="Excluir comentário"
+                                                >
+                                                    <TrashIcon />
+                                                </S.DeleteCommentButton>
+                                            )}
+                                        </S.CommentHeader>
+                                        <S.CommentText>{comment.content}</S.CommentText>
+                                    </S.CommentBubble>
+                                </S.CommentItem>
+                            );
+                        })}
                     </S.CommentsSection>
                 )}
             </>
@@ -234,26 +279,41 @@ export default function Postcard({ post, showMenu }: PostcardProps) {
 
       </S.PostContent>
       <Modal 
-          isOpen={isDeleteModalOpen} 
-          onClose={() => setIsDeleteModalOpen(false)}
-          title="Excluir Projeto"
-        >
-          {/* Conteúdo interno do Modal */}
-          <div style={{ textAlign: 'center' }}>
-              <p style={{ marginBottom: '24px', color: '#555' }}>
-                  Tem certeza que deseja excluir permanentemente o projeto <strong>{post.title}</strong>?
-              </p>
-
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={`Excluir ${deleteLabel}`}
+      >
+        <div style={{ textAlign: 'center' }}>
+            <p style={{ marginBottom: '24px', color: '#555' }}>
+                Tem certeza que deseja excluir este {deleteLabel?.toLowerCase()}?
+            </p>
             <ModalS.ModalActions>
-                <ModalS.ChoiceButton 
-                    onClick={() => setIsDeleteModalOpen(false)}>
+                <ModalS.ChoiceButton onClick={() => setIsDeleteModalOpen(false)}>
                     Cancelar
                 </ModalS.ChoiceButton>
+                <ModalS.ChoiceButton onClick={handleDeleteMainItem} style={{ backgroundColor: '#e74c3c' }}>
+                    Excluir
+                </ModalS.ChoiceButton>
+            </ModalS.ModalActions>
+        </div>
+      </Modal>
 
-                {/* Botão Confirmar (Vermelho/Perigo) */}
+      <Modal 
+        isOpen={!!commentToDelete} 
+        onClose={() => setCommentToDelete(null)}
+        title="Excluir Comentário"
+      >
+        <div style={{ textAlign: 'center' }}>
+            <p style={{ marginBottom: '24px', color: '#555' }}>
+                Deseja realmente apagar este comentário?
+            </p>
+            <ModalS.ModalActions>
+                <ModalS.ChoiceButton onClick={() => setCommentToDelete(null)}>
+                    Cancelar
+                </ModalS.ChoiceButton>
                 <ModalS.ChoiceButton 
-                    onClick={handleDeleteProject}
-                    style={{ backgroundColor: '#e74c3c' }} // Inline override para cor de erro
+                    onClick={handleConfirmDeleteInternalComment}
+                    style={{ backgroundColor: '#e74c3c' }}
                 >
                     Excluir
                 </ModalS.ChoiceButton>

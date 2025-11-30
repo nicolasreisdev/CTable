@@ -15,6 +15,7 @@ interface AuthContextType {
   login: (data: LoginProps) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  updateUser: (userData: Partial<User>) => void;
 }
 
 // Crie o Contexto
@@ -55,6 +56,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setCurrentUser(null);
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    if (!currentUser) return;
+
+    // Mescla os dados atuais com os novos
+    const updated = { ...currentUser, ...userData };
+
+    // Atualiza o estado (reflete na tela imediatamente)
+    setCurrentUser(updated);
+
+    // Atualiza o localStorage (persiste se der F5)
+    localStorage.setItem('user', JSON.stringify(updated));
+  };
+
   // Não renderize o app até sabermos se o usuário está logado
   if (isLoading) {
     return <div>Carregando...</div>; // Ou um componente de Spinner
@@ -65,7 +79,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       currentUser, 
       login, 
       logout, 
-      isAuthenticated: !!currentUser 
+      isAuthenticated: !!currentUser, 
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>

@@ -269,7 +269,8 @@ class RequestController {
     async deleteProfile(userID: number){
         try{
 
-            await businessLogicProfile.removeProfile(userID);
+            const message = await businessLogicProfile.removeProfile(userID);
+            return message;
 
         }catch(error){
             throw error;

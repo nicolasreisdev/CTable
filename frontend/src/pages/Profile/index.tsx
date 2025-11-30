@@ -8,6 +8,11 @@ import type { CommentProps } from '../../API/Comment';
 import { GetUserProjects } from '../../API/Project';
 import { GetUserComments, DeleteComment } from '../../API/Comment';
 import { useAuth } from '../../API/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { DeleteProfile, UpdateProfile } from '../../API/User';
+import Toast from '../../components/common/Toast';
+import Modal from '../../components/common/Modal';
+import * as ModalS from '../../components/common/Modal/styles';
 
 // --- ÍCONES ---
 const PostsIcon = () => (
@@ -36,9 +41,15 @@ export default function Profile() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const navigate = useNavigate();
+
   // Estados para os dados da API
   const [userPosts, setUserPosts] = useState<ProjectProps[]>([]);
   const [userComments, setUserComments] = useState<CommentProps[]>([]);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteProfileModalOpen, setIsDeleteProfileModalOpen] = useState(false);
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
     // Função assíncrona para buscar todos os dados
@@ -87,6 +98,43 @@ export default function Profile() {
       );
   };
 
+  const handleEditProfile = () => {
+      setIsMenuOpen(false);
+      navigate('/editProfile');
+  };
+
+  const handleDeleteProfile = async () => {
+    
+    if (isDeleting) return;
+    setIsDeleting(true);
+
+      try {
+          await DeleteProfile();
+          setNotification({ message: "Perfil excluído com sucesso. Até logo!", type: 'success' });
+
+          setIsDeleteProfileModalOpen(false);
+          
+          setTimeout(() => {
+              logout(); // Desloga o usuário e limpa o storage
+              navigate('/login'); // Manda para login
+          }, 2000);
+
+      } catch (error) {
+          if (error instanceof Error) {
+              if (error.message.includes("não encontrado") || error.message.includes("not found")) {
+                  setNotification({ message: "Conta já encerrada. Redirecionando...", type: 'success' });
+                  setTimeout(() => { logout(); navigate('/login'); }, 2000);
+                  return;
+              }
+              setNotification({ message: error.message, type: 'error' });
+          }
+          setIsDeleteProfileModalOpen(false);
+      } finally {
+          setIsDeleting(false);
+          setIsDeleteProfileModalOpen(false);
+      }
+  };
+
   // Função para renderizar o feed (posts ou comentários)
   const renderFeed = () => {
     if (view === 'posts') {
@@ -130,6 +178,15 @@ export default function Profile() {
   return (
     <S.PageWrapper>
       <Sidebar />
+
+      {notification && (
+        <Toast 
+            message={notification.message} 
+            type={notification.type} 
+            onClose={() => setNotification(null)} 
+        />
+      )}
+
       <S.ContentWrapper>
 
         <S.ProfileHeader>
@@ -159,10 +216,13 @@ export default function Profile() {
 
                 {isMenuOpen && (
                 <D.DropdownMenu>
-                    <D.MenuItem onClick={() => alert('Editar Perfil')}>Editar Perfil</D.MenuItem>
-                    <D.MenuItem onClick={() => alert('Sair')}>Sair</D.MenuItem>
+                    <D.MenuItem onClick={handleEditProfile}>Editar Perfil</D.MenuItem>
+                    <D.MenuItem onClick={logout}>Sair</D.MenuItem>
                     <D.Separator />
-                    <D.DangerMenuItem onClick={() => alert('Excluir Perfil')}>
+                    <D.DangerMenuItem onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsDeleteProfileModalOpen(true);
+                    }}>
                         Excluir Perfil
                     </D.DangerMenuItem>
                 </D.DropdownMenu>
@@ -177,7 +237,7 @@ export default function Profile() {
                 backgroundImage: undefined 
               }} 
             />
-            <S.Username>{currentUser?.nomeCompleto || currentUser?.username || 'Carregando...'}</S.Username>
+            <S.Username>{currentUser?.username || 'Carregando...'}</S.Username>
         </S.ProfileInfo>
 
         <S.PostList>
@@ -185,6 +245,34 @@ export default function Profile() {
         </S.PostList>
         
       </S.ContentWrapper>
+
+      <Modal 
+        isOpen={isDeleteProfileModalOpen} 
+        onClose={() => !isDeleting && setIsDeleteProfileModalOpen(false)}
+        title="Excluir Conta"
+      >
+        <div style={{ textAlign: 'center' }}>
+            <p style={{ marginBottom: '24px', color: '#555' }}>
+                Tem certeza que deseja excluir sua conta? <br/>
+                <strong>Todos os seus projetos, comunidades e comentários serão apagados permanentemente.</strong>
+            </p>
+            <ModalS.ModalActions>
+                <ModalS.ChoiceButton 
+                  onClick={() => setIsDeleteProfileModalOpen(false)}
+                  disabled={isDeleting}>
+                    Cancelar
+                </ModalS.ChoiceButton>
+                <ModalS.ChoiceButton 
+                    onClick={handleDeleteProfile} 
+                    style={{ backgroundColor: '#e74c3c' }}
+                    disabled={isDeleting}
+                >
+                    {isDeleting ? 'Excluindo...' : 'Excluir Conta'}
+                </ModalS.ChoiceButton>
+            </ModalS.ModalActions>
+        </div>
+      </Modal>
+
     </S.PageWrapper>
   );
 }

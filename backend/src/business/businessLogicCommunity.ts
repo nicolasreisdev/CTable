@@ -148,6 +148,30 @@ class BusinessLogicCommunity{
         return result;
     }
 
+    async getUserFeed(userID: number){
+        const feed = await knex('Projects')
+
+            .join('ProjectCommunities', 'Projects.projectID', '=', 'ProjectCommunities.projectID')
+            
+            .join('CommunityMembers', 'ProjectCommunities.communityID', '=', 'CommunityMembers.communityID')
+            
+            .join('User', 'Projects.creatorID', '=', 'User.id')
+            
+            .where('CommunityMembers.userID', userID)
+            
+            .distinct('Projects.projectID')
+            
+            .select(
+                'Projects.*',
+                'User.username as authorUsername',
+                'User.fullName as authorName'
+            )
+            
+            .orderBy('Projects.createdAt', 'desc');
+
+        return feed;
+    }
+
     async getAllCommunities(){
         const communities = await knex('Communities').select('*');
 

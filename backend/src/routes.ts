@@ -172,6 +172,23 @@ routes.post('/api/project/:projectID/comments', authMiddleware, async(request, r
 
 })
 
+routes.get('/api/user/comments', authMiddleware, async(request, response) => {
+    
+    const allComments = await RequestController.getUserComments(request.user.id);
+
+    return response.status(200).json(allComments);
+})
+
+routes.delete('/api/project/:commentID/deletecomment', authMiddleware, async(request, response) =>{
+
+    const { commentID } = request.params;    
+
+    await RequestController.deleteComment( request.user.id, commentID );
+
+    return response.status(200).json({ message: "Comentário deletado com sucesso."});
+
+})
+
 routes.get('/api/project/:projectID/comments', async(request, response) => {
 
     const { projectID } = request.params;
@@ -183,6 +200,26 @@ routes.get('/api/project/:projectID/comments', async(request, response) => {
 })
 
 
+routes.put('/api/user/editprofile', authMiddleware, async(request, response) =>{
+
+    const updatedProfile = await RequestController.updateProfile(request.body, request.user.id);
+
+    return response.status(200).json(updatedProfile);
+})
+
+routes.delete('/api/user/deleteprofile', authMiddleware, async(request, response) =>{
+   
+    const message = await RequestController.deleteProfile(request.user.id);
+
+    return response.status(200).json(message);
+})
+
+routes.get('/api/user/home', authMiddleware, async(request, response) => {
+    
+    const homeData = await RequestController.getUserHome(request.user.id);
+    
+    return response.status(200).json(homeData);
+})
 
 
 

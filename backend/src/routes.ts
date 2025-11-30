@@ -221,6 +221,15 @@ routes.get('/api/user/home', authMiddleware, async(request, response) => {
     return response.status(200).json(homeData);
 })
 
+routes.get('/api/projects/:projectId', authMiddleware, async (request, response) => {
+    const { projectId } = request.params;
+    try {
+        const project = await RequestController.getProjectById(projectId);
+        return response.status(200).json(project);
+    } catch (error) {
+        return response.status(404).json({ message: "Projeto não encontrado" });
+    }
+});
 
 
 export default routes;

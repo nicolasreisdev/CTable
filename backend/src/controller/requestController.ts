@@ -118,6 +118,15 @@ class RequestController {
         }
     }
 
+    async getProjectById(projectId: string) {
+        try {
+            const project = await businessLogicProject.getProjectById(projectId);
+            return project;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async newCommunity(data: CommunityData, creatorID: number){
         try{
 

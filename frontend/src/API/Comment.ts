@@ -58,3 +58,20 @@ export async function GetUserComments(): Promise<CommentProps[]> {
 
   return await response.json();
 }
+
+export async function DeleteComment(commentId: string) {
+  const response = await fetch(`http://localhost:3000/api/project/${commentId}/deletecomment`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Erro ao excluir comentário.");
+  }
+  
+  return await response.json();
+}

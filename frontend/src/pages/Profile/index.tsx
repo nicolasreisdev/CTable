@@ -6,7 +6,7 @@ import * as D from '../../components/common/Dropdown/styles';
 import type { ProjectProps } from '../../API/Project';
 import type { CommentProps } from '../../API/Comment';
 import { GetUserProjects } from '../../API/Project';
-import { GetUserComments } from '../../API/Comment';
+import { GetUserComments, DeleteComment } from '../../API/Comment';
 import { useAuth } from '../../API/AuthContext';
 
 // --- ÍCONES ---
@@ -78,6 +78,15 @@ export default function Profile() {
     };
   }, [isMenuOpen]);
 
+  const handleDeleteComment = async (commentId: string) => {
+      await DeleteComment(commentId);
+      
+      // Remove o comentário deletado do estado local para sumir da tela instantaneamente
+      setUserComments((prevComments) => 
+          prevComments.filter(comment => comment.commentID !== commentId)
+      );
+  };
+
   // Função para renderizar o feed (posts ou comentários)
   const renderFeed = () => {
     if (view === 'posts') {
@@ -96,13 +105,10 @@ export default function Profile() {
       // Mapeia 'userComments' 
       return userComments.map(comment => (
         <S.PostContainer key={comment.commentID || Math.random()}>
-          {/* ADAPTAÇÃO AQUI: Criamos um objeto fake de Projeto para o Postcard entender */}
           <Postcard 
             post={{
               id: comment.commentID,
-              // Usa 'projectTitle' que vem do backend para mostrar onde foi o comentário
               title: `Comentou em: ${comment.projectTitle || 'Projeto'}`, 
-              // AQUI ESTÁ A CORREÇÃO PRINCIPAL: Mapeia 'content' para 'description'
               description: comment.content, 
               technologies: [],
               status: '',
@@ -110,7 +116,9 @@ export default function Profile() {
               // Passa o usuário atual como autor para o cabeçalho do card
               author: { title: currentUser?.username || 'Você' } 
             } as any} 
-            showMenu={true} // Se quiser permitir deletar comentários, precisará adaptar a lógica do menu depois
+            showMenu={true} 
+            deleteLabel="Comentário"
+            onDelete={() => handleDeleteComment(comment.commentID!)}
           />
         </S.PostContainer>
       ));

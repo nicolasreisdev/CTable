@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles'; 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FormPageContainer, FormWrapper, FormTitle, StyledForm, StyledInput, SubmitButton, RedirectLink } from '../../components/domain/Form/styles';
 import { useForm, Controller} from 'react-hook-form';
 import { IMaskInput } from 'react-imask';

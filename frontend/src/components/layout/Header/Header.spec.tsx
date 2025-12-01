@@ -3,15 +3,22 @@ import { describe, it, expect, vi } from 'vitest';
 import Header from './index';
 import { BrowserRouter } from 'react-router-dom';
 
+// Interface genérica para os estilos
+interface StyleProps {
+  children?: React.ReactNode;
+  onClick?: React.MouseEventHandler;
+  to?: string;
+}
+
 // Mock dos estilos
 vi.mock('./styles', () => ({
-  HeaderContainer: ({ children }: any) => <header>{children}</header>,
-  SearchContainer: ({ children }: any) => <div data-testid="search-container">{children}</div>,
-  ActionsContainer: ({ children }: any) => <div>{children}</div>,
-  CreateButton: ({ children, onClick }: any) => (
+  HeaderContainer: ({ children }: StyleProps) => <header>{children}</header>,
+  SearchContainer: ({ children }: StyleProps) => <div data-testid="search-container">{children}</div>,
+  ActionsContainer: ({ children }: StyleProps) => <div>{children}</div>,
+  CreateButton: ({ children, onClick }: StyleProps) => (
     <button onClick={onClick} data-testid="create-btn">{children}</button>
   ),
-  ProfileIcon: ({ children, to }: any) => <a href={to}>{children}</a>,
+  ProfileIcon: ({ children, to }: StyleProps) => <a href={to}>{children}</a>,
 }));
 
 // Mock do componente Searchbar 

@@ -5,10 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 
 // Mock dos estilos
 vi.mock('./styles', () => ({
-  HeaderContainer: ({ children }: any) => <header>{children}</header>,
-  ActionsContainer: ({ children }: any) => <div>{children}</div>,
+  HeaderContainer: ({ children }: { children: React.ReactNode }) => <header>{children}</header>,
+  ActionsContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   // Simulando o componente Button (que é um Link)
-  Button: ({ children, to }: any) => <a href={to}>{children}</a>,
+  Button: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
 }));
 
 describe('Componente HeaderHome', () => {

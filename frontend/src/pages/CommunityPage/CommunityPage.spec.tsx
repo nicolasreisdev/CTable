@@ -27,32 +27,43 @@ vi.mock('../../API/Community', () => ({
 
 // Mocks Visuais
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
-vi.mock('../../components/domain/Postcard', () => ({ default: ({ post }: any) => <div data-testid="postcard">{post.title}</div> }));
-vi.mock('../../components/common/Toast', () => ({ default: ({ message }: any) => <div data-testid="toast">{message}</div> }));
+vi.mock('../../components/domain/Postcard', () => ({ 
+    default: ({ post }: { post: { title: string } }) => <div data-testid="postcard">{post.title}</div> 
+}));
+vi.mock('../../components/common/Toast', () => ({ 
+    default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> 
+}));
 
 // Mock Modal (renderiza se aberto)
+interface ModalMockProps {
+    isOpen: boolean;
+    children: React.ReactNode;
+    title: string;
+}
+
 vi.mock('../../components/common/Modal', () => ({
-    default: ({ isOpen, children, title }: any) => isOpen ? (
+    default: ({ isOpen, children, title }: ModalMockProps) => isOpen ? (
         <div data-testid="modal">
             <h2>{title}</h2>
             {children}
         </div>
     ) : null
 }));
+
 vi.mock('../../components/common/Modal/styles', () => ({
-    ModalActions: ({ children }: any) => <div>{children}</div>,
-    ChoiceButton: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+    ModalActions: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    ChoiceButton: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => <button onClick={onClick}>{children}</button>,
 }));
 
 // Mock Dropdown 
 vi.mock('../../components/common/Dropdown/styles', () => {
-    const DropdownMenu = ({ children }: any) => <div id="dropdown-menu-mock" data-testid="dropdown-menu">{children}</div>;
+    const DropdownMenu = ({ children }: { children: React.ReactNode }) => <div id="dropdown-menu-mock" data-testid="dropdown-menu">{children}</div>;
     DropdownMenu.toString = () => '#dropdown-menu-mock';
     
     return {
         DropdownMenu,
-        MenuItem: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
-        DangerMenuItem: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+        MenuItem: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => <button onClick={onClick}>{children}</button>,
+        DangerMenuItem: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => <button onClick={onClick}>{children}</button>,
         Separator: () => <hr />
     }
 });
@@ -96,7 +107,7 @@ describe('Página CommunityPage', () => {
   it('deve permitir entrar na comunidade (Join)', async () => {
     // Comunidade onde NÃO sou membro
     vi.spyOn(CommunityAPI, 'GetCommunityById').mockResolvedValue(mockCommunityData);
-    vi.spyOn(CommunityAPI, 'JoinCommunity').mockResolvedValue({} as any);
+    vi.spyOn(CommunityAPI, 'JoinCommunity').mockResolvedValue({} as unknown as void);
 
     render(
       <BrowserRouter>
@@ -118,7 +129,7 @@ describe('Página CommunityPage', () => {
     // Comunidade onde SOU membro
     const memberData = { ...mockCommunityData, community: { ...mockCommunityData.community, isMember: true } };
     vi.spyOn(CommunityAPI, 'GetCommunityById').mockResolvedValue(memberData);
-    vi.spyOn(CommunityAPI, 'LeaveCommunity').mockResolvedValue({} as any);
+    vi.spyOn(CommunityAPI, 'LeaveCommunity').mockResolvedValue({} as unknown as void);
 
     render(
       <BrowserRouter>
@@ -151,7 +162,7 @@ describe('Página CommunityPage', () => {
         community: { ...mockCommunityData.community, isMember: true, isAdmin: true } 
     };
     vi.spyOn(CommunityAPI, 'GetCommunityById').mockResolvedValue(adminData);
-    vi.spyOn(CommunityAPI, 'DeleteCommunity').mockResolvedValue({} as any);
+    vi.spyOn(CommunityAPI, 'DeleteCommunity').mockResolvedValue({} as unknown as void);
 
     render(
       <BrowserRouter>

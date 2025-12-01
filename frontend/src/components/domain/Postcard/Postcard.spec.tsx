@@ -22,30 +22,37 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock Styles do Postcard
+interface StyledProps {
+  children?: React.ReactNode;
+  onClick?: React.MouseEventHandler;
+  onSubmit?: React.FormEventHandler;
+  disabled?: boolean;
+}
+
 vi.mock('./styles', () => ({
-  PostCardWrapper: ({ children, onClick }: any) => <div onClick={onClick} data-testid="postcard-wrapper">{children}</div>,
-  PostHeader: ({ children }: any) => <div>{children}</div>,
-  PostContent: ({ children }: any) => <div>{children}</div>,
-  MenuWrapper: ({ children }: any) => <div>{children}</div>,
-  MenuButton: ({ children, onClick }: any) => <button onClick={onClick} data-testid="menu-btn">{children}</button>,
-  ActionRow: ({ children }: any) => <div>{children}</div>,
-  ActionButton: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
-  CommentForm: ({ children, onSubmit }: any) => <form onSubmit={onSubmit}>{children}</form>,
-  CommentTextArea: (props: any) => <textarea {...props} />,
-  CommentFooter: ({ children }: any) => <div>{children}</div>,
-  CharacterCount: ({ children }: any) => <span>{children}</span>,
-  SubmitCommentButton: ({ children, disabled }: any) => <button disabled={disabled}>{children}</button>,
-  CommentsSection: ({ children }: any) => <div>{children}</div>,
-  CommentItem: ({ children }: any) => <div>{children}</div>,
-  CommentBubble: ({ children }: any) => <div>{children}</div>,
-  CommentHeader: ({ children }: any) => <div>{children}</div>,
-  CommentText: ({ children }: any) => <p>{children}</p>,
-  DeleteCommentButton: ({ onClick }: any) => <button onClick={onClick} data-testid="delete-comment-btn">Delete</button>,
+  PostCardWrapper: ({ children, onClick }: StyledProps) => <div onClick={onClick} data-testid="postcard-wrapper">{children}</div>,
+  PostHeader: ({ children }: StyledProps) => <div>{children}</div>,
+  PostContent: ({ children }: StyledProps) => <div>{children}</div>,
+  MenuWrapper: ({ children }: StyledProps) => <div>{children}</div>,
+  MenuButton: ({ children, onClick }: StyledProps) => <button onClick={onClick} data-testid="menu-btn">{children}</button>,
+  ActionRow: ({ children }: StyledProps) => <div>{children}</div>,
+  ActionButton: ({ children, onClick }: StyledProps) => <button onClick={onClick}>{children}</button>,
+  CommentForm: ({ children, onSubmit }: StyledProps) => <form onSubmit={onSubmit}>{children}</form>,
+  CommentTextArea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} />,
+  CommentFooter: ({ children }: StyledProps) => <div>{children}</div>,
+  CharacterCount: ({ children }: StyledProps) => <span>{children}</span>,
+  SubmitCommentButton: ({ children, disabled }: StyledProps) => <button disabled={disabled}>{children}</button>,
+  CommentsSection: ({ children }: StyledProps) => <div>{children}</div>,
+  CommentItem: ({ children }: StyledProps) => <div>{children}</div>,
+  CommentBubble: ({ children }: StyledProps) => <div>{children}</div>,
+  CommentHeader: ({ children }: StyledProps) => <div>{children}</div>,
+  CommentText: ({ children }: StyledProps) => <p>{children}</p>,
+  DeleteCommentButton: ({ onClick }: StyledProps) => <button onClick={onClick} data-testid="delete-comment-btn">Delete</button>,
   CommentAvatar: () => <div />,
 }));
 
 vi.mock('../../common/Dropdown/styles', () => {
-  const DropdownMenu = ({ children }: any) => (
+  const DropdownMenu = ({ children }: { children: React.ReactNode }) => (
     <div data-testid="dropdown-menu">
       {children}
     </div>
@@ -55,14 +62,14 @@ vi.mock('../../common/Dropdown/styles', () => {
 
   return {
     DropdownMenu,
-    MenuItem: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
-    DangerMenuItem: ({ children, onClick }: any) => <button onClick={onClick} data-testid="delete-post-btn">{children}</button>,
+    MenuItem: ({ children, onClick }: StyledProps) => <button onClick={onClick}>{children}</button>,
+    DangerMenuItem: ({ children, onClick }: StyledProps) => <button onClick={onClick} data-testid="delete-post-btn">{children}</button>,
   };
 });
 
 // Mock Modal e Toast
 vi.mock('../../common/Modal', () => ({
-  default: ({ isOpen, title, children }: any) => isOpen ? (
+  default: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) => isOpen ? (
     <div data-testid="modal">
       <h1>{title}</h1>
       {children}
@@ -71,12 +78,12 @@ vi.mock('../../common/Modal', () => ({
 }));
 
 vi.mock('../../common/Modal/styles', () => ({
-  ModalActions: ({ children }: any) => <div>{children}</div>,
-  ChoiceButton: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+  ModalActions: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ChoiceButton: ({ children, onClick }: StyledProps) => <button onClick={onClick}>{children}</button>,
 }));
 
 vi.mock('../../common/Toast', () => ({
-  default: ({ message }: any) => <div data-testid="toast">{message}</div>,
+  default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div>,
 }));
 
 describe('Componente Postcard', () => {
@@ -93,7 +100,7 @@ describe('Componente Postcard', () => {
   });
 
   it('NÃO deve navegar se clicar em um botão interativo dentro do card', () => {
-    render(<BrowserRouter><Postcard post={mockPost as any} showMenu={true} /></BrowserRouter>);
+    render(<BrowserRouter><Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={true} /></BrowserRouter>);
     
     // Clica no botão de menu (que está dentro do wrapper)
     fireEvent.click(screen.getByTestId('menu-btn'));
@@ -104,7 +111,7 @@ describe('Componente Postcard', () => {
   });
 
   it('deve ir para a página de edição ao clicar em Editar', () => {
-    render(<BrowserRouter><Postcard post={mockPost as any} showMenu={true} /></BrowserRouter>);
+    render(<BrowserRouter><Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={true} /></BrowserRouter>);
     
     fireEvent.click(screen.getByTestId('menu-btn'));
     fireEvent.click(screen.getByText('Editar'));
@@ -114,7 +121,7 @@ describe('Componente Postcard', () => {
 
   it('deve exibir erro ao tentar deletar projeto falho', async () => {
     vi.spyOn(ProjectAPI, 'DeleteProject').mockRejectedValue(new Error('Erro ao deletar'));
-    render(<BrowserRouter><Postcard post={mockPost as any} showMenu={true} /></BrowserRouter>);
+    render(<BrowserRouter><Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={true} /></BrowserRouter>);
 
     fireEvent.click(screen.getByTestId('menu-btn'));
     fireEvent.click(screen.getByTestId('delete-post-btn'));
@@ -131,18 +138,18 @@ describe('Componente Postcard', () => {
   it('deve renderizar o post corretamente', () => {
     render(
         <BrowserRouter>
-            <Postcard post={mockPost as any} showMenu={false} />
+            <Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={false} />
         </BrowserRouter>
     );
     expect(screen.getByText('Projeto Teste')).toBeInTheDocument();
   });
 
   it('deve abrir o menu e permitir excluir o projeto', async () => {
-    vi.spyOn(ProjectAPI, 'DeleteProject').mockResolvedValue(true as any);
+    vi.spyOn(ProjectAPI, 'DeleteProject').mockResolvedValue(true as unknown as void);
 
     render(
         <BrowserRouter>
-            <Postcard post={mockPost as any} showMenu={true} />
+            <Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={true} />
         </BrowserRouter>
     );
 
@@ -166,11 +173,11 @@ describe('Componente Postcard', () => {
     const mockComments = [
         { commentID: 'c1', content: 'Bom trabalho!', authorID: 'user999', username: 'Outro' }
     ];
-    vi.spyOn(CommentAPI, 'GetComments').mockResolvedValue(mockComments as any);
+    vi.spyOn(CommentAPI, 'GetComments').mockResolvedValue(mockComments as unknown as CommentAPI.CommentProps[]);
 
     render(
         <BrowserRouter>
-            <Postcard post={mockPost as any} showMenu={false} />
+            <Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={false} />
         </BrowserRouter>
     );
 
@@ -182,12 +189,12 @@ describe('Componente Postcard', () => {
   });
 
   it('deve enviar um novo comentário', async () => {
-    vi.spyOn(CommentAPI, 'CreateComment').mockResolvedValue({} as any);
+    vi.spyOn(CommentAPI, 'CreateComment').mockResolvedValue({} as unknown as CommentAPI.CommentProps);
     vi.spyOn(CommentAPI, 'GetComments').mockResolvedValue([]);
 
     render(
         <BrowserRouter>
-            <Postcard post={mockPost as any} showMenu={false} />
+            <Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={false} />
         </BrowserRouter>
     );
 

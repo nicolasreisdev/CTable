@@ -4,17 +4,17 @@ import TagInput from './';
 
 // Mock dos estilos para evitar erros de ThemeProvider
 vi.mock('../CreationForm/styles', () => ({
-  SearchWrapper: ({ children, ref }: any) => <div ref={ref} data-testid="wrapper">{children}</div>,
-  Input: (props: any) => <input data-testid="tag-input" {...props} />,
-  SearchResultsList: ({ children }: any) => <ul data-testid="results-list">{children}</ul>,
-  SearchResultItem: ({ children, onClick }: any) => <li onClick={onClick}>{children}</li>,
-  ErrorMessage: ({ children }: any) => <span>{children}</span>,
+  SearchWrapper: ({ children, ref }: { children: React.ReactNode; ref: React.Ref<HTMLDivElement> }) => <div ref={ref} data-testid="wrapper">{children}</div>,
+  Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input data-testid="tag-input" {...props} />,
+  SearchResultsList: ({ children }: { children: React.ReactNode }) => <ul data-testid="results-list">{children}</ul>,
+  SearchResultItem: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => <li onClick={onClick}>{children}</li>,
+  ErrorMessage: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
 // Mock do componente Keyword (visualização da tag)
 vi.mock('../../common/Keyword', () => ({
-  KeywordContainer: ({ children }: any) => <div>{children}</div>,
-  Keyword: ({ children, onRemove }: any) => (
+  KeywordContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Keyword: ({ children, onRemove }: { children: React.ReactNode; onRemove: () => void }) => (
     <span data-testid="keyword">
       {children}
       <button onClick={onRemove} data-testid={`remove-${children}`}>X</button>

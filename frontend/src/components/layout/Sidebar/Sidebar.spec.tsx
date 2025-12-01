@@ -14,17 +14,23 @@ vi.mock('../../../API/AuthContext', () => ({
   })
 }));
 
+interface StyleProps {
+  children?: React.ReactNode;
+  to?: string;
+  onClick?: React.MouseEventHandler;
+}
+
 // Mock dos estilos do Sidebar
 vi.mock('./styles', () => ({
-  SidebarContainer: ({ children }: any) => <aside data-testid="sidebar-container">{children}</aside>,
-  SidebarNav: ({ children }: any) => <nav>{children}</nav>,
-  HomeLink: ({ children, to }: any) => <a href={to}>{children}</a>,
-  CommunitiesHeader: ({ children, onClick }: any) => (
+  SidebarContainer: ({ children }: StyleProps) => <aside data-testid="sidebar-container">{children}</aside>,
+  SidebarNav: ({ children }: StyleProps) => <nav>{children}</nav>,
+  HomeLink: ({ children, to }: StyleProps) => <a href={to}>{children}</a>,
+  CommunitiesHeader: ({ children, onClick }: StyleProps) => (
     <div data-testid="communities-header" onClick={onClick}>{children}</div>
   ),
-  CommunitiesList: ({ children }: any) => <div data-testid="communities-list">{children}</div>,
-  CommunityLink: ({ children, to }: any) => <a href={to}>{children}</a>,
-  CommunityIcon: (props: any) => <img {...props} />,
+  CommunitiesList: ({ children }: StyleProps) => <div data-testid="communities-list">{children}</div>,
+  CommunityLink: ({ children, to }: StyleProps) => <a href={to}>{children}</a>,
+  CommunityIcon: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />,
 }));
 
 describe('Componente Sidebar', () => {
@@ -55,7 +61,7 @@ describe('Componente Sidebar', () => {
       { communityID: '1', name: 'React Brasil' },
       { communityID: '2', name: 'Frontend' }
     ];
-    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue(mockCommunities as any);
+    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue(mockCommunities as unknown as CommunityAPI.CommunityProps[]);
 
     render(
       <BrowserRouter>

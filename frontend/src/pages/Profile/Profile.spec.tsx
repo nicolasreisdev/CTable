@@ -29,19 +29,30 @@ vi.mock('../../API/User', () => ({ DeleteProfile: vi.fn() }));
 
 // Mocks Visuais
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
+// Mocks Visuais
+interface MockPostcardProps {
+    post: { title: string };
+    deleteLabel?: string;
+    onDelete?: () => void;
+}
 vi.mock('../../components/domain/Postcard', () => ({ 
-    default: ({ post, deleteLabel, onDelete }: any) => (
+    default: ({ post, deleteLabel, onDelete }: MockPostcardProps) => (
         <div data-testid="postcard">
             <span>{post.title}</span>
             {deleteLabel && <button onClick={onDelete} data-testid="mock-delete-btn">Deletar {deleteLabel}</button>}
         </div>
     ) 
 }));
-vi.mock('../../components/common/Toast', () => ({ default: ({ message }: any) => <div data-testid="toast">{message}</div> }));
+vi.mock('../../components/common/Toast', () => ({ default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> }));
 
 // Mock Modal
+interface ModalProps {
+    isOpen: boolean;
+    children: React.ReactNode;
+    title: string;
+}
 vi.mock('../../components/common/Modal', () => ({
-    default: ({ isOpen, children, title }: any) => isOpen ? (
+    default: ({ isOpen, children, title }: ModalProps) => isOpen ? (
         <div data-testid="modal">
             <h2>{title}</h2>
             {children}
@@ -49,15 +60,19 @@ vi.mock('../../components/common/Modal', () => ({
     ) : null
 }));
 vi.mock('../../components/common/Modal/styles', () => ({
-    ModalActions: ({ children }: any) => <div>{children}</div>,
-    ChoiceButton: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+    ModalActions: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    ChoiceButton: ({ children, onClick }: { children: React.ReactNode; onClick: () => void }) => <button onClick={onClick}>{children}</button>,
 }));
 
 // Mock Dropdown 
+interface StyleProps {
+    children?: React.ReactNode;
+    onClick?: React.MouseEventHandler;
+}
 vi.mock('../../components/common/Dropdown/styles', () => ({
-    DropdownMenu: ({ children }: any) => <div data-testid="dropdown">{children}</div>,
-    MenuItem: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
-    DangerMenuItem: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+    DropdownMenu: ({ children }: StyleProps) => <div data-testid="dropdown">{children}</div>,
+    MenuItem: ({ children, onClick }: StyleProps) => <button onClick={onClick}>{children}</button>,
+    DangerMenuItem: ({ children, onClick }: StyleProps) => <button onClick={onClick}>{children}</button>,
     Separator: () => <hr />
 }));
 
@@ -92,8 +107,8 @@ describe('Página Profile', () => {
     // Setup: 1 comentário na lista
     vi.spyOn(CommentAPI, 'GetUserComments').mockResolvedValue([
         { commentID: 'c1', content: 'Comentário Teste', projectTitle: 'Proj' }
-    ] as any);
-    vi.spyOn(CommentAPI, 'DeleteComment').mockResolvedValue({} as any);
+    ] as unknown as CommentAPI.CommentProps[]);
+    vi.spyOn(CommentAPI, 'DeleteComment').mockResolvedValue({} as unknown as void);
 
     render(<BrowserRouter><Profile /></BrowserRouter>);
 
@@ -182,7 +197,7 @@ describe('Página Profile', () => {
   });
 
   it('deve carregar dados do perfil e mostrar posts por padrão', async () => {
-    vi.spyOn(ProjectAPI, 'GetUserProjects').mockResolvedValue([{ id: '1', title: 'Meu Projeto' }] as any);
+    vi.spyOn(ProjectAPI, 'GetUserProjects').mockResolvedValue([{ id: '1', title: 'Meu Projeto' }] as unknown as ProjectAPI.ProjectProps[]);
 
     render(
       <BrowserRouter>
@@ -200,7 +215,7 @@ describe('Página Profile', () => {
   it('deve alternar para a aba de comentários', async () => {
     vi.spyOn(CommentAPI, 'GetUserComments').mockResolvedValue([
         { commentID: 'c1', content: 'Bom post', projectTitle: 'Projeto X' }
-    ] as any);
+    ] as unknown as CommentAPI.CommentProps[]);
 
     render(
       <BrowserRouter>
@@ -235,7 +250,7 @@ describe('Página Profile', () => {
   });
 
   it('deve excluir a conta com sucesso', async () => {
-    vi.spyOn(UserAPI, 'DeleteProfile').mockResolvedValue({} as any);
+    vi.spyOn(UserAPI, 'DeleteProfile').mockResolvedValue({} as unknown as void);
 
     render(
       <BrowserRouter>

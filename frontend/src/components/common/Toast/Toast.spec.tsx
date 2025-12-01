@@ -4,13 +4,13 @@ import Toast from './index';
 
 // Mock dos estilos
 vi.mock('./styles', () => ({
-  ToastContainer: ({ children, type }: any) => (
+  ToastContainer: ({ children, type }: { children: React.ReactNode; type: string }) => (
     <div data-testid="toast-container" data-type={type}>
       {children}
     </div>
   ),
-  ToastMessage: ({ children }: any) => <p>{children}</p>,
-  CloseButton: ({ children, onClick }: any) => (
+  ToastMessage: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+  CloseButton: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => (
     <button onClick={onClick} data-testid="close-btn">
       {children}
     </button>

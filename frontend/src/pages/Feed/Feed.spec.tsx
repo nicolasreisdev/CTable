@@ -19,14 +19,20 @@ vi.mock('../../components/layout/Sidebar', () => ({
 }));
 
 vi.mock('../../components/domain/Postcard', () => ({
-  default: ({ post }: { post: any }) => (
+  default: ({ post }: { post: { title: string } }) => (
     <div data-testid="postcard-mock">{post.title}</div>
   ),
 }));
 
 // Mock do Modal (simples, apenas renderiza se estiver aberto)
+interface ModalProps {
+  isOpen: boolean;
+  children: React.ReactNode;
+  title: string;
+}
+
 vi.mock('../../components/common/Modal', () => ({
-  default: ({ isOpen, children, title }: any) => 
+  default: ({ isOpen, children, title }: ModalProps) => 
     isOpen ? (
       <div data-testid="modal-mock">
         <h1>{title}</h1>
@@ -37,14 +43,14 @@ vi.mock('../../components/common/Modal', () => ({
 
 // Mock dos estilos do Modal que são usados como componentes
 vi.mock('../../components/common/Modal/styles', () => ({
-  ModalActions: ({ children }: any) => <div>{children}</div>,
-  ChoiceButton: ({ children, onClick }: any) => (
+  ModalActions: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ChoiceButton: ({ children, onClick }: { children: React.ReactNode; onClick: () => void }) => (
     <button onClick={onClick}>{children}</button>
   ),
 }));
 
 vi.mock('../../components/common/Toast', () => ({
-  default: ({ message }: any) => <div data-testid="toast-mock">{message}</div>,
+  default: ({ message }: { message: string }) => <div data-testid="toast-mock">{message}</div>,
 }));
 
 // Mock do React Router
@@ -86,7 +92,7 @@ describe('Página Feed', () => {
     ];
     
     // Simula resposta positiva da API
-    vi.spyOn(ProjectAPI, 'GetFeedProjects').mockResolvedValue(mockPosts as any);
+    vi.spyOn(ProjectAPI, 'GetFeedProjects').mockResolvedValue(mockPosts as unknown as ProjectAPI.ProjectProps[]);
 
     render(
       <BrowserRouter>

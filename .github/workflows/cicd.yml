@@ -105,9 +105,10 @@ jobs:
                 echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
               else
 
-                BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
+                BODY=$(echo -e "**Detalhes do Débito Técnico ($FOLDER_PREFIX)**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:**\n$MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI.")
               
                 gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
                 echo "Issue criada para: $TITLE"
               fi
             done
+          done

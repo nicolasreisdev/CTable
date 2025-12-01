@@ -9,7 +9,7 @@
 
     /* --- Estrutura de Arquivos --- */
     "outDir": "./dist", // Pasta onde o JavaScript compilado será salvo
-    "rootDir": "./src", // Pasta que contém seu código-fonte TypeScript
+    // "rootDir": "./src", // Pasta que contém seu código-fonte TypeScript
 
     /* --- Checagem de Tipos Estrita --- */
     "strict": true, // Habilita todas as checagens de tipo estritas (recomendado)
@@ -24,7 +24,8 @@
     "resolveJsonModule": true // Permite importar arquivos .json
   },
   "include": [
-    "src/**/*" // Diz ao TypeScript para compilar tudo que estiver dentro da pasta 'src'
+    "src/**/*", // Diz ao TypeScript para compilar tudo que estiver dentro da pasta 'src'
+    "api/**/*"
   ],
   "exclude": [
     "node_modules", // Ignora a pasta de dependências

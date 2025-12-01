@@ -1,26 +1,9 @@
+import api from './api'; // Importa a instância que criamos no Passo 2
+import { isAxiosError } from 'axios';
+
 export interface LoginProps {
   username: string;
   senha: string;
-}
-
-export async function Login(data: LoginProps) {
-  const response = await fetch('http://localhost:3000/api/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message);
-  }
-
-  const {user, token} = await response.json();
-  console.log("Dados do usuário logado:", user);
-  return { user, token };
-  
 }
 
 export interface RegisterProps {
@@ -32,18 +15,37 @@ export interface RegisterProps {
   dataNascimento: string; 
 }
 
-export async function Register(data: RegisterProps) {
-  const response = await fetch('http://localhost:3000/api/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+export async function Login(data: LoginProps) {
+  try{
+  
+    const response = await api.post('/api/login', data);
 
-  if (!response.ok) {
-    const errorData = await response.json();  
-    throw new Error(errorData.message);  
+    const { user, token } = response.data;
+    console.log("Dados do usuário logado:", user);
+    return { user, token };
+
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao conectar com o servidor.");
+  }
+  
+}
+
+
+export async function Register(data: RegisterProps) {
+ try {
+
+    await api.post('/api/register', data);
+
+  } catch (error) {
+
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao realizar cadastro.");
+
   }
 }
 
@@ -55,5 +57,14 @@ export function logout() {
 export function getCurrentUser() {
   const userString = localStorage.getItem('user');
   if (!userString) return null;
-  return JSON.parse(userString);
+
+  try{
+
+    return JSON.parse(userString);
+
+  }catch {
+
+    return null;
+    
+  }
 }

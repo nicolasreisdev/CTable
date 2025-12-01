@@ -1,10 +1,10 @@
-// src/pages/EditProfile/index.tsx
-import React, { useState, useEffect } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import { PageWrapper, ContentWrapper } from '../Feed/styles';
-// REUTILIZANDO ESTILOS DE CRIAÇÃO
+
 import * as S from '../../components/domain/CreationForm/styles'; 
 import Toast from '../../components/common/Toast';
 import type { NotificationState } from '../../components/common/Toast';

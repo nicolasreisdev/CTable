@@ -1,5 +1,4 @@
-// frontend/src/pages/FeedPage/FeedPage.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/common/Modal';
 import Postcard from '../../components/domain/Postcard';

@@ -1,4 +1,3 @@
-import React from 'react';
 import HeaderHome from '../../components/layout/HeaderHome';
 import * as S from './styles';
 

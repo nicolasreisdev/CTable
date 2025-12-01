@@ -1,6 +1,6 @@
-// src/pages/ProjectPage/index.tsx
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import * as S from './styles';
 import { GetProjectById } from '../../API/Project';

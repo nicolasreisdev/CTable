@@ -168,7 +168,7 @@ export default function Profile() {
               startDate: comment.createdAt,
               // Passa o usuário atual como autor para o cabeçalho do card
               author: { title: currentUser?.username || 'Você' } 
-            } as any} 
+            } as unknown as ProjectProps} 
             showMenu={true} 
             deleteLabel="Comentário"
             onDelete={() => handleDeleteComment(comment.commentID!)}

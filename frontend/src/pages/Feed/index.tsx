@@ -62,7 +62,7 @@ export default function Feed() {
                             {posts.length > 0 ? (
                                 posts.map((post, index) => (
                                     <Postcard 
-                                        key={(post as any).id || (post as any).projectID || index} 
+                                        key={(post as unknown as ProjectProps).id || (post as any).projectID || index} 
                                         post={post} 
                                         showMenu={false} 
                                     />

@@ -163,6 +163,30 @@ export default function Postcard({ post, showMenu, onDelete, deleteLabel = 'Proj
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Não navega se estiver na aba de comentários do perfil (deleteLabel 'Comentário')
+    if (deleteLabel !== 'Projeto') return;
+
+    // Não navega se o clique foi em um elemento interativo
+    const target = e.target as HTMLElement;
+    
+    // Verifica se clicou em botões, inputs, links ou no próprio menu
+    if (
+        target.closest('button') || 
+        target.closest('input') || 
+        target.closest('textarea') ||
+        target.closest('a') ||
+        target.closest(D.DropdownMenu as any) // Garante que itens do dropdown não disparem
+    ) {
+        return;
+    }
+
+    // Realiza a navegação
+    if (projectId) {
+        navigate(`/project/${projectId}`);
+    }
+  };
+
   const formatDate = (dateString?: string) => {
       if (!dateString) return "";
       return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -171,7 +195,7 @@ export default function Postcard({ post, showMenu, onDelete, deleteLabel = 'Proj
   };
 
   return (
-    <S.PostCardWrapper>
+    <S.PostCardWrapper onClick={handleCardClick}>
       {notification && (
         <Toast
           message={notification.message}

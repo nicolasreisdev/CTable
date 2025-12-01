@@ -24,7 +24,8 @@
     "resolveJsonModule": true // Permite importar arquivos .json
   },
   "include": [
-    "src/**/*" // Diz ao TypeScript para compilar tudo que estiver dentro da pasta 'src'
+    "src/**/*", // Diz ao TypeScript para compilar tudo que estiver dentro da pasta 'src'
+    "api/**/*"
   ],
   "exclude": [
     "node_modules", // Ignora a pasta de dependências

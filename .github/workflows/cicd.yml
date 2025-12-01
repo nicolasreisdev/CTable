@@ -27,16 +27,24 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' 
+          node-version: '20' 
           cache: 'npm'
 
-      - name: Instalar dependências do backend
-        run: npm install
+      - name: Instalar dependências do Backend
+        run: npm ci 
         working-directory: ./backend
 
-      - name: Rodar Testes e Gerar Cobertura (lcov)
+      - name: Rodar Testes Backend e Gerar Cobertura
         run: npm run test:coverage
         working-directory: ./backend
+
+      - name: Instalar dependências do Frontend
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Rodar Testes Frontend
+        run: npm run test:coverage 
+        working-directory: ./frontend
 
       - name: Instalar Qlty CLI
         uses: qltysh/qlty-action/install@main
@@ -44,55 +52,63 @@ jobs:
       - name: Inicializar Qlty
         run: qlty init --no
 
-      - name: Rodar Qlty smells e salvar resultados
-        run: qlty check --sarif . > ../qlty_report.json
+      - name: Rodar Qlty no Backend
+        run: qlty check --sarif . > ../backend_report.json
         working-directory: ./backend 
         continue-on-error: true
 
-      - name: Instalar GitHub CLI (gh)
-        run: sudo apt-get install gh -y
+      - name: Rodar Qlty no Frontend
+        run: qlty check --sarif . > ../frontend_report.json
+        working-directory: ./frontend
+        continue-on-error: true
 
-      - name: Debug - Mostrar Conteúdo do Relatório Qlty
-        run: cat qlty_report.json
+      - name: Instalar ferramentas auxiliares
+        run: |
+          sudo apt-get update
+          sudo apt-get install gh jq -y
 
-      - name: Criar Issues no GitHub a partir do Relatório
+      - name: Processar Relatórios e Criar Issues
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          REPORT_FILE="qlty_report.json"
-          
-          if [ ! -s $REPORT_FILE ]; then
-            echo "Relatório Qlty não encontrado ou vazio. Nenhuma Issue será criada."
-            exit 0
-          fi
-          
-          echo "Processando o relatório Qlty SARIF..."
+          REPORTS=("backend_report.json:backend" "frontend_report.json:frontend")
 
-          sudo apt-get install jq -y
-          
-          jq -c '.runs[0].results[]' $REPORT_FILE | while read -r i; do
-            
-            RULE_ID=$(echo $i | jq -r '.ruleId')
-            
-            FILE_URI=$(echo $i | jq -r '.locations[0].physicalLocation.artifactLocation.uri')
-            
-            LINE=$(echo $i | jq -r '.locations[0].physicalLocation.region.startLine')
-            
-            MESSAGE=$(echo $i | jq -r '.message.text' | sed 's/"/\\"/g') 
-            
-            TITLE="[Qlty Smell] $RULE_ID em $FILE_URI"
-       
-            EXISTING_ISSUES=$(gh issue list --search "$TITLE label:technical-debt is:open" --json number --jq '.[0].number' --repo ${{ github.repository }} || echo "")
+          for ITEM in "${REPORTS[@]}"; do
+            REPORT_FILE="${ITEM%%:*}"
+            FOLDER_PREFIX="${ITEM##*:}"
 
-            
-            if [ -n "$EXISTING_ISSUES" ]; then
-              echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
-            else
-              BODY="**Detalhes do Débito Técnico**"$'\n\n'"- **Regra:** $RULE_ID"$'\n'"- **Arquivo:** \`$FILE_URI\`"$'\n'"- **Linha:** $LINE"$'\n\n'"---"$'\n\n'"**Mensagem do Qlty:** $MESSAGE"$'\n\n'"Criado automaticamente pelo pipeline de CI."
+            echo "------------------------------------------------"
+            echo "Processando relatório: $REPORT_FILE (Contexto: $FOLDER_PREFIX)"
 
-              BODY="**Detalhes do Débito Técnico**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:** $MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI."
-              
-              gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
-              echo "Issue criada para: $TITLE"
+            if [ ! -s $REPORT_FILE ]; then
+              echo "Relatório $REPORT_FILE não encontrado ou vazio. Pulando..."
+              continue
             fi
+
+            jq -c '.runs[0].results[]' $REPORT_FILE | while read -r i; do
+              
+              RULE_ID=$(echo $i | jq -r '.ruleId')
+              
+              RAW_URI=$(echo $i | jq -r '.locations[0].physicalLocation.artifactLocation.uri')
+              
+              FILE_URI="$FOLDER_PREFIX/$RAW_URI"
+              
+              LINE=$(echo $i | jq -r '.locations[0].physicalLocation.region.startLine')
+              
+              MESSAGE=$(echo $i | jq -r '.message.text' | sed 's/"/\\"/g') 
+              
+              TITLE="[Qlty Smell] $RULE_ID em $FILE_URI"
+        
+              EXISTING_ISSUES=$(gh issue list --search "$TITLE label:technical-debt is:open" --json number --jq '.[0].number' --repo ${{ github.repository }} || echo "")
+
+              if [ -n "$EXISTING_ISSUES" ]; then
+                echo "Issue duplicada encontrada (#$EXISTING_ISSUES) para: $TITLE. Pulando criação."
+              else
+
+                BODY=$(echo -e "**Detalhes do Débito Técnico ($FOLDER_PREFIX)**\n\n- **Regra:** $RULE_ID\n- **Arquivo:** \`$FILE_URI\`\n- **Linha:** $LINE\n\n---\n**Mensagem do Qlty:**\n$MESSAGE\n\n\nCriado automaticamente pelo pipeline de CI.")
+              
+                gh issue create --title "$TITLE" --body "$BODY" --label "technical-debt" --repo ${{ github.repository }}
+                echo "Issue criada para: $TITLE"
+              fi
+            done
           done

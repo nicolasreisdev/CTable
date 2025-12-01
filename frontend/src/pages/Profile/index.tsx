@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Sidebar from '../../components/layout/Sidebar'; 
 import Postcard from '../../components/domain/Postcard'; 
 import * as S from './styles'; 

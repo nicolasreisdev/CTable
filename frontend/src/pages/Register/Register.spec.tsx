@@ -16,18 +16,24 @@ vi.mock('../../API/Auth', () => ({
   Register: vi.fn(),
 }));
 
+interface MockStyleProps {
+  children?: React.ReactNode;
+  onSubmit?: React.FormEventHandler;
+  disabled?: boolean;
+}
+
 vi.mock('../../components/domain/Form/styles', () => ({
-  FormPageContainer: ({ children }: any) => <div>{children}</div>,
-  FormWrapper: ({ children }: any) => <div>{children}</div>,
-  FormTitle: ({ children }: any) => <h1>{children}</h1>,
-  StyledForm: ({ children, onSubmit }: any) => <form onSubmit={onSubmit}>{children}</form>,
-  StyledInput: (props: any) => <input {...props} />, 
-  SubmitButton: ({ children, disabled }: any) => <button type="submit" disabled={disabled}>{children}</button>,
-  RedirectLink: ({ children }: any) => <div>{children}</div>,
+  FormPageContainer: ({ children }: MockStyleProps) => <div>{children}</div>,
+  FormWrapper: ({ children }: MockStyleProps) => <div>{children}</div>,
+  FormTitle: ({ children }: MockStyleProps) => <h1>{children}</h1>,
+  StyledForm: ({ children, onSubmit }: MockStyleProps) => <form onSubmit={onSubmit}>{children}</form>,
+  StyledInput: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />, 
+  SubmitButton: ({ children, disabled }: MockStyleProps) => <button type="submit" disabled={disabled}>{children}</button>,
+  RedirectLink: ({ children }: MockStyleProps) => <div>{children}</div>,
 }));
 
 vi.mock('../../components/common/Toast', () => ({
-  default: ({ message }: any) => <div data-testid="toast">{message}</div>
+  default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div>
 }));
 
 describe('Página Register', () => {
@@ -36,7 +42,7 @@ describe('Página Register', () => {
   });
 
   it('deve registrar um novo usuário com sucesso', async () => {
-    vi.spyOn(AuthAPI, 'Register').mockResolvedValue({} as any);
+    vi.spyOn(AuthAPI, 'Register').mockResolvedValue({} as unknown as void);
 
     render(
       <BrowserRouter>

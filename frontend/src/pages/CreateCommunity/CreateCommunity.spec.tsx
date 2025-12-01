@@ -7,7 +7,7 @@ import * as KeywordsAPI from '../../API/Keywords';
 
 // --- Mocks ---
 const navigateMock = vi.fn();
-let mockLocationState: any = null;
+let mockLocationState: unknown = null;
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -28,9 +28,9 @@ vi.mock('../../API/Keywords', () => ({
 }));
 
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
-vi.mock('../../components/common/Toast', () => ({ default: ({ message }: any) => <div data-testid="toast">{message}</div> }));
+vi.mock('../../components/common/Toast', () => ({ default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> }));
 vi.mock('../../components/domain/TagInput', () => ({
-    default: ({ onChange, value }: any) => (
+    default: ({ onChange, value }: { onChange: (val: string[]) => void; value: string[] }) => (
       <input 
         data-testid="tag-input-mock" 
         value={value ? value.join(',') : ''} 

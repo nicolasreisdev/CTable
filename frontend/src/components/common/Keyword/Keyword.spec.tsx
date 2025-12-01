@@ -4,13 +4,13 @@ import { Keyword } from './index';
 
 // Mock dos estilos
 vi.mock('./styles', () => ({
-  KeywordTag: ({ children }: any) => <div data-testid="keyword-tag">{children}</div>,
-  KeywordRemoveButton: ({ children, onClick }: any) => (
+  KeywordTag: ({ children }: { children: React.ReactNode }) => <div data-testid="keyword-tag">{children}</div>,
+  KeywordRemoveButton: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => (
     <button onClick={onClick} data-testid="remove-btn">
       {children}
     </button>
   ),
-  KeywordContainer: ({ children }: any) => <div>{children}</div>
+  KeywordContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }));
 
 describe('Componente Keyword', () => {

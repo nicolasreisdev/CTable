@@ -2,24 +2,30 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import Modal from './index';
 
+// Interface auxiliar para os mocks
+interface MockProps {
+  children?: React.ReactNode;
+  onClick?: React.MouseEventHandler;
+}
+
 // Mock dos estilos
 vi.mock('./styles', () => ({
-  ModalOverlay: ({ children, onClick }: any) => (
+  ModalOverlay: ({ children, onClick }: MockProps) => (
     <div data-testid="overlay" onClick={onClick}>
       {children}
     </div>
   ),
-  ModalContent: ({ children, onClick }: any) => (
+  ModalContent: ({ children, onClick }: MockProps) => (
     <div data-testid="content" onClick={onClick}>
       {children}
     </div>
   ),
-  CloseButton: ({ children, onClick }: any) => (
+  CloseButton: ({ children, onClick }: MockProps) => (
     <button data-testid="close-btn" onClick={onClick}>
       {children}
     </button>
   ),
-  ModalTitle: ({ children }: any) => <h1>{children}</h1>,
+  ModalTitle: ({ children }: { children: React.ReactNode }) => <h1>{children}</h1>,
 }));
 
 describe('Componente Modal', () => {

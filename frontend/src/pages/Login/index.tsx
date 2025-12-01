@@ -25,7 +25,6 @@ export default function LoginPage() {
     async function onSubmit(data: LoginProps) {
       console.log(data);
       try{
-        //await Login(data);
         await login(data);
         
         console.log('Usuário registrado com sucesso');

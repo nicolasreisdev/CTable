@@ -4,11 +4,15 @@ import Home from './index';
 import { BrowserRouter } from 'react-router-dom';
 
 // Mocks dos estilos
+interface StyleProps {
+  children?: React.ReactNode;
+}
+
 vi.mock('./styles', () => ({
-  HomePageContainer: ({ children }: any) => <div data-testid="home-container">{children}</div>,
-  ContentWrapper: ({ children }: any) => <div>{children}</div>,
-  SiteTitle: ({ children }: any) => <h1>{children}</h1>,
-  Tagline: ({ children }: any) => <p>{children}</p>,
+  HomePageContainer: ({ children }: StyleProps) => <div data-testid="home-container">{children}</div>,
+  ContentWrapper: ({ children }: StyleProps) => <div>{children}</div>,
+  SiteTitle: ({ children }: StyleProps) => <h1>{children}</h1>,
+  Tagline: ({ children }: StyleProps) => <p>{children}</p>,
 }));
 
 // Mock do HeaderHome

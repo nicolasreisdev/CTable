@@ -35,15 +35,21 @@ vi.mock('../../API/AuthContext', () => ({
 
 // Mocks Visuais
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
-vi.mock('../../components/common/Toast', () => ({ default: ({ message }: any) => <div data-testid="toast">{message}</div> }));
+vi.mock('../../components/common/Toast', () => ({ default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> }));
 
 // Mock dos estilos de formulário 
+interface FormStyleProps {
+  children?: React.ReactNode;
+  onSubmit?: React.FormEventHandler;
+  htmlFor?: string;
+}
+
 vi.mock('../../components/domain/CreationForm/styles', () => ({
-  FormContainer: ({ children, onSubmit }: any) => <form onSubmit={onSubmit}>{children}</form>,
-  InputGroup: ({ children }: any) => <div>{children}</div>,
-  Label: ({ children, htmlFor }: any) => <label htmlFor={htmlFor}>{children}</label>,
-  Input: (props: any) => <input {...props} />,
-  SubmitButton: ({ children }: any) => <button type="submit">{children}</button>,
+  FormContainer: ({ children, onSubmit }: FormStyleProps) => <form onSubmit={onSubmit}>{children}</form>,
+  InputGroup: ({ children }: FormStyleProps) => <div>{children}</div>,
+  Label: ({ children, htmlFor }: FormStyleProps) => <label htmlFor={htmlFor}>{children}</label>,
+  Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
+  SubmitButton: ({ children }: FormStyleProps) => <button type="submit">{children}</button>,
 }));
 
 describe('Página EditProfile', () => {
@@ -67,7 +73,7 @@ describe('Página EditProfile', () => {
   });
 
   it('deve atualizar o perfil com sucesso', async () => {
-    vi.spyOn(UserAPI, 'UpdateProfile').mockResolvedValue({} as any);
+    vi.spyOn(UserAPI, 'UpdateProfile').mockResolvedValue({} as unknown as void);
 
     render(
       <BrowserRouter>

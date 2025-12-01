@@ -1,20 +1,35 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-// Importe o componente que quer testar (ex: App ou uma página de Login)
-// import App from './App'; 
+import { describe, it, expect, vi } from 'vitest';
+import App from './App';
 
-describe('Teste de Configuração Inicial', () => {
-  it('deve somar 1 + 1 corretamente', () => {
-    expect(1 + 1).toBe(2);
-  });
+// --- Mocks ---
+vi.mock('./Router', () => ({
+  Router: () => <div data-testid="app-router">Router Content</div>
+}));
 
-  // Exemplo de teste de componente (descomente quando tiver o componente)
-  /*
-  it('deve renderizar o título da aplicação', () => {
+vi.mock('./styles/global', () => ({
+  GlobalStyle: () => <div data-testid="global-style" />
+}));
+
+vi.mock('./styles/themes/default', () => ({
+  defaultTheme: { 
+    colors: { background: '#fff' } 
+  }
+}));
+
+describe('Componente App', () => {
+  it('deve renderizar a estrutura principal corretamente', () => {
     render(<App />);
-    // Procura por um texto que você sabe que existe na tela
-    const linkElement = screen.getByText(/HuLuSGV/i); 
-    expect(linkElement).toBeInTheDocument();
+
+    // Verifica se o componente Router foi renderizado dentro do App
+    expect(screen.getByTestId('app-router')).toBeInTheDocument();
+    expect(screen.getByText('Router Content')).toBeInTheDocument();
   });
-  */
+
+  it('deve injetar os estilos globais', () => {
+    render(<App />);
+    
+    // Verifica se o componente de estilos globais está presente na árvore
+    expect(screen.getByTestId('global-style')).toBeInTheDocument();
+  });
 });

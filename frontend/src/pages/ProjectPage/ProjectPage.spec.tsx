@@ -21,21 +21,25 @@ vi.mock('../../API/Project', () => ({
 
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
 
-// Mocks de Estilo (simplificados para não quebrar no render)
+// Mocks de Estilo 
+interface StyleProps {
+  children?: React.ReactNode;
+}
+
 vi.mock('./styles', () => ({
-  PageWrapper: ({ children }: any) => <div>{children}</div>,
-  MainContent: ({ children }: any) => <div>{children}</div>,
+  PageWrapper: ({ children }: StyleProps) => <div>{children}</div>,
+  MainContent: ({ children }: StyleProps) => <div>{children}</div>,
   Banner: () => <div />,
-  HeaderContainer: ({ children }: any) => <div>{children}</div>,
-  ProjectIcon: ({ children }: any) => <div>{children}</div>,
-  HeaderInfo: ({ children }: any) => <div>{children}</div>,
-  ContentGrid: ({ children }: any) => <div>{children}</div>,
-  MainColumn: ({ children }: any) => <div>{children}</div>,
-  DescriptionBox: ({ children }: any) => <div>{children}</div>,
-  InfoSidebar: ({ children }: any) => <div>{children}</div>,
-  KeywordsContainer: ({ children }: any) => <div>{children}</div>,
-  KeywordTag: ({ children }: any) => <span>{children}</span>,
-  StatusBadge: ({ children }: any) => <span>{children}</span>,
+  HeaderContainer: ({ children }: StyleProps) => <div>{children}</div>,
+  ProjectIcon: ({ children }: StyleProps) => <div>{children}</div>,
+  HeaderInfo: ({ children }: StyleProps) => <div>{children}</div>,
+  ContentGrid: ({ children }: StyleProps) => <div>{children}</div>,
+  MainColumn: ({ children }: StyleProps) => <div>{children}</div>,
+  DescriptionBox: ({ children }: StyleProps) => <div>{children}</div>,
+  InfoSidebar: ({ children }: StyleProps) => <div>{children}</div>,
+  KeywordsContainer: ({ children }: StyleProps) => <div>{children}</div>,
+  KeywordTag: ({ children }: StyleProps) => <span>{children}</span>,
+  StatusBadge: ({ children }: StyleProps) => <span>{children}</span>,
 }));
 
 describe('Página ProjectPage', () => {
@@ -54,7 +58,7 @@ describe('Página ProjectPage', () => {
   });
 
   it('deve carregar e exibir os detalhes do projeto', async () => {
-    vi.spyOn(ProjectAPI, 'GetProjectById').mockResolvedValue(mockProject as any);
+    vi.spyOn(ProjectAPI, 'GetProjectById').mockResolvedValue(mockProject as unknown as ProjectAPI.ProjectProps);
 
     render(
       <BrowserRouter>
@@ -73,7 +77,7 @@ describe('Página ProjectPage', () => {
   });
 
   it('deve exibir mensagem se projeto não for encontrado', async () => {
-    vi.spyOn(ProjectAPI, 'GetProjectById').mockResolvedValue(null as any);
+    vi.spyOn(ProjectAPI, 'GetProjectById').mockResolvedValue(null as unknown as ProjectAPI.ProjectProps);
 
     render(
       <BrowserRouter>

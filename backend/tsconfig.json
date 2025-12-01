@@ -9,7 +9,7 @@
 
     /* --- Estrutura de Arquivos --- */
     "outDir": "./dist", // Pasta onde o JavaScript compilado será salvo
-    "rootDir": "./src", // Pasta que contém seu código-fonte TypeScript
+    // "rootDir": "./src", // Pasta que contém seu código-fonte TypeScript
 
     /* --- Checagem de Tipos Estrita --- */
     "strict": true, // Habilita todas as checagens de tipo estritas (recomendado)

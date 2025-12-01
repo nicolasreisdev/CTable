@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FiHome, FiChevronDown } from 'react-icons/fi';
 import { GetAllCommunities } from '../../../API/Community';
 import * as S from './styles';
@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 export default function Sidebar() {
     // Estado para controlar se a lista de comunidades está visível
     const [isCommunitiesOpen, setIsCommunitiesOpen] = useState(true);
-    const { currentUser, logout } = useAuth();
+    const { currentUser } = useAuth();
     const [userCommunities, setUserCommunities] = useState<CommunityProps[]>([]);
 
     const toggleCommunities = () => {

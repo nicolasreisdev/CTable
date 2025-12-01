@@ -2,6 +2,14 @@ import styled from 'styled-components';
 
 export const PostCardWrapper = styled.div`
     width: 100%;
+
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 `;
 
 // Cabeçalho com comunidade e autor

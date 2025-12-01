@@ -92,6 +92,42 @@ describe('Componente Postcard', () => {
     vi.clearAllMocks();
   });
 
+  it('NÃO deve navegar se clicar em um botão interativo dentro do card', () => {
+    render(<BrowserRouter><Postcard post={mockPost as any} showMenu={true} /></BrowserRouter>);
+    
+    // Clica no botão de menu (que está dentro do wrapper)
+    fireEvent.click(screen.getByTestId('menu-btn'));
+    
+    // O menu deve abrir, mas a navegação NÃO deve ocorrer
+    expect(screen.getByTestId('dropdown-menu')).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it('deve ir para a página de edição ao clicar em Editar', () => {
+    render(<BrowserRouter><Postcard post={mockPost as any} showMenu={true} /></BrowserRouter>);
+    
+    fireEvent.click(screen.getByTestId('menu-btn'));
+    fireEvent.click(screen.getByText('Editar'));
+
+    expect(navigateMock).toHaveBeenCalledWith('/editProject/proj1', expect.objectContaining({ state: { projectToEdit: mockPost } }));
+  });
+
+  it('deve exibir erro ao tentar deletar projeto falho', async () => {
+    vi.spyOn(ProjectAPI, 'DeleteProject').mockRejectedValue(new Error('Erro ao deletar'));
+    render(<BrowserRouter><Postcard post={mockPost as any} showMenu={true} /></BrowserRouter>);
+
+    fireEvent.click(screen.getByTestId('menu-btn'));
+    fireEvent.click(screen.getByTestId('delete-post-btn'));
+    
+    // Botão de confirmação no modal (segundo botão "Excluir" na tela)
+    const modalButtons = screen.getAllByText('Excluir');
+    fireEvent.click(modalButtons[modalButtons.length - 1]);
+
+    await waitFor(() => {
+        expect(screen.getByTestId('toast')).toHaveTextContent('Erro ao excluir projeto');
+    });
+  });
+
   it('deve renderizar o post corretamente', () => {
     render(
         <BrowserRouter>

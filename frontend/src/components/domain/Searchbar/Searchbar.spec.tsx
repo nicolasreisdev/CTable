@@ -27,6 +27,66 @@ describe('Componente Searchbar', () => {
     vi.clearAllMocks();
   });
 
+  it('deve fechar o dropdown ao clicar fora do componente', async () => {
+    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue([]);
+    vi.spyOn(ProjectAPI, 'GetFeedProjects').mockResolvedValue([]);
+
+    render(<BrowserRouter><Searchbar /></BrowserRouter>);
+
+    const input = screen.getByTestId('search-input');
+    
+    // Abre dropdown
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'a' } });
+    
+    await waitFor(() => expect(screen.getByTestId('dropdown')).toBeInTheDocument());
+
+    // Clica fora
+    fireEvent.mouseDown(document.body);
+
+    await waitFor(() => {
+        expect(screen.queryByTestId('dropdown')).not.toBeInTheDocument();
+    });
+  });
+
+  it('deve navegar para uma comunidade', async () => {
+    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue([
+        { communityID: 'c1', name: 'Comunidade Java' } as any
+    ]);
+    vi.spyOn(ProjectAPI, 'GetFeedProjects').mockResolvedValue([]);
+
+    render(<BrowserRouter><Searchbar /></BrowserRouter>);
+
+    const input = screen.getByTestId('search-input');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'Java' } });
+
+    const result = await screen.findByText('Comunidade Java');
+    fireEvent.click(result);
+
+    expect(navigateMock).toHaveBeenCalledWith('/r/c1');
+    expect(input).toHaveValue(''); // Verifica se limpou a query
+  });
+
+  it('deve limpar resultados se input ficar vazio', async () => {
+    vi.spyOn(ProjectAPI, 'GetFeedProjects').mockResolvedValue([{ id: '1', title: 'Teste' }] as any);
+    render(<BrowserRouter><Searchbar /></BrowserRouter>);
+
+    const input = screen.getByTestId('search-input');
+    
+    // Digita algo
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'Teste' } });
+    await screen.findByText('Teste');
+
+    // Apaga tudo
+    fireEvent.change(input, { target: { value: '' } });
+
+    await waitFor(() => {
+        expect(screen.queryByTestId('dropdown')).not.toBeInTheDocument();
+    });
+  });
+
   it('deve carregar dados ao focar no input e filtrar resultados', async () => {
     // Mock das APIs
     vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue([

@@ -1,3 +1,6 @@
+import api from './api';
+import { isAxiosError } from 'axios';
+
 export interface ProjectProps {
   id?: string;
   title: string;
@@ -18,111 +21,91 @@ export function parseDate(dataString: string): Date {
   return new Date(Number(ano), Number(mes) - 1, Number(dia));
 }
 
-export async function NewProject(data: ProjectProps) {
-    
-  const response = await fetch('http://localhost:3000/api/user/newproject', {
-    method: 'POST',
+const getAuthHeader = () => {
+  return {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-    body: JSON.stringify(data),
-  });
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+};
 
-  if (!response.ok) {
-    const errorData = await response.json();  
-    throw new Error(errorData.message);  
+export async function NewProject(data: ProjectProps) {
+  try{
+    const response = await api.post('/api/user/newproject', data, getAuthHeader());
+
+    return response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao criar projeto.");
   }
 }
 
 export async function UpdateProject(projectId: string, data: ProjectProps) {
-    
-  const response = await fetch(`http://localhost:3000/api/user/updateproject/${projectId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-    body: JSON.stringify(data),
-  });
+  try{
+    const response = await api.put(`/api/user/updateproject/${projectId}`, 
+      data, 
+      getAuthHeader()
+    );
+    return response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao atualizar projeto.");
+  }
 
-  if (!response.ok) {
-    const errorData = await response.json();  
-    throw new Error(errorData.message);  
-  } 
 }
 
 export async function GetFeedProjects(): Promise<ProjectProps[]> {
-  const token = localStorage.getItem('token');
 
-  const response = await fetch('http://localhost:3000/api/user/home', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`, 
-    },
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message);
+  try{
+    const response = await api.get('/api/user/home', getAuthHeader());
+
+    console.log("Dados do feed de projetos:", response.data);
+
+    return response.data.feed;
+  }catch(error){
+    console.error("Erro ao buscar feed:", error);
+    throw new Error("Erro ao carregar o feed de projetos.");
   }
-
-  const data = await response.json();
-  console.log("Dados do feed de projetos:", data);
-
-  return data.feed;
 }
 
 export async function DeleteProject(projectId: string) {
-    const response = await fetch(`http://localhost:3000/api/user/deleteproject/${projectId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao excluir projeto.");
-  } 
+  try{
+    await api.delete(`/api/user/deleteproject/${projectId}`, getAuthHeader());
+  }
+  catch(error){
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao excluir projeto.");
+  }
 }
 
 export async function GetUserProjects(): Promise<ProjectProps[]> {
-  const token = localStorage.getItem('token');
+  try{
+    const response = await api.get('/api/user/projects', getAuthHeader());
+    
+    console.log("Dados dos projetos do usuário:", response.data.projects);
 
-  const response = await fetch('http://localhost:3000/api/user/projects', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`, // Adiciona o Token JWT
-    },
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message);
+    return response.data.projects;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao buscar projetos do usuário.");
   }
-
-  const data = await response.json();
-  console.log("Dados dos projetos do usuário:", data.projects);
-
-  return data.projects;
 }
 
 export async function GetProjectById(projectId: string): Promise<ProjectProps> {
-  const response = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
+    const response = await api.get(`/api/projects/${projectId}`, getAuthHeader());
 
-  if (!response.ok) {
+    return await response.data;
+  }catch(error){
+    console.error("Erro ao buscar projeto:", error);
     throw new Error('Erro ao carregar projeto');
   }
-
-  return await response.json();
 }

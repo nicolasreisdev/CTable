@@ -1,3 +1,5 @@
+import api from './api';
+import { isAxiosError } from 'axios';
 export interface CommentProps {
   projectTitle?: string;
   commentID?: string;
@@ -9,69 +11,69 @@ export interface CommentProps {
   fullName?: string;
 }
 
-export async function CreateComment(projectId: string, content: string) {
-  const response = await fetch(`http://localhost:3000/api/project/${projectId}/comments`, {
-    method: 'POST',
+const getAuthHeader = () => {
+  return {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-    body: JSON.stringify({ content }),
-  });
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+};
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao enviar comentário.");
+export async function CreateComment(projectId: string, content: string) {
+  try{
+
+    const response = await api.post(`/api/project/${projectId}/comments`, 
+      {content},
+      getAuthHeader()
+    );
+
+    return response.data;
+
+  }catch(error){
+
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao enviar comentário.");
+
   }
-
-  return await response.json();
 }
 
 export async function GetComments(projectId: string): Promise<CommentProps[]> {
-  const response = await fetch(`http://localhost:3000/api/project/${projectId}/comments`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
+  
+    const response = await api.get(`/api/project/${projectId}/comments`, getAuthHeader());
 
-  if (!response.ok) {
+    return await response.data;
+  }catch(error){
+    console.error("Erro ao buscar comentários:", error);
     throw new Error("Erro ao carregar comentários.");
   }
 
-  return await response.json();
+
 }
 
 export async function GetUserComments(): Promise<CommentProps[]> {
-  const response = await fetch('http://localhost:3000/api/user/comments', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
+    const response = await api.get('/api/user/comments', getAuthHeader());
 
-  if (!response.ok) {
+    return response.data;
+  }catch(error){
+    console.error("Erro ao buscar comentários do usuário:", error);
     throw new Error("Erro ao carregar comentários do usuário.");
   }
-
-  return await response.json();
 }
 
 export async function DeleteComment(commentId: string) {
-  const response = await fetch(`http://localhost:3000/api/project/${commentId}/deletecomment`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao excluir comentário.");
-  }
+  try{
   
-  return await response.json();
+    const response = await api.delete(`/api/project/${commentId}/deletecomment`, getAuthHeader());
+
+    return response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao excluir comentário.");
+  }
 }

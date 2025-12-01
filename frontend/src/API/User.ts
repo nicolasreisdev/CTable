@@ -1,3 +1,6 @@
+import api from './api';
+import { isAxiosError } from 'axios';
+
 export interface UserProfileData {
   nomeCompleto: string;
   username: string;
@@ -7,37 +10,44 @@ export interface UserProfileData {
 }
 
 export async function UpdateProfile(data: UserProfileData) {
-  const response = await fetch('http://localhost:3000/api/user/editprofile', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-    body: JSON.stringify(data),
-  });
+  try{
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao atualizar perfil.");
+    const response = await api.put('/api/user/editprofile', data, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      }
+    });
+
+    return response.data;
+
+  }catch(error){
+
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao atualizar perfil.");
+
   }
-
-  // Retorna o usuário atualizado
-  return await response.json();
 }
 
 export async function DeleteProfile() {
-  const response = await fetch('http://localhost:3000/api/user/deleteprofile', {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao excluir perfil.");
+    const response = await api.delete('/api/user/deleteprofile', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      }
+    });
+
+    
+    return response.data;
+    
+  }catch(error){
+
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro ao excluir perfil.");
+
   }
-  
-  return await response.json();
 }

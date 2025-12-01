@@ -1,3 +1,6 @@
+import api from './api';
+import { isAxiosError } from 'axios';
+
 export interface CommunityProps {
     communityID: string;
     name: string;
@@ -10,122 +13,101 @@ export interface CommunityProps {
     isAdmin?: boolean;
 }
 
-export async function NewCommunity(data: CommunityProps) { 
-    console.log("Enviando dados da comunidade:", data);
-    const response = await fetch('http://localhost:3000/api/newcommunity', {
-    method: 'POST',
+const getAuthHeader = () => {
+  return {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-    body: JSON.stringify(data),
-  });
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+};
 
-  if (!response.ok) {
-    console.error("Erro ao criar comunidade:", response.statusText);
-    const errorData = await response.json();  
-    throw new Error(errorData.message);  
-  } 
+export async function NewCommunity(data: CommunityProps) { 
+
+    try{
+      console.log("Enviando dados da comunidade:", data);
+      const response = await api.post('/api/newcommunity', data, getAuthHeader());
+      return response.data
+    }catch(error){
+      if (isAxiosError(error) && error.response) {
+          throw new Error(error.response.data.message);
+      }
+      throw new Error("Erro ao criar comunidade.");
+    }
 }
 
 export async function GetAllCommunities(): Promise<CommunityProps[]> {
-  const response = await fetch('http://localhost:3000/api/user/communities', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
-
-  if (!response.ok) {
-    console.error("Erro ao obter comunidades:", response.statusText);
+  try{
+  const response = await api.get<CommunityProps[]>('/api/user/communities', getAuthHeader());
+  return response.data
+  }catch(error){
+    console.error("Erro ao obter comunidades:", error);
     throw new Error('Erro ao obter comunidades');
   }
-
-  const communities: CommunityProps[] = await response.json();
-  return communities;
 } 
 
 export async function GetCommunityById(communityId: string) {
-  const response = await fetch(`http://localhost:3000/api/communities/data/${communityId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
+    const response = await api.get(`/api/communities/data/${communityId}`, getAuthHeader());
 
-  if (!response.ok) {
-    if (response.status === 404) throw new Error('Comunidade não encontrada');
+    return await response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response?.status === 404) {
+          throw new Error('Comunidade não encontrada');
+      }
     throw new Error('Erro ao carregar a comunidade');
   }
-
-  return await response.json();
 }
 
 export async function JoinCommunity(communityId: string) {
-  const response = await fetch(`http://localhost:3000/api/communities/${communityId}/join`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
+    const response = await api.post(`/api/communities/${communityId}/join`, {}, getAuthHeader());
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Erro ao entrar na comunidade');
+    return await response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+          throw new Error(error.response.data.message);
+      }
+    throw new Error('Erro ao entrar na comunidade');
   }
-
-  return await response.json();
 }
 
 export async function DeleteCommunity(communityId: string) {
-  const response = await fetch(`http://localhost:3000/api/communities/deletecommunity/${communityId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao excluir comunidade.");
+  try{
+    const response = await api.delete(`/api/communities/deletecommunity/${communityId}`, getAuthHeader());
+    return response.data
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+          throw new Error(error.response.data.message);
+      }
+    throw new Error("Erro ao excluir comunidade.");
   }
 }
 
 export async function UpdateCommunity(communityId: string, data: CommunityProps) {
-  const response = await fetch(`http://localhost:3000/api/communities/updatecommunity/${communityId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-    body: JSON.stringify(data),
-  });
+  try{
+    const response = await api.put(`/api/communities/updatecommunity/${communityId}`,
+      data,
+      getAuthHeader()
+    );
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao atualizar comunidade.");
+    return response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.message);
+      }
+    throw new Error("Erro ao atualizar comunidade.");
   }
-  
-  return await response.json();
 }
 
 export async function LeaveCommunity(communityId: string) {
-  const response = await fetch(`http://localhost:3000/api/user/leavecommunity/${communityId}`, {
-    method: 'DELETE', 
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+  try{
+    const response = await api.delete(`/api/user/leavecommunity/${communityId}`, getAuthHeader());
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Erro ao sair da comunidade.");
+    return await response.data;
+  }catch(error){
+    if (isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.message);
+      }
+    throw new Error("Erro ao sair da comunidade.");
   }
-  
-  return await response.json();
 }

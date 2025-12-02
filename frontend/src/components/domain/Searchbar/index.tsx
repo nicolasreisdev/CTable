@@ -25,7 +25,6 @@ export default function Searchbar() {
     const [filteredCommunities, setFilteredCommunities] = useState<CommunityProps[]>([]);
     const [filteredProjects, setFilteredProjects] = useState<ProjectProps[]>([]);
 
-    // Carrega dados APENAS na primeira vez que o usuário foca na busca (para economizar recursos)
     const handleFocus = async () => {
         setIsFocused(true);
         if (allCommunities.length === 0 && allProjects.length === 0) {

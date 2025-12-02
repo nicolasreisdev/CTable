@@ -40,7 +40,7 @@ describe('Componente Sidebar', () => {
 
   it('deve renderizar a estrutura básica e o link Home', async () => {
     // Mock da API retornando lista vazia
-    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue([]);
+    vi.spyOn(CommunityAPI, 'GetUserCommunities').mockResolvedValue([]);
 
     render(
       <BrowserRouter>
@@ -53,7 +53,7 @@ describe('Componente Sidebar', () => {
     expect(screen.getByText('COMUNIDADES')).toBeInTheDocument();
     
     // Aguarda o useEffect terminar para limpar warnings
-    await waitFor(() => expect(CommunityAPI.GetAllCommunities).toHaveBeenCalled());
+    await waitFor(() => expect(CommunityAPI.GetUserCommunities).toHaveBeenCalled());
   });
 
   it('deve buscar e listar as comunidades do usuário', async () => {
@@ -61,7 +61,7 @@ describe('Componente Sidebar', () => {
       { communityID: '1', name: 'React Brasil' },
       { communityID: '2', name: 'Frontend' }
     ];
-    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue(mockCommunities as unknown as CommunityAPI.CommunityProps[]);
+    vi.spyOn(CommunityAPI, 'GetUserCommunities').mockResolvedValue(mockCommunities as unknown as CommunityAPI.CommunityProps[]);
 
     render(
       <BrowserRouter>
@@ -81,7 +81,7 @@ describe('Componente Sidebar', () => {
   });
 
   it('deve alternar a visibilidade da lista de comunidades ao clicar no header', async () => {
-    vi.spyOn(CommunityAPI, 'GetAllCommunities').mockResolvedValue([]);
+    vi.spyOn(CommunityAPI, 'GetUserCommunities').mockResolvedValue([]);
 
     render(
       <BrowserRouter>
@@ -101,6 +101,6 @@ describe('Componente Sidebar', () => {
     fireEvent.click(screen.getByTestId('communities-header'));
     expect(screen.getByTestId('communities-list')).toBeInTheDocument();
 
-    await waitFor(() => expect(CommunityAPI.GetAllCommunities).toHaveBeenCalled());
+    await waitFor(() => expect(CommunityAPI.GetUserCommunities).toHaveBeenCalled());
   });
 });

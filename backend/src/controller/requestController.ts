@@ -111,7 +111,7 @@ class RequestController {
     async removeProject(userID: number, projectID: string){
         try{
 
-            BusinessLogicProject.removeProject(userID, projectID);
+            await BusinessLogicProject.removeProject(userID, projectID);
 
         }catch(error){
             throw error;

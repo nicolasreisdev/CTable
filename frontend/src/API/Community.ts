@@ -35,7 +35,7 @@ export async function NewCommunity(data: CommunityProps) {
     }
 }
 
-export async function GetAllCommunities(): Promise<CommunityProps[]> {
+export async function GetUserCommunities(): Promise<CommunityProps[]> {
   try{
   const response = await api.get<CommunityProps[]>('/api/user/communities', getAuthHeader());
   return response.data
@@ -109,5 +109,15 @@ export async function LeaveCommunity(communityId: string) {
         throw new Error(error.response.data.message);
       }
     throw new Error("Erro ao sair da comunidade.");
+  }
+}
+
+export async function GetAllCommunities(): Promise<CommunityProps[]> {
+  try{
+    const response = await api.get<CommunityProps[]>('/api/communities', getAuthHeader());
+    return response.data
+  }catch(error){
+    console.error("Erro ao obter todas as comunidades:", error);
+    throw new Error('Erro ao obter todas as comunidades');
   }
 }

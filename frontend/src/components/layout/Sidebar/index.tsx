@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FiHome, FiChevronDown } from 'react-icons/fi';
-import { GetAllCommunities } from '../../../API/Community';
+import { GetUserCommunities } from '../../../API/Community';
 import * as S from './styles';
 import type { CommunityProps } from '../../../API/Community';
 import { useAuth } from '../../../API/AuthContext';
@@ -21,7 +21,7 @@ export default function Sidebar() {
         const fetchCommunities = async () => {
           try {;
             
-            const apiUserCommunities = await GetAllCommunities();
+            const apiUserCommunities = await GetUserCommunities();
             console.log("Comunidades do usuário:", apiUserCommunities);
             setUserCommunities(apiUserCommunities);
     

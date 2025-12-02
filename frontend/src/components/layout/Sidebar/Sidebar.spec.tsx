@@ -53,7 +53,7 @@ describe('Componente Sidebar', () => {
     expect(screen.getByText('COMUNIDADES')).toBeInTheDocument();
     
     // Aguarda o useEffect terminar para limpar warnings
-    await waitFor(() => expect(CommunityAPI.GetAllCommunities).toHaveBeenCalled());
+    await waitFor(() => expect(CommunityAPI.GetUserCommunities).toHaveBeenCalled());
   });
 
   it('deve buscar e listar as comunidades do usuário', async () => {
@@ -101,6 +101,6 @@ describe('Componente Sidebar', () => {
     fireEvent.click(screen.getByTestId('communities-header'));
     expect(screen.getByTestId('communities-list')).toBeInTheDocument();
 
-    await waitFor(() => expect(CommunityAPI.GetAllCommunities).toHaveBeenCalled());
+    await waitFor(() => expect(CommunityAPI.GetUserCommunities).toHaveBeenCalled());
   });
 });

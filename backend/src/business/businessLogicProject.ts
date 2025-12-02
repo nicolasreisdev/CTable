@@ -180,7 +180,8 @@ class BusinessLogicProject{
                 'Comments.*',           
                 'Projects.title as projectTitle' 
             )
-            .orderBy('Comments.createdAt', 'desc'); 
+            .orderBy('Comments.createdAt', 'desc')
+            .orderBy('Comments.commentID', 'desc');
 
         return comments;
     }

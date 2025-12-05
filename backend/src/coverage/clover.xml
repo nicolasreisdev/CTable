@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1764638666203" clover="3.2.0">
-  <project timestamp="1764638666203" name="All files">
+<coverage generated="1764696623502" clover="3.2.0">
+  <project timestamp="1764696623502" name="All files">
     <metrics statements="439" coveredstatements="381" conditionals="129" coveredconditionals="84" methods="96" coveredmethods="81" elements="664" coveredelements="546" complexity="0" loc="439" ncloc="439" packages="4" files="8" classes="8"/>
     <package name="src">
       <metrics statements="110" coveredstatements="105" conditionals="0" coveredconditionals="0" methods="27" coveredmethods="25"/>
-      <file name="app.ts" path="/home/cecilia/Documents/CTable/backend/src/app.ts">
+      <file name="app.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/app.ts">
         <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="1" count="5" type="stmt"/>
         <line num="2" count="5" type="stmt"/>
@@ -20,7 +20,7 @@
         <line num="26" count="5" type="stmt"/>
         <line num="30" count="5" type="stmt"/>
       </file>
-      <file name="routes.ts" path="/home/cecilia/Documents/CTable/backend/src/routes.ts">
+      <file name="routes.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/routes.ts">
         <metrics statements="97" coveredstatements="92" conditionals="0" coveredconditionals="0" methods="23" coveredmethods="21"/>
         <line num="1" count="5" type="stmt"/>
         <line num="2" count="5" type="stmt"/>
@@ -123,7 +123,7 @@
     </package>
     <package name="src.business">
       <metrics statements="215" coveredstatements="183" conditionals="125" coveredconditionals="81" methods="44" coveredmethods="34"/>
-      <file name="businessLogicAuth.ts" path="/home/cecilia/Documents/CTable/backend/src/business/businessLogicAuth.ts">
+      <file name="businessLogicAuth.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/business/businessLogicAuth.ts">
         <metrics statements="28" coveredstatements="28" conditionals="10" coveredconditionals="9" methods="2" coveredmethods="2"/>
         <line num="3" count="5" type="stmt"/>
         <line num="4" count="5" type="stmt"/>
@@ -154,7 +154,7 @@
         <line num="80" count="2" type="stmt"/>
         <line num="88" count="5" type="stmt"/>
       </file>
-      <file name="businessLogicCommunity.ts" path="/home/cecilia/Documents/CTable/backend/src/business/businessLogicCommunity.ts">
+      <file name="businessLogicCommunity.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/business/businessLogicCommunity.ts">
         <metrics statements="91" coveredstatements="77" conditionals="55" coveredconditionals="36" methods="22" coveredmethods="15"/>
         <line num="1" count="5" type="stmt"/>
         <line num="10" count="17" type="stmt"/>
@@ -248,7 +248,7 @@
         <line num="306" count="0" type="stmt"/>
         <line num="314" count="5" type="stmt"/>
       </file>
-      <file name="businessLogicProfile.ts" path="/home/cecilia/Documents/CTable/backend/src/business/businessLogicProfile.ts">
+      <file name="businessLogicProfile.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/business/businessLogicProfile.ts">
         <metrics statements="23" coveredstatements="20" conditionals="16" coveredconditionals="11" methods="2" coveredmethods="2"/>
         <line num="1" count="5" type="stmt"/>
         <line num="3" count="5" type="stmt"/>
@@ -274,7 +274,7 @@
         <line num="54" count="2" type="stmt"/>
         <line num="60" count="5" type="stmt"/>
       </file>
-      <file name="businessLogicProject.ts" path="/home/cecilia/Documents/CTable/backend/src/business/businessLogicProject.ts">
+      <file name="businessLogicProject.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/business/businessLogicProject.ts">
         <metrics statements="73" coveredstatements="58" conditionals="44" coveredconditionals="25" methods="18" coveredmethods="15"/>
         <line num="2" count="5" type="stmt"/>
         <line num="9" count="17" type="stmt"/>
@@ -353,7 +353,7 @@
     </package>
     <package name="src.controller">
       <metrics statements="110" coveredstatements="89" conditionals="4" coveredconditionals="3" methods="24" coveredmethods="21"/>
-      <file name="requestController.ts" path="/home/cecilia/Documents/CTable/backend/src/controller/requestController.ts">
+      <file name="requestController.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/controller/requestController.ts">
         <metrics statements="110" coveredstatements="89" conditionals="4" coveredconditionals="3" methods="24" coveredmethods="21"/>
         <line num="1" count="5" type="stmt"/>
         <line num="2" count="5" type="stmt"/>
@@ -469,7 +469,7 @@
     </package>
     <package name="src.utils">
       <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <file name="validationUser.ts" path="/home/cecilia/Documents/CTable/backend/src/utils/validationUser.ts">
+      <file name="validationUser.ts" path="/home/nicolas/Área de Trabalho/CTable/backend/src/utils/validationUser.ts">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="5" type="stmt"/>
         <line num="4" count="5" type="stmt"/>

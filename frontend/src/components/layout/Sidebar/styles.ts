@@ -14,6 +14,7 @@ export const SidebarContainer = styled.aside`
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
     overflow-y: auto;
+    z-index: 600;
 `;
 
 export const SidebarNav = styled.nav`

@@ -118,10 +118,11 @@ describe('Página Feed', () => {
       </BrowserRouter>
     );
 
-    // Aguarda o texto aparecer
     await waitFor(() => {
-        expect(screen.getByText(/Nenhum post encontrado/i)).toBeInTheDocument();
-    });
+    expect(
+        screen.getByRole('heading', { name: /Nenhum post encontrado/i })
+    ).toBeInTheDocument();
+});
   });
 
   it('deve exibir um Toast de erro se a API falhar', async () => {

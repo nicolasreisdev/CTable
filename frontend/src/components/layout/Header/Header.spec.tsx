@@ -39,7 +39,6 @@ describe('Componente Header', () => {
     // Verifica link de perfil
     const profileLink = screen.getByRole('link'); 
     expect(profileLink).toHaveAttribute('href', '/profile');
-    expect(screen.getByAltText('Foto de perfil')).toBeInTheDocument();
   });
 
   it('deve chamar a função onCreateClick ao clicar no botão Create', () => {

@@ -23,3 +23,7 @@ pnpm-debug.log*
 
 # Banco de dados
 backend/src/data/database.db    
+
+# coverage
+backend/coverage/
+frontend/coverage/

@@ -11,7 +11,7 @@ class businessLogicProfile{
         
         const fieldsToUpdate: any = {};
         
-        if (data.nomeCompleto) fieldsToUpdate.fullName = data.nomeCompleto; // Note a conversão de nome
+        if (data.nomeCompleto) fieldsToUpdate.fullName = data.nomeCompleto; 
         if (data.email) fieldsToUpdate.email = data.email;
         if (data.username) fieldsToUpdate.username = data.username;
         if (data.telefone) fieldsToUpdate.phone = data.telefone;

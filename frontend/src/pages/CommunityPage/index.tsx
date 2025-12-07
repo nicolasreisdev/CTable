@@ -11,6 +11,8 @@ import type { CommunityProps } from '../../API/Community';
 import * as D from '../../components/common/Dropdown/styles';
 import Modal from '../../components/common/Modal';
 import * as ModalS from '../../components/common/Modal/styles';
+import { Loading } from '../../components/common/Loading'
+
 
 export default function CommunityPage() {
   const { communityID } = useParams<{ communityID: string }>();
@@ -134,7 +136,7 @@ export default function CommunityPage() {
         <S.PageWrapper>
             <Sidebar />
             <S.MainContent>
-                <Loading message="Buscando dados da comunidade..." />
+                <Loading />
             </S.MainContent>
         </S.PageWrapper>
     );

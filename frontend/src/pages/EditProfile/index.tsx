@@ -16,11 +16,12 @@ export default function EditProfile() {
   const [notification, setNotification] = useState<NotificationState | null>(null);
 
   // Formata a data para o input (YYYY-MM-DD) 
-  const formatDateForInput = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
-  };
+const formatDateForInput = (dateString?: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+  return date.toISOString().split('T')[0];
+};
 
   const { register, handleSubmit, setValue } = useForm<UserProfileData>();
 

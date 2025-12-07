@@ -13,8 +13,9 @@ import { DeleteProfile } from '../../API/User';
 import Toast from '../../components/common/Toast';
 import Modal from '../../components/common/Modal';
 import * as ModalS from '../../components/common/Modal/styles';
+import {Loading} from '../../components/common/Loading'
 
-// --- ÍCONES ---
+
 const PostsIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
@@ -31,7 +32,6 @@ const SettingsIcon = () => (
     <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
   </svg>
 );
-// -----------------------
 
 type ViewState = 'posts' | 'comments';
 
@@ -43,20 +43,19 @@ export default function Profile() {
 
   const navigate = useNavigate();
 
-  // Estados para os dados da API
   const [userPosts, setUserPosts] = useState<ProjectProps[]>([]);
   const [userComments, setUserComments] = useState<CommentProps[]>([]);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteProfileModalOpen, setIsDeleteProfileModalOpen] = useState(false);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
-    // Função assíncrona para buscar todos os dados
     console.log("Efeito de busca de dados do perfil disparado.");
     const fetchProfileData = async () => {
-      try {;
-        
+      setIsLoading(true);
+      try {
         console.log("Usuário atual no Profile:", currentUser);
         const apiUserPosts = await GetUserProjects();
         
@@ -67,14 +66,15 @@ export default function Profile() {
 
       } catch (error) {
         console.error("Falha ao buscar dados do perfil:", error);
-      } 
+      } finally {
+        setIsLoading(false);
+      }
       
     };
     if(currentUser)
       fetchProfileData();
   }, [currentUser]); 
 
-  // Lógica para fechar o menu ao clicar fora 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -90,14 +90,13 @@ export default function Profile() {
   }, [isMenuOpen]);
 
   const handleLogout = () => {
-    logout(); // Limpa o estado e o localStorage
-    navigate('/login'); // Redireciona para a tela de login
+    logout(); 
+    navigate('/login'); 
   };
 
   const handleDeleteComment = async (commentId: string) => {
       await DeleteComment(commentId);
-      
-      // Remove o comentário deletado do estado local para sumir da tela instantaneamente
+
       setUserComments((prevComments) => 
           prevComments.filter(comment => comment.commentID !== commentId)
       );
@@ -120,8 +119,8 @@ export default function Profile() {
           setIsDeleteProfileModalOpen(false);
           
           setTimeout(() => {
-              logout(); // Desloga o usuário e limpa o storage
-              navigate('/login'); // Manda para login
+              logout(); 
+              navigate('/login'); 
           }, 2000);
 
       } catch (error) {
@@ -140,7 +139,6 @@ export default function Profile() {
       }
   };
 
-  // Função para renderizar o feed (posts ou comentários)
   const renderFeed = () => {
     if (view === 'posts') {
       if (userPosts.length === 0) {
@@ -155,7 +153,6 @@ export default function Profile() {
     }
 
     if (view === 'comments') {
-      // Mapeia 'userComments' 
       return userComments.map(comment => (
         <S.PostContainer key={comment.commentID || Math.random()}>
           <Postcard 
@@ -166,7 +163,7 @@ export default function Profile() {
               technologies: [],
               status: '',
               startDate: comment.createdAt,
-              // Passa o usuário atual como autor para o cabeçalho do card
+             
               author: { title: currentUser?.username || 'Você' } 
             } as unknown as ProjectProps} 
             showMenu={true} 
@@ -193,7 +190,13 @@ export default function Profile() {
       )}
 
       <S.ContentWrapper>
-
+        {isLoading ? (
+          <div style={{ marginTop: '50px' }}>
+                <Loading/>
+             </div>
+        ) :
+        (
+        <>
         <S.ProfileHeader>
             <S.ActionsWrapper ref={menuRef}>
                 <S.ProfileActions>
@@ -248,7 +251,8 @@ export default function Profile() {
         <S.PostList>
           {renderFeed()}
         </S.PostList>
-        
+        </>
+        )}
       </S.ContentWrapper>
 
       <Modal 

@@ -10,6 +10,7 @@ import { GetFeedProjects } from '../../API/Project';
 import type { ProjectProps } from '../../API/Project';
 import Toast from '../../components/common/Toast'; 
 import type { NotificationState } from '../../components/common/Toast';
+import { Loading } from '../../components/common/Loading'
 
 export default function Feed() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -63,10 +64,7 @@ export default function Feed() {
                 <S.FeedContainer>
                     <S.PostList>
                         {isLoading ? (
-                            <S.LoadingContainer>
-                                <div className="spinner"></div>
-                                <p>Carregando feed...</p>
-                            </S.LoadingContainer>
+                            <Loading/>
                         ) : posts.length > 0 ? (
                             posts.map((post, index) => (
                                 <Postcard 

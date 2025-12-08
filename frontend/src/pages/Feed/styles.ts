@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-// Wrapper para a página inteira
 export const PageWrapper = styled.div`
     background: linear-gradient(135deg, ${props => props.theme['gray-100']} 0%, ${props => props.theme['gray-100']}f0 100%);
     min-height: 100vh;
@@ -20,7 +19,6 @@ export const PageWrapper = styled.div`
     }
 `;
 
-// Wrapper para o conteúdo principal
 export const ContentWrapper = styled.main`
     margin-left: 250px; 
     margin-top: 60px;  
@@ -47,7 +45,6 @@ export const ContentWrapper = styled.main`
     }
 `;
 
-// Container principal do feed com posts
 export const FeedContainer = styled.main`
     width: 100%;
     max-width: 800px; 
@@ -93,14 +90,12 @@ export const FeedContainer = styled.main`
     }
 `;
 
-// Lista que agrupa os posts
 export const PostList = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
     position: relative;
 
-    /* Animação de entrada para cada post */
     & > * {
         animation: slideInUp 0.4s ease-out backwards;
     }
@@ -123,7 +118,6 @@ export const PostList = styled.div`
     }
 `;
 
-// Mensagem de feed vazio
 export const EmptyFeedMessage = styled.div`
     text-align: center;
     padding: 60px 24px;
@@ -156,7 +150,6 @@ export const EmptyFeedMessage = styled.div`
     }
 `;
 
-// Header do feed 
 export const FeedHeader = styled.div`
     margin-bottom: 24px;
     padding-bottom: 20px;
@@ -177,33 +170,5 @@ export const FeedHeader = styled.div`
         color: ${props => props.theme.placeholder};
         font-size: 0.9rem;
         margin: 0;
-    }
-`;
-
-// Container para loading state
-export const LoadingContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 24px;
-    gap: 16px;
-
-    .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid ${props => props.theme.placeholder}30;
-        border-top-color: ${props => props.theme.keyword};
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    p {
-        color: ${props => props.theme.placeholder};
-        font-size: 0.9rem;
     }
 `;

@@ -11,6 +11,8 @@ import type { CommunityProps } from '../../API/Community';
 import * as D from '../../components/common/Dropdown/styles';
 import Modal from '../../components/common/Modal';
 import * as ModalS from '../../components/common/Modal/styles';
+import { Loading } from '../../components/common/Loading'
+
 
 export default function CommunityPage() {
   const { communityID } = useParams<{ communityID: string }>();
@@ -26,17 +28,25 @@ export default function CommunityPage() {
 
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     async function loadData() {
+        setIsLoading(true);
         console.log("Carregando dados da comunidade para ID:", communityID);
+        
         if (!communityID) return;
+        
         try {
             const data = await GetCommunityById(communityID);
             setCommunity(data.community);
             setPosts(data.posts);
         } catch (error) {
             console.error(error);
-        } 
+        } finally {
+            setIsLoading(false);
+        }
+
     }
     loadData();
   }, [communityID]);
@@ -121,7 +131,30 @@ export default function CommunityPage() {
     }
   };
 
-  if (!community) return <div>Comunidade não encontrada</div>;
+  if (isLoading) {
+    return (
+        <S.PageWrapper>
+            <Sidebar />
+            <S.MainContent>
+                <Loading />
+            </S.MainContent>
+        </S.PageWrapper>
+    );
+  }
+
+  if (!community){
+    return (
+        <S.PageWrapper>
+            <Sidebar />
+            <S.MainContent>
+                <div style={{ padding: '20px', textAlign: 'center' }}>
+                    <h2>Ops! Comunidade não encontrada.</h2>
+                    <p>Ela pode ter sido excluída ou o link está incorreto.</p>
+                </div>
+            </S.MainContent>
+        </S.PageWrapper>
+      );
+  }
 
   return (
     <S.PageWrapper>

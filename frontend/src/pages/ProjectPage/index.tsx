@@ -5,6 +5,7 @@ import * as S from './styles';
 import { GetProjectById } from '../../API/Project';
 import type { ProjectProps } from '../../API/Project';
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import {Loading} from '../../components/common/Loading'
 
 export default function ProjectPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -27,10 +28,11 @@ export default function ProjectPage() {
     loadData();
   }, [projectId]);
 
-  if (loading) return <div>Carregando...</div>;
+  if (loading) {
+     return <Loading/>
+  }
   if (!project) return <div>Projeto não encontrado</div>;
 
-  // Formata data
   const startDate = new Date(project.startDate).toLocaleDateString('pt-BR');
 
   return (

@@ -25,5 +25,5 @@ pnpm-debug.log*
 backend/src/data/database.db    
 
 # coverage
-backend/coverage/
+backend/src/coverage/
 frontend/coverage/

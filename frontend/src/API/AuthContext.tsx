@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import * as api from './Auth'; 
 import type { LoginProps } from './Auth';
+import { Loading } from '../components/common/Loading'
+
 
 interface User {
   id: string; 
@@ -69,9 +71,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('user', JSON.stringify(updated));
   };
 
-  // Não renderize o app até sabermos se o usuário está logado
   if (isLoading) {
-    return <div>Carregando...</div>; // Ou um componente de Spinner
+     return <Loading/>
   }
 
   return (

@@ -82,10 +82,8 @@ describe('Componente Modal', () => {
       </Modal>
     );
 
-    // Clica no cartão do modal (conteúdo)
     fireEvent.click(screen.getByTestId('content'));
     
-    // A função de fechar NÃO deve ser chamada
     expect(handleClose).not.toHaveBeenCalled();
   });
 });

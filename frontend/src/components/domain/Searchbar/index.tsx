@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import * as S from './styles';
 import { useNavigate } from 'react-router-dom';
-
 import { GetAllCommunities } from '../../../API/Community';
 import { GetFeedProjects } from '../../../API/Project';
 import type { CommunityProps } from '../../../API/Community';
@@ -70,7 +69,7 @@ export default function Searchbar() {
         );
 
         setFilteredCommunities(filteredComms.slice(0, 5)); // Limita a 5 resultados
-        setFilteredProjects(filteredProjs.slice(0, 5));    // Limita a 5 resultados
+        setFilteredProjects(filteredProjs.slice(0, 5));    
 
     }, [query, allCommunities, allProjects]);
 
@@ -130,7 +129,6 @@ export default function Searchbar() {
                                             onClick={() => handleNavigateToCommunity(comm.communityID)}
                                         >
                                             <span>{comm.name}</span>
-                                            {/* Opcional: mostrar tecnologia principal */}
                                             {comm.technologies?.[0] && <small>{comm.technologies[0]}</small>}
                                         </S.ResultItem>
                                     ))}

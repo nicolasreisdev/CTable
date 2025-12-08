@@ -4,7 +4,6 @@ import ProjectPage from './index';
 import { BrowserRouter } from 'react-router-dom';
 import * as ProjectAPI from '../../API/Project';
 
-// --- Mocks ---
 const mockParams = { projectId: 'proj-123' };
 
 vi.mock('react-router-dom', async () => {
@@ -21,7 +20,6 @@ vi.mock('../../API/Project', () => ({
 
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
 
-// Mocks de Estilo 
 interface StyleProps {
   children?: React.ReactNode;
 }

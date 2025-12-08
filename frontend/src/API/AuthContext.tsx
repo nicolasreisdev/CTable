@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Função de login que atualiza o estado E o localStorage
   const login = async (data: LoginProps) => {
-    const { user, token } = await api.Login(data); // Chama sua API
+    const { user, token } = await api.Login(data); 
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setCurrentUser(user);

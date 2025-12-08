@@ -14,10 +14,8 @@ export interface ProjectProps {
 }
 
 export function parseDate(dataString: string): Date {
-  // Divide a string "20/11/2025" em partes
   const [dia, mes, ano] = dataString.split('/');
 
-  // Cria a data: new Date(ano, mês - 1, dia)
   return new Date(Number(ano), Number(mes) - 1, Number(dia));
 }
 

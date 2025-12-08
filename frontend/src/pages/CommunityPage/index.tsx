@@ -113,7 +113,7 @@ export default function CommunityPage() {
     try {
         await LeaveCommunity(community.communityID);
         
-        // Atualiza a interface otimisticamente
+        // Atualiza a interface 
         setCommunity((prev: CommunityProps | null) => prev ? ({
             ...prev,
             isMember: false, // O usuário não é mais membro

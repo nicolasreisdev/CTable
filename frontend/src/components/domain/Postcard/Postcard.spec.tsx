@@ -5,7 +5,6 @@ import { BrowserRouter } from 'react-router-dom';
 import * as ProjectAPI from '../../../API/Project';
 import * as CommentAPI from '../../../API/Comment';
 
-// --- Mocks ---
 
 // Mock do hook useAuth
 vi.mock('../../../API/AuthContext', () => ({
@@ -102,7 +101,6 @@ describe('Componente Postcard', () => {
   it('NÃO deve navegar se clicar em um botão interativo dentro do card', () => {
     render(<BrowserRouter><Postcard post={mockPost as unknown as ProjectAPI.ProjectProps} showMenu={true} /></BrowserRouter>);
     
-    // Clica no botão de menu (que está dentro do wrapper)
     fireEvent.click(screen.getByTestId('menu-btn'));
     
     // O menu deve abrir, mas a navegação NÃO deve ocorrer
@@ -126,7 +124,6 @@ describe('Componente Postcard', () => {
     fireEvent.click(screen.getByTestId('menu-btn'));
     fireEvent.click(screen.getByTestId('delete-post-btn'));
     
-    // Botão de confirmação no modal (segundo botão "Excluir" na tela)
     const modalButtons = screen.getAllByText('Excluir');
     fireEvent.click(modalButtons[modalButtons.length - 1]);
 
@@ -158,7 +155,6 @@ describe('Componente Postcard', () => {
 
     fireEvent.click(screen.getByTestId('delete-post-btn'));
     
-    // Confirmação no Modal (o último botão "Excluir" está no modal)
     const buttons = screen.getAllByText('Excluir');
     const confirmDeleteBtn = buttons[buttons.length - 1];
     fireEvent.click(confirmDeleteBtn);

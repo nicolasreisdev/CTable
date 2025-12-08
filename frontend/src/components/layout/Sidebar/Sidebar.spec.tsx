@@ -3,9 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Sidebar from './index';
 import { BrowserRouter } from 'react-router-dom';
 import * as CommunityAPI from '../../../API/Community';
-import * as AuthContext from '../../../API/AuthContext';
-
-// --- Mocks ---
 
 // Mock do contexto de autenticação
 vi.mock('../../../API/AuthContext', () => ({

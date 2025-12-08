@@ -4,7 +4,6 @@ import Register from './index';
 import { BrowserRouter } from 'react-router-dom';
 import * as AuthAPI from '../../API/Auth';
 
-// --- Mocks ---
 const navigateMock = vi.fn();
 
 vi.mock('react-router-dom', async () => {

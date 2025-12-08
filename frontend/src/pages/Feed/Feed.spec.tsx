@@ -4,8 +4,6 @@ import Feed from './';
 import { BrowserRouter } from 'react-router-dom';
 import * as ProjectAPI from '../../API/Project'; 
 
-// 1. Mocks de Componentes Filhos
-// Mockamos os componentes visuais para focar na lógica da página Feed
 vi.mock('../../components/layout/Header', () => ({
   default: ({ onCreateClick }: { onCreateClick: () => void }) => (
     <button data-testid="header-create-btn" onClick={onCreateClick}>
@@ -24,7 +22,6 @@ vi.mock('../../components/domain/Postcard', () => ({
   ),
 }));
 
-// Mock do Modal (simples, apenas renderiza se estiver aberto)
 interface ModalProps {
   isOpen: boolean;
   children: React.ReactNode;
@@ -41,7 +38,6 @@ vi.mock('../../components/common/Modal', () => ({
     ) : null,
 }));
 
-// Mock dos estilos do Modal que são usados como componentes
 vi.mock('../../components/common/Modal/styles', () => ({
   ModalActions: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   ChoiceButton: ({ children, onClick }: { children: React.ReactNode; onClick: () => void }) => (
@@ -53,7 +49,6 @@ vi.mock('../../components/common/Toast', () => ({
   default: ({ message }: { message: string }) => <div data-testid="toast-mock">{message}</div>,
 }));
 
-// Mock do React Router
 const navigateMock = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -100,7 +95,7 @@ describe('Página Feed', () => {
       </BrowserRouter>
     );
 
-    // Aguarda a renderização dos posts (pois é assíncrono dentro do useEffect)
+    // Aguarda a renderização dos posts 
     await waitFor(() => {
         expect(screen.getAllByTestId('postcard-mock')).toHaveLength(2);
     });
@@ -149,20 +144,15 @@ describe('Página Feed', () => {
       </BrowserRouter>
     );
 
-    // 1. O modal não deve estar visível inicialmente
     expect(screen.queryByTestId('modal-mock')).not.toBeInTheDocument();
 
-    // 2. Clica no botão do header (que dispara setIsCreateModalOpen(true))
     fireEvent.click(screen.getByTestId('header-create-btn'));
 
-    // 3. Verifica se o modal abriu
     expect(screen.getByTestId('modal-mock')).toBeInTheDocument();
     expect(screen.getByText('O que você deseja criar?')).toBeInTheDocument();
 
-    // 4. Clica em "Criar Projeto"
     fireEvent.click(screen.getByText('Criar Projeto'));
 
-    // 5. Verifica se o modal fechou (opcional, dependendo da implementação do mock) e se navegou
     expect(navigateMock).toHaveBeenCalledWith('/createProject');
     await waitFor(() => expect(ProjectAPI.GetFeedProjects).toHaveBeenCalled());
   });

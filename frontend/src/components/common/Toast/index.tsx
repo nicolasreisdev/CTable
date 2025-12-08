@@ -4,7 +4,7 @@ import { ToastContainer, ToastMessage, CloseButton } from './styles';
 interface ToastProps {
   message: string;
   type: 'success' | 'error';
-  onClose: () => void; // Função para fechar o toast
+  onClose: () => void; 
 }
 
 export interface NotificationState {

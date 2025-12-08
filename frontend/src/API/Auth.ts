@@ -1,4 +1,4 @@
-import api from './api'; // Importa a instância que criamos no Passo 2
+import api from './api'; 
 import { isAxiosError } from 'axios';
 
 export interface LoginProps {

@@ -5,7 +5,6 @@ import { BrowserRouter } from 'react-router-dom';
 import * as ProjectAPI from '../../API/Project';
 import * as KeywordsAPI from '../../API/Keywords';
 
-// --- Mocks ---
 
 const navigateMock = vi.fn();
 let mockLocationState: unknown = null;
@@ -20,7 +19,6 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock da API
 vi.mock('../../API/Project', async () => {
     const actual = await vi.importActual('../../API/Project');
     return {
@@ -34,11 +32,9 @@ vi.mock('../../API/Keywords', () => ({
   GetKeywords: vi.fn(),
 }));
 
-// Mocks Visuais
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div data-testid="sidebar" /> }));
 vi.mock('../../components/common/Toast', () => ({ default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> }));
 
-// Mock do TagInput
 vi.mock('../../components/domain/TagInput', () => ({
   default: ({ onChange, value }: { onChange: (val: string[]) => void; value: string[] }) => (
     <input 

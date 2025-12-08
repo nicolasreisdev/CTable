@@ -1,7 +1,6 @@
 import React from 'react';
 import * as S from './styles';
 
-// Props que o componente Keyword aceita
 interface KeywordProps {
   children: React.ReactNode;
   onRemove: () => void;

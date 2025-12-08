@@ -50,12 +50,11 @@ describe('Componente Toast', () => {
     // Verifica que ainda não foi chamado
     expect(handleClose).not.toHaveBeenCalled();
 
-    // Avança o tempo em 5000ms (5 segundos)
+    // Avança o tempo em 5000ms 
     act(() => {
       vi.advanceTimersByTime(5000);
     });
 
-    // Agora deve ter sido chamado
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
   

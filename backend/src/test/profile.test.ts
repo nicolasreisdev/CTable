@@ -77,9 +77,9 @@ describe('Fluxo de Perfil de Usuário', () => {
     const response = await request(app)
         .put('/api/user/editprofile')
         .set('Authorization', `Bearer ${token}`)
-        .send({}); // Objeto vazio
+        .send({}); 
 
-    // O controller deve lançar erro "Nenhum dado para atualizar"
+    
     expect(response.status).not.toBe(200);
   });
 });

@@ -7,7 +7,6 @@ export async function up(knex: Knex): Promise<void> {
     
     table.timestamp('associatedAt').defaultTo(knex.fn.now());
 
-    // Chaves Estrangeiras
     table.foreign('projectID')
          .references('projectID')
          .inTable('Projects')
@@ -18,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
          .inTable('Communities')
          .onDelete('CASCADE');
 
-    // Chave Primária Composta (Um projeto não pode ser linkado duas vezes na mesma comunidade)
+   
     table.primary(['projectID', 'communityID']);
   });
 }

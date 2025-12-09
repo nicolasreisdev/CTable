@@ -64,7 +64,6 @@ describe('Fluxo de Projetos', () => {
     expect(response.body.project).toHaveProperty('projectID');
     expect(response.body.project.title).toBe('Meu Projeto React');
 
-    // Verifica se salvou no banco
     const projectDb = await knex('Projects').where({ title: 'Meu Projeto React' }).first();
     expect(projectDb).toBeDefined();
   });
@@ -90,7 +89,7 @@ describe('Fluxo de Projetos', () => {
   });
 
   it('deve atualizar um projeto existente (Status 200)', async () => {
-    // Cria projeto
+   
     const resCreate = await request(app)
       .post('/api/user/newproject')
       .set('Authorization', `Bearer ${tokenUser1}`)
@@ -98,7 +97,6 @@ describe('Fluxo de Projetos', () => {
     
     const projectId = resCreate.body.project.projectID;
 
-    // Atualiza
     const response = await request(app)
       .put(`/api/user/updateproject/${projectId}`)
       .set('Authorization', `Bearer ${tokenUser1}`)
@@ -217,19 +215,18 @@ describe('Fluxo de Projetos', () => {
   });
 
   it('deve impedir exclusão de comentário por quem não é o autor', async () => {
-    // User 1 cria projeto
+    
     const resProj = await request(app).post('/api/user/newproject')
       .set('Authorization', `Bearer ${tokenUser1}`)
       .send({ title: 'Post', description: '...', status: 'Aberto', startDate: new Date() });
     const pId = resProj.body.project.projectID;
 
-    // User 1 comenta
+    
     const resComment = await request(app).post(`/api/project/${pId}/comments`)
       .set('Authorization', `Bearer ${tokenUser1}`)
       .send({ content: 'Meu comentário' });
     const cId = resComment.body.commentID;
 
-    // User 2 tenta deletar
     const response = await request(app)
         .delete(`/api/project/${cId}/deletecomment`)
         .set('Authorization', `Bearer ${tokenUser2}`);
@@ -239,7 +236,7 @@ describe('Fluxo de Projetos', () => {
 
   it('deve retornar 404 ao buscar projeto inexistente', async () => {
     const response = await request(app)
-      .get('/api/projects/999999') // ID que não existe
+      .get('/api/projects/999999') 
       .set('Authorization', `Bearer ${tokenUser1}`);
       
     expect(response.status).toBe(404);
@@ -298,7 +295,6 @@ describe('Fluxo de Projetos', () => {
         .set('Authorization', `Bearer ${tokenUser2}`)
         .send({ content: 'Segundo!' });
 
-      // Busca comentários
       const response = await request(app).get(`/api/project/${projectId}/comments`);
 
       expect(response.status).toBe(200);
@@ -306,13 +302,12 @@ describe('Fluxo de Projetos', () => {
     });
 
     it('deve deletar um comentário próprio com sucesso', async () => {
-      // Cria comentário
+      
       const commRes = await request(app).post(`/api/project/${projectId}/comments`)
         .set('Authorization', `Bearer ${tokenUser1}`)
         .send({ content: 'Vou deletar' });
       const commentId = commRes.body.commentID;
 
-      // Deleta
       const response = await request(app)
         .delete(`/api/project/${commentId}/deletecomment`)
         .set('Authorization', `Bearer ${tokenUser1}`);
@@ -320,7 +315,6 @@ describe('Fluxo de Projetos', () => {
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Comentário deletado com sucesso.');
 
-      // Verifica no banco
       const comments = await request(app).get(`/api/project/${projectId}/comments`);
       expect(comments.body).toHaveLength(0);
     });
@@ -346,7 +340,7 @@ describe('Fluxo de Projetos', () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(2);
       
-      // Verifica se o título do projeto vem junto (conforme businessLogicProject.getUserComments)
+      
       const titulos = response.body.map((c: any) => c.projectTitle);
       expect(titulos).toContain('Discussão');
       expect(titulos).toContain('Outro Projeto');

@@ -6,7 +6,6 @@ import { request } from 'http';
 
 const routes = express.Router();
 
-// Endpoint para CADASTRAR um novo usuário
 routes.post('/api/register', async (request, response) => {
     console.log("Recebendo requisição de cadastro:", request.body);
     const {user, token} = await RequestController.createUser(request.body);
@@ -17,7 +16,6 @@ routes.post('/api/register', async (request, response) => {
     });
 });
 
-// Endpoint para verificar a existência de usuário
 routes.post('/api/login', async(request, response) => {
     const { user, token } = await RequestController.enterUser(request.body);
     return response.status(200).json({
@@ -28,14 +26,13 @@ routes.post('/api/login', async(request, response) => {
 });
 
 
-// Endpoint para enviar ao fronend os keywords disponíveis
+
 routes.get('/api/keywords', async(request, response) => {
     const tags = await RequestController.getKeywords();
 
     return response.status(200).json(tags);
 });
 
-// Endpoint para criar projeto
 routes.post('/api/user/newproject', authMiddleware,  async(request, response) =>{
     const projectData = request.body;
         
@@ -50,7 +47,7 @@ routes.post('/api/user/newproject', authMiddleware,  async(request, response) =>
 });
 
 
-// Endpoint para enviar ao frontend os projetos de determinado usuário
+
 routes.get('/api/user/projects', authMiddleware, async(request, response) => {
       const creatorID = request.user.id;
       const projects = await RequestController.getUserProjects(creatorID);
@@ -59,7 +56,6 @@ routes.get('/api/user/projects', authMiddleware, async(request, response) => {
       })
 });
 
-// Endpoint para atualizar um projeto existente
 routes.put('/api/user/updateproject/:projectId', authMiddleware, async(request, response) => {
     const { projectId } = request.params;
     const updatedData = request.body;
@@ -92,7 +88,6 @@ routes.delete('/api/user/leavecommunity/:communityID', authMiddleware, async(req
     return response.status(200).json(result);
 })
 
-// Endpoint para criar uma comunidade
 routes.post('/api/newcommunity', authMiddleware, async(request, response) => {
 
     const newCommunity = await RequestController.newCommunity(request.body, request.user.id);

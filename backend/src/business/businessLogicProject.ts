@@ -36,10 +36,6 @@ class BusinessLogicProject{
                 if (keywordsToInsert.length > 0) {
                     await trx('ProjectsKeywords').insert(keywordsToInsert); 
                     
-                    // --- NOVA LÓGICA DE ASSOCIAÇÃO AUTOMÁTICA ---
-
-                    // 3. Busca Comunidades que usam essas mesmas Keywords
-                    // Usamos .distinct() para evitar duplicatas (caso uma comunidade tenha React E Node, por exemplo)
                     const matchingCommunities = await trx('CommunitiesKeywords')
                         .whereIn('keywordID', keywordIDs.map(k => k.keywordID))
                         .distinct('communityID');
@@ -226,7 +222,6 @@ class BusinessLogicProject{
     }
 
     async getProjectById(projectId: string) {
-        // Busca o projeto com dados do autor (join)
         const project = await knex('Projects')
             .join('User', 'Projects.creatorID', '=', 'User.id')
             .where('Projects.projectID', projectId)
@@ -242,13 +237,11 @@ class BusinessLogicProject{
             throw new Error("Projeto não encontrado.");
         }
 
-        // Busca as tecnologias (keywords) associadas
         const keywords = await knex('ProjectsKeywords')
             .join('Keywords', 'ProjectsKeywords.keywordID', '=', 'Keywords.keywordID')
             .where('ProjectsKeywords.projectID', projectId)
             .select('Keywords.tag');
 
-        // Retorna o objeto formatado
         return {
             ...project,
             technologies: keywords.map((k: any) => k.tag)

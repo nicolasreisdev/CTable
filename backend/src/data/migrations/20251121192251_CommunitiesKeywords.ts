@@ -5,7 +5,6 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('communityID').unsigned();
     table.integer('keywordID').unsigned();
 
-    // Chaves Estrangeiras
     table.foreign('communityID')
          .references('communityID')
          .inTable('Communities')
@@ -16,7 +15,6 @@ export async function up(knex: Knex): Promise<void> {
          .inTable('Keywords')
          .onDelete('CASCADE');
 
-    // Chave Primária Composta
     table.primary(['communityID', 'keywordID']);
   });
 }

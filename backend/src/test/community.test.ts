@@ -2,8 +2,8 @@ import request from 'supertest';
 import app from '../app';
 import knex from '../data';
 
-let tokenAdmin: string; // Criador
-let tokenUser: string; // Membro
+let tokenAdmin: string; 
+let tokenUser: string;
 let user1Id: number;
 let user2Id: number;
 

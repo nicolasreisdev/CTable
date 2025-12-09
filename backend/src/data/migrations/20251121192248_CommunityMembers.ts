@@ -5,10 +5,9 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('userID').unsigned();
     table.integer('communityID').unsigned();
     
-    table.string('role', 255).defaultTo('member'); // ex: 'admin', 'member'
+    table.string('role', 255).defaultTo('member'); 
     table.timestamp('joinedAt').defaultTo(knex.fn.now());
 
-    // Chaves Estrangeiras
     table.foreign('userID')
          .references('id')
          .inTable('User')
@@ -18,8 +17,7 @@ export async function up(knex: Knex): Promise<void> {
          .references('communityID')
          .inTable('Communities')
          .onDelete('CASCADE');
-
-    // Chave Primária Composta (Um usuário só pode entrar na mesma comunidade uma vez)
+         
     table.primary(['userID', 'communityID']);
   });
 }

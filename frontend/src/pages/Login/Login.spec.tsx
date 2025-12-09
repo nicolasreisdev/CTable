@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import LoginPage from './index';
 import { BrowserRouter } from 'react-router-dom';
 
-// --- Mocks ---
 const navigateMock = vi.fn();
 const loginMock = vi.fn();
 
@@ -16,7 +15,6 @@ vi.mock('../../API/AuthContext', () => ({
   useAuth: () => ({ login: loginMock })
 }));
 
-// Mock dos estilos do Form 
 interface MockStyleProps {
   children?: React.ReactNode;
   onSubmit?: React.FormEventHandler;
@@ -33,7 +31,6 @@ vi.mock('../../components/domain/Form/styles', () => ({
   RedirectLink: ({ children }: MockStyleProps) => <div>{children}</div>,
 }));
 
-// Mock do Toast
 vi.mock('../../components/common/Toast', () => ({
   default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div>
 }));

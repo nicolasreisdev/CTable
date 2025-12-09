@@ -3,7 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import Home from './index';
 import { BrowserRouter } from 'react-router-dom';
 
-// Mocks dos estilos
 interface StyleProps {
   children?: React.ReactNode;
 }
@@ -15,7 +14,6 @@ vi.mock('./styles', () => ({
   Tagline: ({ children }: StyleProps) => <p>{children}</p>,
 }));
 
-// Mock do HeaderHome
 vi.mock('../../components/layout/HeaderHome', () => ({
   default: () => <div data-testid="header-home">Header Mock</div>
 }));

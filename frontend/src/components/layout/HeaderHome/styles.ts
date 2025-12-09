@@ -65,7 +65,7 @@ export const ActionsContainer = styled.div`
     z-index: 1;
 `;
 
-// Botão melhorado
+// Botão 
 export const Button = styled(Link)`
     display: flex;
     align-items: center;
@@ -159,26 +159,5 @@ export const Button = styled(Link)`
             box-shadow: 0 4px 16px ${props => props.theme.button}50,
                         0 2px 6px ${props => props.theme.button}30;
         }
-    }
-`;
-
-// Logo/Brand (opcional, caso queira adicionar)
-export const Logo = styled.div`
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: ${props => props.theme.white};
-    background: linear-gradient(135deg, 
-        ${props => props.theme.keyword}, 
-        ${props => props.theme.button}
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.5px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-
-    &:hover {
-        transform: scale(1.05);
     }
 `;

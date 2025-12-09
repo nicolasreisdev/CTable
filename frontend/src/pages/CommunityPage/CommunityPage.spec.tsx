@@ -4,7 +4,6 @@ import CommunityPage from './index';
 import { BrowserRouter } from 'react-router-dom';
 import * as CommunityAPI from '../../API/Community';
 
-// --- Mocks ---
 const navigateMock = vi.fn();
 const mockParams = { communityID: '100' };
 
@@ -17,7 +16,6 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock das APIs
 vi.mock('../../API/Community', () => ({
     GetCommunityById: vi.fn(),
     JoinCommunity: vi.fn(),
@@ -25,7 +23,6 @@ vi.mock('../../API/Community', () => ({
     DeleteCommunity: vi.fn(),
 }));
 
-// Mocks Visuais
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
 vi.mock('../../components/domain/Postcard', () => ({ 
     default: ({ post }: { post: { title: string } }) => <div data-testid="postcard">{post.title}</div> 
@@ -34,7 +31,6 @@ vi.mock('../../components/common/Toast', () => ({
     default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> 
 }));
 
-// Mock Modal (renderiza se aberto)
 interface ModalMockProps {
     isOpen: boolean;
     children: React.ReactNode;
@@ -55,7 +51,6 @@ vi.mock('../../components/common/Modal/styles', () => ({
     ChoiceButton: ({ children, onClick }: { children: React.ReactNode; onClick: React.MouseEventHandler }) => <button onClick={onClick}>{children}</button>,
 }));
 
-// Mock Dropdown 
 vi.mock('../../components/common/Dropdown/styles', () => {
     const DropdownMenu = ({ children }: { children: React.ReactNode }) => <div id="dropdown-menu-mock" data-testid="dropdown-menu">{children}</div>;
     DropdownMenu.toString = () => '#dropdown-menu-mock';
@@ -145,7 +140,7 @@ describe('Página CommunityPage', () => {
     expect(screen.getByTestId('modal')).toBeInTheDocument();
     expect(screen.getByText('Sair da Comunidade')).toBeInTheDocument();
 
-    // onfirma no modal 
+    // Confirma no modal 
     const buttons = screen.getAllByText('Sair');
     fireEvent.click(buttons[buttons.length - 1]);
 

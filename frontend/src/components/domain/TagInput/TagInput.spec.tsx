@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TagInput from './'; 
 
-// Mock dos estilos para evitar erros de ThemeProvider
+// Mock dos estilos
 vi.mock('../CreationForm/styles', () => ({
   SearchWrapper: ({ children, ref }: { children: React.ReactNode; ref: React.Ref<HTMLDivElement> }) => <div ref={ref} data-testid="wrapper">{children}</div>,
   Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input data-testid="tag-input" {...props} />,
@@ -11,7 +11,7 @@ vi.mock('../CreationForm/styles', () => ({
   ErrorMessage: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
-// Mock do componente Keyword (visualização da tag)
+// Mock do componente Keyword 
 vi.mock('../../common/Keyword', () => ({
   KeywordContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Keyword: ({ children, onRemove }: { children: React.ReactNode; onRemove: () => void }) => (
@@ -98,7 +98,7 @@ describe('Componente TagInput', () => {
     const removeBtn = screen.getByTestId('remove-React');
     fireEvent.click(removeBtn);
 
-    // Deve chamar onChange com a lista filtrada (sem 'React')
+    // Deve chamar onChange com a lista filtrada 
     expect(mockOnChange).toHaveBeenCalledWith(['Vitest']);
   });
 

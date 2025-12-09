@@ -4,11 +4,9 @@ import EditProfile from './index';
 import { BrowserRouter } from 'react-router-dom';
 import * as UserAPI from '../../API/User';
 
-// --- Mocks ---
 const navigateMock = vi.fn();
 const updateUserMock = vi.fn();
 
-// Mock do usuário atual logado
 const mockCurrentUser = {
   nomeCompleto: 'João Silva',
   username: 'joaosilva',
@@ -33,11 +31,9 @@ vi.mock('../../API/AuthContext', () => ({
   })
 }));
 
-// Mocks Visuais
 vi.mock('../../components/layout/Sidebar', () => ({ default: () => <div /> }));
 vi.mock('../../components/common/Toast', () => ({ default: ({ message }: { message: string }) => <div data-testid="toast">{message}</div> }));
 
-// Mock dos estilos de formulário 
 interface FormStyleProps {
   children?: React.ReactNode;
   onSubmit?: React.FormEventHandler;
@@ -68,7 +64,6 @@ describe('Página EditProfile', () => {
     expect(screen.getByLabelText('Nome Completo')).toHaveValue('João Silva');
     expect(screen.getByLabelText('Nome de Usuário')).toHaveValue('joaosilva');
     expect(screen.getByLabelText('Email')).toHaveValue('joao@email.com');
-    // A data é formatada para YYYY-MM-DD no componente
     expect(screen.getByLabelText('Data de Nascimento')).toHaveValue('1990-01-01');
   });
 

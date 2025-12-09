@@ -107,14 +107,12 @@ describe('Componente Searchbar', () => {
     // Focar no input deve disparar o carregamento
     fireEvent.focus(input);
     
-    // Digitar algo
     fireEvent.change(input, { target: { value: 'Vitest' } });
 
-    // Aguarda o dropdown aparecer e os resultados serem filtrados
     const projectItem = await screen.findByText('Projeto Vitest');
     expect(projectItem).toBeInTheDocument();
 
-    // Deve mostrar o Projeto, mas não a Comunidade (pois 'React Devs' não bate com 'Vitest')
+    // Deve mostrar o Projeto, mas não a Comunidade
     expect(screen.getByText('Projeto Vitest')).toBeInTheDocument();
     expect(screen.queryByText('React Devs')).not.toBeInTheDocument();
   });

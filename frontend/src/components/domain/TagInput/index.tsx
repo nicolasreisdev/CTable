@@ -52,7 +52,6 @@ export default function TagInput({
 
   // Adiciona uma tag
   const handleAddTag = (tag: string) => {
-    // Usa o 'limit' da prop
     if (selectedTags.length >= limit) {
       setError(`Limite de ${limit} itens atingido.`);
       return;
@@ -65,7 +64,6 @@ export default function TagInput({
     }
   };
 
-  // Remove uma tag
   const handleRemoveTag = (tagToRemove: string) => {
     onChange(selectedTags.filter(tag => tag !== tagToRemove));
     setError(''); 

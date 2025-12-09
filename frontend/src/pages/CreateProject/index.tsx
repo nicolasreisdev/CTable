@@ -38,7 +38,7 @@ export default function CreateProject() {
     const d = new Date(date);
     // Verifica se é data válida
     if (isNaN(d.getTime())) return "";
-    return d.toLocaleDateString('pt-BR'); // Retorna "20/11/2025"
+    return d.toLocaleDateString('pt-BR'); 
   };
 
   const { register, handleSubmit, control, watch } = useForm<ProjectFormProps>({
@@ -195,7 +195,6 @@ export default function CreateProject() {
             </S.SelectWrapper>
           </S.InputGroup>
 
-          {/* 10. Botão de submit dinâmico */}
           <S.SubmitButton type="submit">
             {isEditMode ? 'Atualizar Projeto' : 'Criar Projeto'}
           </S.SubmitButton>

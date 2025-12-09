@@ -82,28 +82,21 @@ export const HeaderContainer = styled.div`
   }
 `;
 
-export const Avatar = styled.div`
+export const Avatar = styled.img`
   width: 130px;
   height: 130px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, ${props => props.theme.sidebar} 0%, ${props => props.theme.button} 100%);
+  border-radius: 24px; /* Identicons ficam ótimos quadrados com bordas arredondadas */
+  
+  /* Garante que a imagem não distorça */
+  object-fit: cover;
+  
+  /* Cor de fundo enquanto carrega */
+  background-color: ${props => props.theme.sidebar};
+  
   border: 5px solid ${props => props.theme.white};
   flex-shrink: 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
               0 4px 12px rgba(0, 0, 0, 0.15);
-  position: relative;
-  
-  /* Efeito de brilho */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 15%;
-    left: 15%;
-    width: 35%;
-    height: 35%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
-    border-radius: 50%;
-  }
   
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   

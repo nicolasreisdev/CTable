@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="128" fill="#8257e5"/>
+  
+  <text 
+    x="50%" 
+    y="50%" 
+    font-family="Arial, sans-serif" 
+    font-weight="bold" 
+    font-size="280" 
+    fill="white" 
+    text-anchor="middle" 
+    dy=".35em"
+  >
+    CT
+  </text>
+</svg>

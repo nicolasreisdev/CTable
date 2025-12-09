@@ -10,6 +10,13 @@ interface StyleProps {
   to?: string;
 }
 
+vi.mock('../../../API/AuthContext', () => ({
+  useAuth: () => ({
+    currentUser: { username: 'testuser' } // Simula um usuário logado para o Avatar aparecer
+  })
+}));
+
+
 // Mock dos estilos
 vi.mock('./styles', () => ({
   HeaderContainer: ({ children }: StyleProps) => <header>{children}</header>,

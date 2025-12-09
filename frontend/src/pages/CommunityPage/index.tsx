@@ -12,7 +12,7 @@ import * as D from '../../components/common/Dropdown/styles';
 import Modal from '../../components/common/Modal';
 import * as ModalS from '../../components/common/Modal/styles';
 import { Loading } from '../../components/common/Loading'
-
+import {getAvatarUrl} from '../../utils/getAvatarurl'
 
 export default function CommunityPage() {
   const { communityID } = useParams<{ communityID: string }>();
@@ -67,11 +67,10 @@ export default function CommunityPage() {
     try {
         await JoinCommunity(community.communityID);
         
-        // Atualiza a interface após entrar na comunidade
         setCommunity((prev: CommunityProps | null) => prev ? ({
             ...prev,
-            isMember: true, // Esconde o botão
-            memberCount: (prev.memberCount || 0) + 1 // Atualiza o contador visualmente
+            isMember: true, 
+            memberCount: (prev.memberCount || 0) + 1 
         }) : null);
 
         setNotification({ message: 'Você entrou na comunidade!', type: 'success' });
@@ -94,7 +93,6 @@ export default function CommunityPage() {
         setNotification({ message: 'Comunidade excluída com sucesso.', type: 'success' });
         setIsDeleteModalOpen(false);
         
-        // Redireciona para home após excluir
         setTimeout(() => {
             navigate('/feed');
         }, 1500);
@@ -113,15 +111,14 @@ export default function CommunityPage() {
     try {
         await LeaveCommunity(community.communityID);
         
-        // Atualiza a interface 
         setCommunity((prev: CommunityProps | null) => prev ? ({
             ...prev,
-            isMember: false, // O usuário não é mais membro
-            memberCount: Math.max((prev.memberCount || 0) - 1, 0) // Decrementa contador
+            isMember: false, 
+            memberCount: Math.max((prev.memberCount || 0) - 1, 0) 
         }) : null);
 
         setNotification({ message: 'Você saiu da comunidade.', type: 'success' });
-        setIsLeaveModalOpen(false); // Fecha o modal
+        setIsLeaveModalOpen(false); 
 
     } catch (error) {
         if (error instanceof Error) {
@@ -172,7 +169,10 @@ export default function CommunityPage() {
         <S.Banner />
         
         <S.HeaderContainer>
-          <S.Avatar /> 
+          <S.Avatar 
+          src={getAvatarUrl(community.name || 'comunidade', 'identicon')} 
+          alt={`Avatar da comunidade ${community.name}`}
+        />
           <S.HeaderInfo>
             <h1>{community.name}</h1>
             <span>{community.memberCount} membros</span>

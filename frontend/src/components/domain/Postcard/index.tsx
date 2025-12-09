@@ -11,6 +11,7 @@ import * as ModalS from '../../common/Modal/styles';
 import { CreateComment, GetComments, DeleteComment } from '../../../API/Comment';
 import type { CommentProps } from '../../../API/Comment';
 import { useAuth } from '../../../API/AuthContext';
+import { getAvatarUrl } from '../../../utils/getAvatarurl';
 
 const TrashIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -204,7 +205,13 @@ export default function Postcard({ post, showMenu, onDelete, deleteLabel = 'Proj
       )}
       
       <S.PostHeader>
-        <img src={(post as any).avatarUrl || 'url_placeholder_avatar.png'} alt={post.title} /> 
+        <img // Tenta usar o username do autor como "semente". 
+          // Se não tiver, tenta o título do autor ou usa 'visitante' como fallback.
+          src={getAvatarUrl(post.authorUsername || (post as any).author?.title || 'visitante')} 
+          alt="Avatar do autor"
+          // Garante que fique redondinho igual ao perfil
+          style={{ borderRadius: '50%', objectFit: 'cover', width: '40px', height: '40px' }}
+        /> 
         <span>{post.title}</span> 
         <small>• {(post as any).author?.title || 'Autor'}</small> 
       </S.PostHeader>

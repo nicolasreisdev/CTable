@@ -145,7 +145,8 @@ describe('Página Profile', () => {
     fireEvent.click(confirmBtn);
 
     await waitFor(() => {
-        expect(screen.getByTestId('toast')).toHaveTextContent('Conta já encerrada');
+        expect(logoutMock).toHaveBeenCalled();
+        expect(navigateMock).toHaveBeenCalledWith('/login');
     });
   });
 

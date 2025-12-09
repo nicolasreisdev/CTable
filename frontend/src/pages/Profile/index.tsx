@@ -13,24 +13,18 @@ import { DeleteProfile } from '../../API/User';
 import Toast from '../../components/common/Toast';
 import Modal from '../../components/common/Modal';
 import * as ModalS from '../../components/common/Modal/styles';
-import {Loading} from '../../components/common/Loading'
+import { Loading } from '../../components/common/Loading'; 
+import { getAvatarUrl } from '../../utils/getAvatarurl'; // Importação do Avatar
 
-
+// Ícones SVG
 const PostsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-    <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><line x1="10" y1="9" x2="8" y2="9" />
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><line x1="10" y1="9" x2="8" y2="9" /></svg>
 );
 const CommentsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
 );
 const SettingsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
 );
 
 type ViewState = 'posts' | 'comments';
@@ -40,39 +34,33 @@ export default function Profile() {
   const [view, setView] = useState<ViewState>('posts');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
   const navigate = useNavigate();
 
   const [userPosts, setUserPosts] = useState<ProjectProps[]>([]);
   const [userComments, setUserComments] = useState<CommentProps[]>([]);
-
   const [isLoading, setIsLoading] = useState(true);
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteProfileModalOpen, setIsDeleteProfileModalOpen] = useState(false);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
-    console.log("Efeito de busca de dados do perfil disparado.");
     const fetchProfileData = async () => {
       setIsLoading(true);
       try {
-        console.log("Usuário atual no Profile:", currentUser);
-        const apiUserPosts = await GetUserProjects();
-        
-        const apiUserComments: CommentProps[] = await GetUserComments();
-        
+        const [apiUserPosts, apiUserComments] = await Promise.all([
+           GetUserProjects(),
+           GetUserComments()
+        ]);
         setUserPosts(apiUserPosts);
         setUserComments(apiUserComments);
-
       } catch (error) {
         console.error("Falha ao buscar dados do perfil:", error);
       } finally {
         setIsLoading(false);
       }
-      
     };
-    if(currentUser)
-      fetchProfileData();
+    if(currentUser) fetchProfileData();
   }, [currentUser]); 
 
   useEffect(() => {
@@ -81,12 +69,8 @@ export default function Profile() {
         setIsMenuOpen(false);
       }
     }
-    if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
 
   const handleLogout = () => {
@@ -96,10 +80,7 @@ export default function Profile() {
 
   const handleDeleteComment = async (commentId: string) => {
       await DeleteComment(commentId);
-
-      setUserComments((prevComments) => 
-          prevComments.filter(comment => comment.commentID !== commentId)
-      );
+      setUserComments(prev => prev.filter(c => c.commentID !== commentId));
   };
 
   const handleEditProfile = () => {
@@ -108,31 +89,19 @@ export default function Profile() {
   };
 
   const handleDeleteProfile = async () => {
-    
     if (isDeleting) return;
     setIsDeleting(true);
-
       try {
           await DeleteProfile();
-          setNotification({ message: "Perfil excluído com sucesso. Até logo!", type: 'success' });
-
+          setNotification({ message: "Perfil excluído com sucesso.", type: 'success' });
           setIsDeleteProfileModalOpen(false);
-          
-          setTimeout(() => {
-              logout(); 
-              navigate('/login'); 
-          }, 2000);
-
+          setTimeout(() => { logout(); navigate('/login'); }, 2000);
       } catch (error) {
-          if (error instanceof Error) {
-              if (error.message.includes("não encontrado") || error.message.includes("not found")) {
-                  setNotification({ message: "Conta já encerrada. Redirecionando...", type: 'success' });
-                  setTimeout(() => { logout(); navigate('/login'); }, 2000);
-                  return;
-              }
-              setNotification({ message: error.message, type: 'error' });
+          if (error instanceof Error && (error.message.includes("não encontrado") || error.message.includes("not found"))) {
+              logout(); navigate('/login');
+          } else {
+             if(error instanceof Error) setNotification({ message: error.message, type: 'error' });
           }
-          setIsDeleteProfileModalOpen(false);
       } finally {
           setIsDeleting(false);
           setIsDeleteProfileModalOpen(false);
@@ -141,17 +110,13 @@ export default function Profile() {
 
   const renderFeed = () => {
     if (view === 'posts') {
-      if (userPosts.length === 0) {
-        return <p style={{ color: '#fff', padding: '20px' }}>Nenhum projeto encontrado.</p>;
-      }
-
-     return userPosts.map((post, index) => (
+      if (userPosts.length === 0) return <p style={{ color: '#fff', padding: '20px' }}>Nenhum projeto encontrado.</p>;
+      return userPosts.map((post, index) => (
         <S.PostContainer key={index}>
           <Postcard post={post} showMenu={true} />
         </S.PostContainer>
       ));
     }
-
     if (view === 'comments') {
       return userComments.map(comment => (
         <S.PostContainer key={comment.commentID || Math.random()}>
@@ -163,9 +128,9 @@ export default function Profile() {
               technologies: [],
               status: '',
               startDate: comment.createdAt,
-             
-              author: { title: currentUser?.username || 'Você' } 
-            } as unknown as ProjectProps} 
+              authorUsername: currentUser?.username, // Garante avatar no card do comentário
+              authorName: currentUser?.username
+            } as any} 
             showMenu={true} 
             deleteLabel="Comentário"
             onDelete={() => handleDeleteComment(comment.commentID!)}
@@ -173,115 +138,62 @@ export default function Profile() {
         </S.PostContainer>
       ));
     }
-
     return null;
   };
 
   return (
     <S.PageWrapper>
       <Sidebar />
-
-      {notification && (
-        <Toast 
-            message={notification.message} 
-            type={notification.type} 
-            onClose={() => setNotification(null)} 
-        />
-      )}
+      {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
       <S.ContentWrapper>
         {isLoading ? (
-          <div style={{ marginTop: '50px' }}>
-                <Loading/>
-             </div>
-        ) :
-        (
-        <>
-        <S.ProfileHeader>
-            <S.ActionsWrapper ref={menuRef}>
-                <S.ProfileActions>
-                    <S.IconButton
-                        title="Ver publicações"
-                        $active={view === 'posts'}
-                        onClick={() => setView('posts')}
-                        >
-                        <PostsIcon />
-                    </S.IconButton>
-                    <S.IconButton
-                        title="Ver comentários"
-                        $active={view === 'comments'}
-                        onClick={() => setView('comments')}
-                        >
-                        <CommentsIcon />
-                    </S.IconButton>
-                    <S.IconButton
-                        title="Configurações"
-                        onClick={() => setIsMenuOpen(prev => !prev)}
-                        >
-                        <SettingsIcon />
-                    </S.IconButton>
-                </S.ProfileActions>
+             <div style={{ marginTop: '50px' }}><Loading message="Carregando seu perfil..." /></div>
+        ) : (
+            <>
+                <S.ProfileHeader>
+                    <S.ActionsWrapper ref={menuRef}>
+                        <S.ProfileActions>
+                            <S.IconButton title="Ver publicações" $active={view === 'posts'} onClick={() => setView('posts')}><PostsIcon /></S.IconButton>
+                            <S.IconButton title="Ver comentários" $active={view === 'comments'} onClick={() => setView('comments')}><CommentsIcon /></S.IconButton>
+                            <S.IconButton title="Configurações" onClick={() => setIsMenuOpen(prev => !prev)}><SettingsIcon /></S.IconButton>
+                        </S.ProfileActions>
+                        {isMenuOpen && (
+                        <D.DropdownMenu>
+                            <D.MenuItem onClick={handleEditProfile}>Editar Perfil</D.MenuItem>
+                            <D.MenuItem onClick={handleLogout}>Sair</D.MenuItem>
+                            <D.Separator />
+                            <D.DangerMenuItem onClick={() => { setIsMenuOpen(false); setIsDeleteProfileModalOpen(true); }}>Excluir Perfil</D.DangerMenuItem>
+                        </D.DropdownMenu>
+                        )}
+                    </S.ActionsWrapper>                
+                </S.ProfileHeader>
+                
+                <S.ProfileInfo>
+                    {/* --- USO DO AVATAR --- */}
+                    <S.ProfileAvatar 
+                       $imageUrl={getAvatarUrl(currentUser?.username || 'usuario')} 
+                    />
+                    {/* ------------------- */}
+                    <S.Username>{currentUser?.username || 'Usuário'}</S.Username>
+                </S.ProfileInfo>
 
-                {isMenuOpen && (
-                <D.DropdownMenu>
-                    <D.MenuItem onClick={handleEditProfile}>Editar Perfil</D.MenuItem>
-                    <D.MenuItem onClick={handleLogout}>Sair</D.MenuItem>
-                    <D.Separator />
-                    <D.DangerMenuItem onClick={() => {
-                        setIsMenuOpen(false);
-                        setIsDeleteProfileModalOpen(true);
-                    }}>
-                        Excluir Perfil
-                    </D.DangerMenuItem>
-                </D.DropdownMenu>
-                )}
-
-            </S.ActionsWrapper>                
-        </S.ProfileHeader>
-        
-        <S.ProfileInfo>
-            <S.ProfileAvatar 
-              style={{ 
-                backgroundImage: undefined 
-              }} 
-            />
-            <S.Username>{currentUser?.username || 'Carregando...'}</S.Username>
-        </S.ProfileInfo>
-
-        <S.PostList>
-          {renderFeed()}
-        </S.PostList>
-        </>
+                <S.PostList>
+                    {renderFeed()}
+                </S.PostList>
+            </>
         )}
       </S.ContentWrapper>
 
-      <Modal 
-        isOpen={isDeleteProfileModalOpen} 
-        onClose={() => !isDeleting && setIsDeleteProfileModalOpen(false)}
-        title="Excluir Conta"
-      >
+      <Modal isOpen={isDeleteProfileModalOpen} onClose={() => !isDeleting && setIsDeleteProfileModalOpen(false)} title="Excluir Conta">
         <div style={{ textAlign: 'center' }}>
-            <p style={{ marginBottom: '24px', color: '#555' }}>
-                Tem certeza que deseja excluir sua conta? <br/>
-                <strong>Todos os seus projetos, comunidades e comentários serão apagados permanentemente.</strong>
-            </p>
+            <p style={{ marginBottom: '24px', color: '#555' }}>Tem certeza que deseja excluir sua conta? <br/><strong>Isso apagará tudo permanentemente.</strong></p>
             <ModalS.ModalActions>
-                <ModalS.ChoiceButton 
-                  onClick={() => setIsDeleteProfileModalOpen(false)}
-                  disabled={isDeleting}>
-                    Cancelar
-                </ModalS.ChoiceButton>
-                <ModalS.ChoiceButton 
-                    onClick={handleDeleteProfile} 
-                    style={{ backgroundColor: '#e74c3c' }}
-                    disabled={isDeleting}
-                >
-                    {isDeleting ? 'Excluindo...' : 'Excluir Conta'}
-                </ModalS.ChoiceButton>
+                <ModalS.ChoiceButton onClick={() => setIsDeleteProfileModalOpen(false)} disabled={isDeleting}>Cancelar</ModalS.ChoiceButton>
+                <ModalS.ChoiceButton onClick={handleDeleteProfile} style={{ backgroundColor: '#e74c3c' }} disabled={isDeleting}>{isDeleting ? 'Excluindo...' : 'Excluir Conta'}</ModalS.ChoiceButton>
             </ModalS.ModalActions>
         </div>
       </Modal>
-
     </S.PageWrapper>
   );
 }

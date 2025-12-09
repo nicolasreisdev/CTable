@@ -5,6 +5,7 @@ import * as S from './styles';
 import type { CommunityProps } from '../../../API/Community';
 import { useAuth } from '../../../API/AuthContext';
 import { useEffect } from 'react';
+import { getAvatarUrl } from '../../../utils/getAvatarurl'
 
 export default function Sidebar() {
     // Estado para controlar se a lista de comunidades está visível
@@ -56,6 +57,7 @@ export default function Sidebar() {
                                 key={community.communityID}
                             >
                                 <S.CommunityIcon
+                                    src={getAvatarUrl(community.name || 'comunidade', 'identicon')}
                                     alt={`${community.name} icon`}
                                 />
                                 <span>{community.name}</span>
